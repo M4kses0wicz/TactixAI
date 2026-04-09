@@ -8,10 +8,10 @@ function App() {
     <>
       <h1>TactiX AI</h1>
       <p>
-        Lorem, ipsum dolor sit amet consectetur adipisicing elit. Deserunt hic,
-        ipsam omnis, error exercitationem in veniam voluptates, odit doloremque
-        molestiae neque dolorum minima voluptatibus soluta blanditiis eos
-        possimus sint! Culpa!
+        Lorem ipsum dolor sit, amet consectetur adipisicing elit. Omnis, ullam
+        ratione? Excepturi asperiores dolorem maiores est autem tempora quos,
+        qui soluta debitis velit laboriosam ducimus nobis, at tenetur tempore
+        et!
       </p>
     </>
   );
