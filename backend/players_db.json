@@ -1,6 +1,8 @@
 {
   "Manchester City": {
-    "players": ["Erling Haaland", "Phil Foden", "Kevin De Bruyne", "Rodri", "Bernardo Silva", "Josko Gvardiol", "Ruben Dias", "Ederson", "Savinho"],
+    "players": ["Gianluigi Donnarumma", "James Trafford", "Marcus Bettinelli", "Josko Gvardiol", "Marc Guéhi", "Rúben Dias", "Abdukodir Khusanov", "John Stones", 
+          "Nathan Aké", "Max Alleyne", "Nico O'Reilly", "Rayan Aït-Nouri", "Matheus Nunes", "Rico Lewis", "Rodri", "Nico González", "Tijjani Reijnders", "Sverre Nypan",
+           "Mateo Kovacic", "Phil Foden", "Rayan Cherki", "Bernardo Silva", "Jérémy Doku", "Savinho", "Antoine Semenyo", "Erling Haaland", "Omar Marmoush"],
     "tactical_profile": {
       "possession": "Extreme (65%+)",
       "directness": "Very Low (Slow & Intricate)",
@@ -11,7 +13,10 @@
     "weaknesses": ["Kontrataki rywala przy wysokiej linii obrony", "Pojedynki 1v1 na pustej przestrzeni"]
   },
   "Liverpool": {
-    "players": ["Mohamed Salah", "Virgil van Dijk", "Alexis Mac Allister", "Luis Díaz", "Trent Alexander-Arnold", "Dominik Szoboszlai", "Darwin Nuñez", "Federico Chiesa"],
+    "players": ["Giorgi Mamardashvili", "Alisson", "Freddie Woodman", "Harvey Davies", "Ibrahima Konaté",
+     "Giovanni Leoni", "Virgil van Dijk", "Joe Gomez", "Rhys Williams", "Milos Kerkez", "Andrew Robertson",
+      "Jeremie Frimpong", "Conor Bradley", "Calvin Ramsay", "Ryan Gravenberch", "Wataru Endo", "Stefan Bajcetic", "Alexis Mac Allister", "Curtis Jones", "Trey Nyoni", "Florian Wirtz",
+     "Dominik Szoboszlai", "Cody Gakpo", "Rio Ngumoha", "Mohamed Salah", "Federico Chiesa", "Alexander Isak", "Hugo Ekitiké"],
     "tactical_profile": {
       "possession": "High (60%)",
       "directness": "High (Fast & Vertical)",
@@ -22,7 +27,10 @@
     "weaknesses": ["Przestrzeń za plecami bocznych obrońców", "Wysokie zużycie energii"]
   },
   "Arsenal": {
-    "players": ["Bukayo Saka", "Martin Ødegaard", "Declan Rice", "Kai Havertz", "William Saliba", "Gabriel Magalhães", "Riccardo Calafiori"],
+    "players": ["David Raya", "Kepa Arrizabalaga", "William Saliba", "Gabriel", "Piero Hincapié", "Cristhian Mosquera",
+     "Riccardo Calafiori", "Myles Lewis-Skelly", "Jurriën Timber", "Ben White", "Martín Zubimendi", "Christian Nørgaard", 
+     "Declan Rice", "Mikel Merino", "Martin Ødegaard", "Eberechi Eze", "Gabriel Martinelli", "Leandro Trossard", 
+    "Bukayo Saka", "Noni Madueke", "Max Dowman", "Viktor Gyökeres", "Kai Havertz", "Gabriel Jesus"],
     "tactical_profile": {
       "possession": "High (62%)",
       "directness": "Medium (Structured)",
@@ -33,7 +41,11 @@
     "weaknesses": ["Brak klasycznego 'kilera' w polu karnym w meczach z niskim blokiem"]
   },
   "Manchester United": {
-    "players": ["Matthijs de Ligt", "Lisandro Martínez", "Leny Yoro", "Manuel Ugarte", "Kobbie Mainoo", "Bruno Fernandes", "Joshua Zirkzee", "Amad Diallo", "Mason Mount"],
+    "players": ["Senne Lammens", "Altay Bayindir", "Tom Heaton", "Leny Yoro",
+     "Matthijs de Ligt", "Lisandro Martínez", "Ayden Heaven", "Harry Maguire",
+      "Tyler Fredricson", "Patrick Dorgu", "Luke Shaw", "Tyrell Malacia", "Diogo Dalot",
+       "Noussair Mazraoui", "Manuel Ugarte", "Casemiro", "Kobbie Mainoo", "Bruno Fernandes",
+     "Mason Mount", "Bryan Mbeumo", "Amad Diallo", "Matheus Cunha", "Benjamin Sesko", "Joshua Zirkzee", "Chido Obi"],
     "tactical_profile": {
       "possession": "Medium (52%)",
       "directness": "Medium-High",
@@ -44,7 +56,11 @@
     "weaknesses": ["Brak dynamiki na skrzydłach", "Wolne przejście do ataku", "Błędy bramkarza przy wyprowadzeniu"]
   },
   "Aston Villa": {
-    "players": ["Ollie Watkins", "Emiliano Martínez", "Leon Bailey", "Youri Tielemans", "Ezri Konsa", "Pau Torres", "Amadou Onana"],
+    "players": ["Emiliano Martínez", "Marco Bizot", "Ezri Konsa", "Pau Torres",
+     "Victor Lindelöf", "Tyrone Mings", "Ian Maatsen", "Lucas Digne", "Matty Cash", 
+     "Andrés García", "Amadou Onana", "Boubacar Kamara", "Lamare Bogarde", "Youri Tielemans",
+      "Douglas Luiz", "John McGinn", "Ross Barkley", "Morgan Rogers", "Harvey Elliott", 
+    "Emiliano Buendía", "Jadon Sancho", "Leon Bailey", "Alysson", "Ollie Watkins", "Tammy Abraham"],
     "tactical_profile": {
       "possession": "Medium (50%)",
       "directness": "High",
