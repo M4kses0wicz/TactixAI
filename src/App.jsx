@@ -11,7 +11,7 @@ function App() {
         Lorem ipsum dolor sit, amet consectetur adipisicing elit. Omnis, ullam
         ratione? Excepturi asperiores dolorem maiores est autem tempora quos,
         qui soluta debitis velit laboriosam ducimus nobis, at tenetur tempore
-        et!
+        et! 
       </p>
     </>
   );

@@ -1,0 +1,57 @@
+{
+  "Manchester City": {
+    "players": ["Erling Haaland", "Phil Foden", "Kevin De Bruyne", "Rodri", "Bernardo Silva", "Josko Gvardiol", "Ruben Dias", "Ederson", "Savinho"],
+    "tactical_profile": {
+      "possession": "Extreme (65%+)",
+      "directness": "Very Low (Slow & Intricate)",
+      "pressing": "Elite (High Turnovers within 40m of opposition goal)",
+      "style_desc": "System 'Field Tilt'. City dusi rywala na jego 20 metrze. Obrońcy (Gvardiol/Lewis) wchodzą do środka pola jako 'Inverted Fullbacks', tworząc przewagę 4 graczy w centrum. Haaland pełni rolę 'Gravity Player' – odciąga stoperów, robiąc miejsce dla Fodena i KDB w 'półstrefach' (half-spaces)."
+    },
+    "strengths": ["Atak pozycyjny", "Kontrola tempa", "Przeciążanie środka pola"],
+    "weaknesses": ["Kontrataki rywala przy wysokiej linii obrony", "Pojedynki 1v1 na pustej przestrzeni"]
+  },
+  "Liverpool": {
+    "players": ["Mohamed Salah", "Virgil van Dijk", "Alexis Mac Allister", "Luis Díaz", "Trent Alexander-Arnold", "Dominik Szoboszlai", "Darwin Nuñez", "Federico Chiesa"],
+    "tactical_profile": {
+      "possession": "High (60%)",
+      "directness": "High (Fast & Vertical)",
+      "pressing": "High (Gegenpressing intensity)",
+      "style_desc": "Styl 'Verticality'. Liverpool szuka najkrótszej drogi do bramki. Trent Alexander-Arnold operuje jako 'Quarterback' z głębi pola. Szukają 'izolacji' dla Salaha i Diaza na skrzydłach. Van Dijk zarządza ekstremalnie wysoką linią spalonego (Offside Trap)."
+    },
+    "strengths": ["Błyskawiczne przejścia fazowe", "Kreatywność bocznych obrońców", "Gry w powietrzu"],
+    "weaknesses": ["Przestrzeń za plecami bocznych obrońców", "Wysokie zużycie energii"]
+  },
+  "Arsenal": {
+    "players": ["Bukayo Saka", "Martin Ødegaard", "Declan Rice", "Kai Havertz", "William Saliba", "Gabriel Magalhães", "Riccardo Calafiori"],
+    "tactical_profile": {
+      "possession": "High (62%)",
+      "directness": "Medium (Structured)",
+      "pressing": "Aggressive (Zonal Press)",
+      "style_desc": "Struktura 4-4-2 w obronie zmieniająca się w 3-2-5 w ataku. Każdy sektor boiska jest 'zmapowany'. Saka izolowany na prawej stronie do pojedynków 1v1. Wykorzystują Havertza jako 'Target Mana' do wygrywania długich piłek od bramkarza pod pressingiem."
+    },
+    "strengths": ["Defensywna stabilność", "Stałe fragmenty (Corner routines)", "Dyscyplina taktyczna"],
+    "weaknesses": ["Brak klasycznego 'kilera' w polu karnym w meczach z niskim blokiem"]
+  },
+  "Manchester United": {
+    "players": ["Matthijs de Ligt", "Lisandro Martínez", "Leny Yoro", "Manuel Ugarte", "Kobbie Mainoo", "Bruno Fernandes", "Joshua Zirkzee", "Amad Diallo", "Mason Mount"],
+    "tactical_profile": {
+      "possession": "Medium (52%)",
+      "directness": "Medium-High",
+      "pressing": "Improved (Mid-block focus)",
+      "style_desc": "Po wypożyczeniu Rashforda, Garnacho i Onany (sezon 2026), zespół przeszedł transformację. Grają bardziej zachowawczo (Mid-block). Manuel Ugarte pełni rolę 'Destroyera' przed linią obrony. Zirkzee operuje jako 'Deep Lying Forward', łącząc pomoc z atakiem. Brak klasycznych szybkich skrzydeł wymusza grę kombinacyjną przez Bruno Fernandesa."
+    },
+    "strengths": ["Odbiór w środku pola", "Kreatywność Bruno", "Solidność stoperów"],
+    "weaknesses": ["Brak dynamiki na skrzydłach", "Wolne przejście do ataku", "Błędy bramkarza przy wyprowadzeniu"]
+  },
+  "Aston Villa": {
+    "players": ["Ollie Watkins", "Emiliano Martínez", "Leon Bailey", "Youri Tielemans", "Ezri Konsa", "Pau Torres", "Amadou Onana"],
+    "tactical_profile": {
+      "possession": "Medium (50%)",
+      "directness": "High",
+      "pressing": "Tactical (Offside trap focus)",
+      "style_desc": "Najwyższa linia obrony w Europie. Pau Torres kluczowy w wyprowadzaniu piłki pionowo przez środek. Wykorzystują szybkość Watkinsa do atakowania kanałów między stoperem a bocznym obrońcą rywala. Bardzo kompaktowy blok w środku pola."
+    },
+    "strengths": ["Pułapki ofsajdowe", "Kontrataki środkiem pola", "Stabilność w bramce"],
+    "weaknesses": ["Ryzyko przy szybkich napastnikach łamiących linię spalonego"]
+  }
+}
