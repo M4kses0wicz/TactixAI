@@ -1,0 +1,7 @@
+1.Zbudowałem "mózg" aplikacji – stworzyłem serwer w FastAPI, który obsługuje zapytania i zarządza logiką całego projektu.
+2.Zintegrowałem Sztuczną Inteligencję – połączyłem projekt z modelem Mistral AI i napisałem instrukcje (prompty), dzięki którym AI analizuje mecze jak profesjonalny trener.
+3.Stworzyłem bazę danych taktycznych – opracowałem zaawansowany system JSON, który przechowuje statystyki setek piłkarzy i dziesiątki ustawień meczowych.
+4.Zaprojektowałem silnik analityczny – stworzyłem algorytm, który dopasowuje konkretne drużyny z bazy danych do zapytań użytkownika.
+5.Zadbałem o bezpieczeństwo i konfigurację – wdrożyłem system zmiennych środowiskowych (.env), aby chronić klucze API, oraz przygotowałem pliki konfiguracyjne projektu.
+6.Zarządzałem kodem na GitHubie – założyłem repozytorium, skonfigurowałem dostęp dla zespołu i pilnowałem porządku w wersjach kodu.
+7.Zrobiłem research nad symulacją meczów – sprawdziłem, jak połączyć nasz backend z silnikami generującymi przebieg spotkania w czasie rzeczywistym.
