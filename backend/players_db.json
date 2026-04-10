@@ -4,27 +4,27 @@
           "Nathan Aké", "Max Alleyne", "Nico O'Reilly", "Rayan Aït-Nouri", "Matheus Nunes", "Rico Lewis", "Rodri", "Nico González", "Tijjani Reijnders", "Sverre Nypan",
            "Mateo Kovacic", "Phil Foden", "Rayan Cherki", "Bernardo Silva", "Jérémy Doku", "Savinho", "Antoine Semenyo", "Erling Haaland", "Omar Marmoush"],
     "tactical_profile": {
-      "possession": "Extreme (65%+)",
-      "directness": "Very Low (Slow & Intricate)",
-      "pressing": "Elite (High Turnovers within 40m of opposition goal)",
-      "style_desc": "System 'Field Tilt'. City dusi rywala na jego 20 metrze. Obrońcy (Gvardiol/Lewis) wchodzą do środka pola jako 'Inverted Fullbacks', tworząc przewagę 4 graczy w centrum. Haaland pełni rolę 'Gravity Player' – odciąga stoperów, robiąc miejsce dla Fodena i KDB w 'półstrefach' (half-spaces)."
+      "possession": "Very High (60.1%)",
+      "directness": "Very Low (Maksymalna cierpliwość)",
+      "pressing": "High (Zorganizowana presja po stracie)",
+      "style_desc": "3-2-4-1 / Juego de Posición (Atak Pozycyjny)"
     },
-    "strengths": ["Atak pozycyjny", "Kontrola tempa", "Przeciążanie środka pola"],
-    "weaknesses": ["Kontrataki rywala przy wysokiej linii obrony", "Pojedynki 1v1 na pustej przestrzeni"]
+    "strengths": ["Dominacja w posiadaniu", "Kreowanie szans", "Skuteczność (Haaland)"],
+    "weaknesses": ["Podatność na szybkie kontrataki"]
   },
   "Liverpool": {
     "players": ["Giorgi Mamardashvili", "Alisson", "Freddie Woodman", "Harvey Davies", "Ibrahima Konaté",
      "Giovanni Leoni", "Virgil van Dijk", "Joe Gomez", "Rhys Williams", "Milos Kerkez", "Andrew Robertson",
       "Jeremie Frimpong", "Conor Bradley", "Calvin Ramsay", "Ryan Gravenberch", "Wataru Endo", "Stefan Bajcetic", "Alexis Mac Allister", "Curtis Jones", "Trey Nyoni", "Florian Wirtz",
      "Dominik Szoboszlai", "Cody Gakpo", "Rio Ngumoha", "Mohamed Salah", "Federico Chiesa", "Alexander Isak", "Hugo Ekitiké"],
-    "tactical_profile": {
-      "possession": "High (60%)",
-      "directness": "High (Fast & Vertical)",
-      "pressing": "High (Gegenpressing intensity)",
-      "style_desc": "Styl 'Verticality'. Liverpool szuka najkrótszej drogi do bramki. Trent Alexander-Arnold operuje jako 'Quarterback' z głębi pola. Szukają 'izolacji' dla Salaha i Diaza na skrzydłach. Van Dijk zarządza ekstremalnie wysoką linią spalonego (Offside Trap)."
+   "tactical_profile": {
+      "possession": "Very High (60.1%)",
+      "directness": "High (Pionowy, szybki atak)",
+      "pressing": "Very High (Słynny, intensywny doskok)",
+      "style_desc": "4-3-3 / Gegenpressing (Heavy Metal)"
     },
-    "strengths": ["Błyskawiczne przejścia fazowe", "Kreatywność bocznych obrońców", "Gry w powietrzu"],
-    "weaknesses": ["Przestrzeń za plecami bocznych obrońców", "Wysokie zużycie energii"]
+    "strengths": ["Błyskawiczne odbiory", "Intensywność", "Wysoka liczba strzałów (xG)"],
+    "weaknesses": ["Ryzykowna, wysoka linia obrony"]
   },
   "Arsenal": {
     "players": ["David Raya", "Kepa Arrizabalaga", "William Saliba", "Gabriel", "Piero Hincapié", "Cristhian Mosquera",
@@ -32,13 +32,13 @@
      "Declan Rice", "Mikel Merino", "Martin Ødegaard", "Eberechi Eze", "Gabriel Martinelli", "Leandro Trossard", 
     "Bukayo Saka", "Noni Madueke", "Max Dowman", "Viktor Gyökeres", "Kai Havertz", "Gabriel Jesus"],
     "tactical_profile": {
-      "possession": "High (62%)",
-      "directness": "Medium (Structured)",
-      "pressing": "Aggressive (Zonal Press)",
-      "style_desc": "Struktura 4-4-2 w obronie zmieniająca się w 3-2-5 w ataku. Każdy sektor boiska jest 'zmapowany'. Saka izolowany na prawej stronie do pojedynków 1v1. Wykorzystują Havertza jako 'Target Mana' do wygrywania długich piłek od bramkarza pod pressingiem."
+      "possession": "High (56.9%)",
+      "directness": "Low (Cierpliwa dominacja)",
+      "pressing": "Very High (Agresywne duszenie rywala)",
+      "style_desc": "4-3-3 / Controlled Chaos (Box Midfield)"
     },
-    "strengths": ["Defensywna stabilność", "Stałe fragmenty (Corner routines)", "Dyscyplina taktyczna"],
-    "weaknesses": ["Brak klasycznego 'kilera' w polu karnym w meczach z niskim blokiem"]
+    "strengths": ["Stałe fragmenty gry", "Żelazna defensywa", "Kontrola środka pola"],
+    "weaknesses": ["Czasami zbyt statyczna gra przy głębokiej defensywie rywala"]
   },
   "Manchester United": {
     "players": ["Senne Lammens", "Altay Bayindir", "Tom Heaton", "Leny Yoro",
@@ -46,14 +46,14 @@
       "Tyler Fredricson", "Patrick Dorgu", "Luke Shaw", "Tyrell Malacia", "Diogo Dalot",
        "Noussair Mazraoui", "Manuel Ugarte", "Casemiro", "Kobbie Mainoo", "Bruno Fernandes",
      "Mason Mount", "Bryan Mbeumo", "Amad Diallo", "Matheus Cunha", "Benjamin Sesko", "Joshua Zirkzee", "Chido Obi"],
-    "tactical_profile": {
-      "possession": "Medium (52%)",
-      "directness": "Medium-High",
-      "pressing": "Improved (Mid-block focus)",
-      "style_desc": "Po wypożyczeniu Rashforda, Garnacho i Onany (sezon 2026), zespół przeszedł transformację. Grają bardziej zachowawczo (Mid-block). Manuel Ugarte pełni rolę 'Destroyera' przed linią obrony. Zirkzee operuje jako 'Deep Lying Forward', łącząc pomoc z atakiem. Brak klasycznych szybkich skrzydeł wymusza grę kombinacyjną przez Bruno Fernandesa."
+  "tactical_profile": {
+      "possession": "Medium (53.2%)",
+      "directness": "High (Błyskawiczne kontrataki)",
+      "pressing": "Medium (Zorientowany na przechwyt)",
+      "style_desc": "4-2-3-1 / Transitional Football (Gra Fazami)"
     },
-    "strengths": ["Odbiór w środku pola", "Kreatywność Bruno", "Solidność stoperów"],
-    "weaknesses": ["Brak dynamiki na skrzydłach", "Wolne przejście do ataku", "Błędy bramkarza przy wyprowadzeniu"]
+    "strengths": ["Zabójcze kontry", "Indywidualne akcje", "Siła fizyczna"],
+    "weaknesses": ["Brak spójności w pressingu", "Luki między liniami"]
   },
   "Aston Villa": {
     "players": ["Emiliano Martínez", "Marco Bizot", "Ezri Konsa", "Pau Torres",
@@ -62,13 +62,13 @@
       "Douglas Luiz", "John McGinn", "Ross Barkley", "Morgan Rogers", "Harvey Elliott", 
     "Emiliano Buendía", "Jadon Sancho", "Leon Bailey", "Alysson", "Ollie Watkins", "Tammy Abraham"],
     "tactical_profile": {
-      "possession": "Medium (50%)",
-      "directness": "High",
-      "pressing": "Tactical (Offside trap focus)",
-      "style_desc": "Najwyższa linia obrony w Europie. Pau Torres kluczowy w wyprowadzaniu piłki pionowo przez środek. Wykorzystują szybkość Watkinsa do atakowania kanałów między stoperem a bocznym obrońcą rywala. Bardzo kompaktowy blok w środku pola."
+      "possession": "Medium (53.7%)",
+      "directness": "Medium (Zbalansowane przejścia)",
+      "pressing": "High (Pułapki i aktywny doskok)",
+      "style_desc": "4-2-3-1 / High Line Trap (Pułapka Ofsajdowa)"
     },
-    "strengths": ["Pułapki ofsajdowe", "Kontrataki środkiem pola", "Stabilność w bramce"],
-    "weaknesses": ["Ryzyko przy szybkich napastnikach łamiących linię spalonego"]
+    "strengths": ["Pułapki ofsajdowe", "Szybkość w ataku (Watkins)", "Dyscyplina taktyczna"],
+    "weaknesses": ["Błędy przy prostopadłych piłkach za plecy"]
   },
   "Chelsea": {
     "players": ["Robert Sánchez", "Filip Jørgensen", "Gabriel Slonina", "Teddy Sharman-Lowe",
@@ -77,14 +77,14 @@
       "Josh Acheampong", "Moisés Caicedo", "Roméo Lavia", "Dário Essugo", "Enzo Fernández", "Andrey Santos",
        "Cole Palmer", "Alejandro Garnacho", "Jamie Gittens",
      "Mykhaylo Mudryk", "Estêvão", "Pedro Neto", "João Pedro", "Liam Delap", "Marc Guiu"],
-    "tactical_profile": {
-      "possession": "High (60% +)",
-      "directness": "Medium",
-      "pressing": "High (Aggressive Counter-press)",
-      "style_desc": "Futbol oparty na dominacji i rotacjach w środkowej strefie. Cole Palmer pełni rolę 'wolnego elektronu', operując w półprzestrzeniach. Boczni obrońcy często pełnią rolę 'inverted full-backs', zagęszczając środek pola, co pozwala na szybkie odzyskanie piłki po stracie."
+   "tactical_profile": {
+      "possession": "High (59.1%)",
+      "directness": "Low (Krótkie podania, drybling)",
+      "pressing": "High (Presja w środkowej strefie)",
+      "style_desc": "4-3-3 / Fluid Possession (Płynny Atak)"
     },
-    "strengths": ["Kreatywność w tercji ataku", "Głębia składu", "Szybkość w fazie przejścia"],
-    "weaknesses": ["Nadmiar opcji ofensywnych utrudniający stabilizację składu", "Ryzyko kontr przy wysokim ustawieniu bocznych obrońców"]
+    "strengths": ["Kreatywność indywidualna (Palmer)", "Drybling", "Szerokość ataku"],
+    "weaknesses": ["Błędy indywidualne w tyłach", "Błędy przy wyprowadzaniu"]
   },
   "West Ham": {
     "players": ["Mads Hermansen", "Alphonse Areola", "Łukasz Fabianski", "Jean-Clair Todibo",
@@ -93,13 +93,13 @@
        "Mohamadou Kanté", "Mateus Fernandes", "Crysencio Summerville", "Keiber Lamadrid",
      "Jarrod Bowen", "Adama Traoré", "Taty Castellanos", "Pablo", "Callum Wilson"],
     "tactical_profile": {
-      "possession": "Medium (45-50%)",
-      "directness": "High",
-      "pressing": "Zonal (Mid-block focus)",
-      "style_desc": "Balans między techniczną finezją a fizycznością. Wykorzystują drybling Kudusa i szybkość Bowena do błyskawicznego przenoszenia piłki z obrony do ataku. Gra oparta na solidnym duecie defensywnych pomocników i prostopadłych podaniach od Paquety."
+      "possession": "Low (42.2%)",
+      "directness": "Very High (Szybka, długa piłka)",
+      "pressing": "Low (Cierpliwe czekanie na błąd)",
+      "style_desc": "4-1-4-1 / Pragmatic Counter (Kontratak)"
     },
-    "strengths": ["Indywidualne umiejętności skrzydłowych", "Groźne stałe fragmenty gry", "Solidność w odbiorze"],
-    "weaknesses": ["Utrzymanie koncentracji w końcówkach", "Wolna rotacja piłki w ataku pozycyjnym"]
+    "strengths": ["Fizyczność", "Obrona pola karnego", "Stałe fragmenty"],
+    "weaknesses": ["Bardzo mała aktywność w ataku pozycyjnym"]
   },
   "Brentford": {
     "players": ["Caoimhín Kelleher", "Hákon Valdimarsson", "Ellery Balcombe", 
@@ -109,13 +109,13 @@
     "Mikkel Damsgaard", "Antoni Milambo", "Fábio Carvalho", "Kevin Schade", "Reiss Nelson", "Dango Ouattara",
      "Romelle Donovan", "Igor Thiago", "Kaye Furo"],
     "tactical_profile": {
-      "possession": "Medium (45%)",
-      "directness": "Very High",
-      "pressing": "High / Organized Trigger",
-      "style_desc": "Ekstremalnie bezpośredni styl gry oparty na szybkich przejściach z obrony do ataku. Wykorzystują mobilność Michaela Kayode i Rico Henry'ego na wahadłach. Jordan Henderson zapewnia doświadczenie i kontrolę tempa w środku pola, podczas gdy kreatywność Damsgaarda i Milambo ma zasilać potężnego fizycznie Igora Thiago. Często stosują długie piłki od bramkarza (Kelleher) bezpośrednio w strefy ataku."
+      "possession": "Low (47.0%)",
+      "directness": "High (Bezpośrednie dośrodkowania)",
+      "pressing": "Medium (Zorganizowany blok obronny)",
+      "style_desc": "3-5-2 / Set-Piece Specialists (Analityka)"
     },
-    "strengths": ["Zagrożenie przy stałych fragmentach gry", "Szybkość w fazie przejścia (Schade, Ouattara)", "Silna rotacja w formacji ofensywnej"],
-    "weaknesses": ["Wiek kluczowych graczy w środku pola (Henderson)", "Ryzyko luki za plecami wysoko podchodzących bocznych obrońców"]
+    "strengths": ["Wyrzuty z autu", "Stałe fragmenty", "Analityka przedmeczowa"],
+    "weaknesses": ["Atak pozycyjny", "Potencjał techniczny"]
   },
   "Everton": {
     "players": ["Jordan Pickford", "Mark Travers", "Tom King", "Jarrad Branthwaite", 
@@ -123,126 +123,126 @@
      "Nathan Patterson", "Séamus Coleman", "James Garner", "Idrissa Gueye", "Kiernan Dewsbury-Hall",
       "Carlos Alcaraz", "Tim Iroegbunam", "Harrison Armstrong", "Merlin Röhl", "Jack Grealish", "Tyrique George",
        "Dwight McNeil", "Iliman Ndiaye", "Tyler Dibling", "Thierno Barry", "Beto"],
-    "tactical_profile": {
-      "possession": "Medium (48%)",
-      "directness": "High",
-      "pressing": "High (Zonal Press)",
-      "style_desc": "Nowoczesne wydanie klasycznego stylu Evertonu. Pozyskanie Grealisha i Dewsbury-Halla dodało drużynie kreatywności w fazie ataku pozycyjnego. Branthwaite jest kluczowy w wyprowadzaniu piłki, często szukając prostopadłych podań do Ndiaye. Wykorzystują szybkość młodych skrzydeł (Dibling, George) do rozciągania obrony rywala, podczas gdy Thierno Barry pełni rolę silnego punktu odniesienia w polu karnym."
+   "tactical_profile": {
+      "possession": "Low (43.6%)",
+      "directness": "Very High (Klasyczny Long Ball)",
+      "pressing": "Very Low (Głęboka obrona, brak presji)",
+      "style_desc": "4-4-1-1 / Parking the Bus (Low Block)"
     },
-    "strengths": ["Silna i wysoka linia obrony", "Zdolność do utrzymania się przy piłce w strefie między liniami", "Doświadczony bramkarz"],
-    "weaknesses": ["Wiek i malejąca dynamika defensywnych pomocników (Gueye)", "Podatność na błędy przy próbach gry od tyłu pod silnym pressingiem"]
+    "strengths": ["Gra w powietrzu", "Siła fizyczna", "Solidność u siebie"],
+    "weaknesses": ["Mała kreatywność", "Tracenie piłki w środku pola"]
   },
   "Fulham": {
     "players": ["Bernd Leno", "Benjamin Lecomte", "Calvin Bassey", "Joachim Andersen", "Issa Diop", "Jorge Cuenca", 
     "Antonee Robinson", "Ryan Sessegnon", "Kenny Tete", "Timothy Castagne", "Sander Berge", "Saša Lukić", 
     "Harrison Reed", "Tom Cairney", "Emile Smith Rowe", "Josh King", "Kevin", "Alex Iwobi",
      "Oscar Bobb", "Harry Wilson", "Samuel Chukwueze", "Rodrigo Muniz", "Raúl Jiménez", "Jonah Kusi-Asare"],
-    "tactical_profile": {
-      "possession": "Medium/High (52%)",
-      "directness": "Medium",
-      "pressing": "High (Balanced)",
-      "style_desc": "Gra oparta na dynamicznych skrzydłach i technicznej kontroli w środku pola. Wykorzystują kreatywność Smith Rowe'a oraz szybkość Oscara Bobba do tworzenia przewagi w bocznych sektorach. Joachim Andersen pełni rolę głównego dystrybutora długich piłek z linii obrony, a Antonee Robinson zapewnia ciągłe wsparcie ofensywne jako jeden z najszybszych bocznych obrońców ligi."
+   "tactical_profile": {
+      "possession": "Medium (51.8%)",
+      "directness": "Medium (Klasyczna gra skrzydłami)",
+      "pressing": "Medium Low (Asekuracyjne ustawienie)",
+      "style_desc": "4-2-3-1 / Balanced Wing Play (Gra Skrzydłami)"
     },
-    "strengths": ["Bardzo szybkie przejścia z obrony do ataku", "Kreatywność w fazie ataku pozycyjnego", "Doświadczona obsada bramki"],
-    "weaknesses": ["Podatność na straty piłki w strefie defensywnej", "Zależność od skuteczności wykończenia Muniza"]
+    "strengths": ["Stabilność", "Dośrodkowania", "Rzuty rożne"],
+    "weaknesses": ["Brak szybkości w centralnej części obrony"]
   },
   "Brighton": {
     "players": ["Bart Verbruggen", "Jason Steele", "Tom McGill", "Jan Paul van Hecke", "Olivier Boscagli", "Igor Julio",
      "Adam Webster", "Lewis Dunk", "Ferdi Kadioğlu", "Maxim De Cuyper", "Joël Veltman", "Carlos Baleba",
       "Mats Wieffer", "Jack Hinshelwood", "Yasin Ayari", "Diego Gómez", "Matt O'Riley", "Pascal Groß", "James Milner",
        "Kaoru Mitoma", "Yankuba Minteh", "Solly March", "Georginio Rutter", "Charalampos Kostoulas", "Stefanos Tzimas", "Danny Welbeck"],
-    "tactical_profile": {
-      "possession": "Very High (60% +)",
-      "directness": "Medium",
-      "pressing": "High / Full Pitch Press",
-      "style_desc": "Futbol totalny oparty na wciąganiu przeciwnika w pułapkę pressingu we własnej strefie obronnej. Boscagli i Van Hecke są kluczowi w kreowaniu akcji od tyłu. Wykorzystują niesamowitą szybkość i drybling Mitomy oraz Minteha na skrzydłach, podczas gdy środek pola z Baleba i Wiefferem zapewnia fizyczną dominację i szybki odbiór piłki. Bardzo duża rotacja na pozycji napastnika między doświadczeniem Welbecka a młodością Tzimasa."
+   "tactical_profile": {
+      "possession": "Medium High (52.6%)",
+      "directness": "Very Low (Prowokowanie krótką grą)",
+      "pressing": "Medium High (Inteligentne zamykanie stref)",
+      "style_desc": "4-2-3-1 / Baited Pressing (Prowokowanie)"
     },
-    "strengths": ["Zdolność wychodzenia spod pressingu", "Elastyczność taktyczna bocznych obrońców (Kadıoğlu, De Cuyper)", "Mieszanka doświadczenia z topowymi talentami"],
-    "weaknesses": ["Narażenie na błędy indywidualne przy ryzykownej grze od bramki", "Wysoka linia obrony podatna na szybkie kontry"]
+    "strengths": ["Wyciąganie rywala z pozycji", "Technika", "Budowanie od tyłu"],
+    "weaknesses": ["Ryzykowne podania bramkarza pod presją"]
   },
 "Sunderland": {
     "players": ["Robin Roefs", "Melker Ellborg", "Simon Moore", "Dan Ballard", "Omar Alderete", "Luke O'Nien", "Dennis Cirkin",
      "Reinildo Mandava", "Trai Hume", "Lutsharel Geertruida", "Nordi Mukiele", "Granit Xhaka", "Habib Diarra", "Noah Sadiki", 
      "Enzo Le Fée", "Abdoullah Ba", "Chris Rigg", "Milan Aleksic", "Harrison Jones", "Nilson Angulo", "Romaine Mundle",
       "Chemsdine Talbi", "Bertrand Traoré", "Jocelin Ta Bi", "Brian Brobbey", "Eliezer Mayenda", "Wilson Isidor", "Ahmed Abdullahi"],
-    "tactical_profile": {
-      "possession": "High (55-58%)",
-      "directness": "Medium",
-      "pressing": "Organized High Press",
-      "style_desc": "Gra Sunderlandu w tym sezonie kręci się wokół autorytetu Granita Xhaki, który dyryguje tempem akcji z głębi pola. Drużyna stawia na techniczne rozegranie przez Enzo Le Fée i Chrisa Rigga, szukając w polu karnym silnego fizycznie Briana Brobbeya. Boczni obrońcy, szczególnie Geertruida i Mukiele, często pełnią rolę dodatkowych rozgrywających lub zabezpieczają środek pola przy atakach."
+   "tactical_profile": {
+      "possession": "Low (43.7%)",
+      "directness": "Medium Low (Techniczne budowanie akcji)",
+      "pressing": "Medium (Aktywność w środku pola)",
+      "style_desc": "4-2-3-1 / Youthful Possession (Młodzieżowa)"
     },
-    "strengths": ["Lider w środku pola (Xhaka)", "Wszechstronność obrońców (Geertruida, Mukiele)", "Niesamowity potencjał kreatywny młodych graczy"],
-    "weaknesses": ["Brak zgrania przy tak dużej liczbie nowych, jakościowych nazwisk", "Ryzyko w fazie defensywnej przy bardzo ofensywnym ustawieniu środka pola"]
+    "strengths": ["Odważna gra 1 na 1", "Szybkość", "Brak strachu"],
+    "weaknesses": ["Brak doświadczenia", "Błędy w końcówkach"]
   },
   "Newcastle United": {
     "players": ["Aaron Ramsdale", "Nick Pope", "Mark Gillespie", "John Ruddy", "Malick Thiaw", "Sven Botman", "Fabian Schär", 
     "Dan Burn", "Lewis Hall", "Alex Murphy", "Tino Livramento", "Kieran Trippier", "Emil Krafth", "Sandro Tonali", 
     "Bruno Guimarães", "Jacob Ramsey", "Joelinton", "Lewis Miley", "Joe Willock", "Anthony Gordon",
      "Harvey Barnes", "Anthony Elanga", "Jacob Murphy", "Nick Woltemade", "Yoane Wissa", "William Osula"],
-    "tactical_profile": {
-      "possession": "Medium/High (54%)",
-      "directness": "High",
-      "pressing": "Elite High Press (Aggressive)",
-      "style_desc": "Newcastle opiera swoją grę na niezwykle silnym i kreatywnym środku pola (Tonali, Bruno, Ramsey), który dominuje fizycznie i technicznie. Po przejściu do ataku wykorzystują eksplozywną szybkość Gordona i Elangi na skrzydłach. Nick Woltemade pełni rolę nowoczesnej 'dziewiątki', która schodzi głębiej, robiąc miejsce dla wbiegającego w pole karne Wissy. Linia obrony z Thiawem i Botmanem pozwala na bardzo odważną, wysoką grę defensywną."
+   "tactical_profile": {
+      "possession": "Medium (52.5%)",
+      "directness": "High (Siłowe pchanie akcji)",
+      "pressing": "High (Fizyczna walka o piłkę)",
+      "style_desc": "4-3-3 / Power Play (Wysoka Intensywność)"
     },
-    "strengths": ["Jeden z najsilniejszych środków pola w lidze", "Zabójcze kontrataki", "Świetna gra nogami bramkarzy (Ramsdale)"],
-    "weaknesses": ["Ryzyko kontuzji przy bardzo intensywnym pressingu", "Wysokie ustawienie bocznych obrońców (Hall, Livramento) zostawiające luki"]
+    "strengths": ["Siła fizyczna", "Stałe fragmenty", "Intensywność"],
+    "weaknesses": ["Zmęczenie kadry", "Częste kontuzje"]
   },
   "Bournemouth": {
     "players": ["Djordje Petrovic", "Christos Mandas", "Fraser Forster", "Bafodé Diakité", "Marcos Senesi", "Veljko Milosavljevic",
      "James Hill", "Matai Akinmboni", "Adrien Truffert", "Julio Soler", "Álex Jiménez", "Adam Smith", "Tyler Adams",
       "Alex Scott", "Lewis Cook", "Alex Tóth", "Ryan Christie", "Justin Kluivert", "Marcus Tavernier", "Amine Adli",
        "Rayan", "Ben Gannon-Doak", "David Brooks", "Junior Kroupi", "Evanilson", "Enes Ünal"],
-    "tactical_profile": {
-      "possession": "Medium (50%)",
-      "directness": "High",
-      "pressing": "Aggressive / Man-oriented",
-      "style_desc": "Bournemouth gra niezwykle odważny, ofensywny futbol oparty na młodych i szybkich zawodnikach. Wykorzystują kreatywność Alexa Scotta w środku pola do zasilania Amine Adliego i Rayana na skrzydłach. Diakité i Senesi tworzą duet stoperów, który nie boi się wyprowadzać piłki krótko, co pozwala na płynne przejścia do ataku. Junior Kroupi i Evanilson wymieniają się rolami w ataku, tworząc dynamiczny i trudny do upilnowania duet."
+   "tactical_profile": {
+      "possession": "Medium (50.3%)",
+      "directness": "Medium High (Agresywny impuls)",
+      "pressing": "High (Odważny, młody doskok)",
+      "style_desc": "4-2-3-1 / Modern High Press (Agresja)"
     },
-    "strengths": ["Eksplozywna młodość na pozycjach ofensywnych", "Bardzo szybkie boki obrony (Truffert, Jiménez)", "Rywalizacja w bramce (Petrovic vs Mandas)"],
-    "weaknesses": ["Brak doświadczenia w kluczowych momentach meczu", "Ryzyko przy agresywnym kryciu indywidualnym"]
+    "strengths": ["Dynamika", "Wysoka energia", "Szybki doskok"],
+    "weaknesses": ["Odkrywanie się w defensywie"]
   },
   "Crystal Palace": {
     "players": ["Dean Henderson", "Walter Benítez", "Remi Matthews", "Maxence Lacroix", "Chris Richards", "Jaydee Canvot", "Chadi Riad", 
     "Tyrick Mitchell", "Borna Sosa", "Rio Cardines", "Daniel Muñoz", "Caleb Kporha", "Nathaniel Clyne", "Adam Wharton",
      "Cheick Doucouré", "Jefferson Lerma", "Kaden Rodney", "Will Hughes", "Daichi Kamada", "Justin Devenny", "Ismaïla Sarr",
       "Yéremy Pino", "Brennan Johnson", "Evann Guessand", "Jørgen Strand Larsen", "Jean-Philippe Mateta", "Christantus Uche", "Eddie Nketiah"],
-    "tactical_profile": {
-      "possession": "Medium (49%)",
-      "directness": "High",
-      "pressing": "High / Aggressive Wing-press",
-      "style_desc": "Styl oparty na błyskawicznym przechodzeniu z obrony do ataku za pomocą niezwykle szybkich skrzydeł (Johnson, Sarr, Pino). Adam Wharton jest architektem gry, odpowiadając za pionowe podania przeszywające linie rywala. W ataku drużyna stawia na potężną fizyczność duetu Strand Larsen - Mateta, co pozwala na skuteczną grę górnymi piłkami i dominację w polu karnym."
+   "tactical_profile": {
+      "possession": "Low (46.1%)",
+      "directness": "High (Pionowe rajdy skrzydłami)",
+      "pressing": "Low (Zagęszczanie własnego pola)",
+      "style_desc": "3-4-2-1 / Direct Transitions (Bezpośredniość)"
     },
-    "strengths": ["Niesamowita szybkość na bokach ataku", "Fizyczna dominacja napastników", "Precyzja rozegrania Adama Whartona"],
-    "weaknesses": ["Ryzyko luki między linią obrony a pomocy przy wysokim pressingu", "Zależność od formy fizycznej kluczowych stoperów (Lacroix, Richards)"]
+    "strengths": ["Dryblingi", "Szybkość na skrzydłach", "Szczelny blok"],
+    "weaknesses": ["Uzależnienie od formy liderów"]
   },
   "Leeds United": {
     "players": ["Lucas Perri", "Illan Meslier", "Karl Darlow", "Alex Cairns", "Pascal Struijk", "Jaka Bijol", "Joe Rodon",
      "Sebastiaan Bornauw", "Gabriel Gudmundsson", "Sam Byram", "Jayden Bogle", "James Justin", "Ethan Ampadu", "Anton Stach", 
      "Ilia Gruev", "Charlie Crew", "Sean Longstaff", "Ao Tanaka", "Brenden Aaronson", "Facundo Buonanotte",
       "Noah Okafor", "Wilfried Gnonto", "Daniel James", "Dominic Calvert-Lewin", "Joël Piroe", "Lukas Nmecha"],
-    "tactical_profile": {
-      "possession": "Medium/High (53%)",
-      "directness": "High",
-      "pressing": "High (Aggressive Gengenpress)",
-      "style_desc": "Leeds pod wodzą obecnego sztabu stawia na intensywność i szybkie ataki po odbiorze piłki. Anton Stach i Ethan Ampadu tworzą 'ryglowy' środek pola, który pozwala ofensywnym graczom, takim jak Buonanotte, na dużą swobodę. Wykorzystują eksplozywną szybkość Gnonto i Jamesa na skrzydłach, by dostarczać piłki do Calverta-Lewina, który dominuje w powietrzu. Para stoperów Bijol-Struijk zapewnia bezpieczeństwo przy stałych fragmentach gry."
+   "tactical_profile": {
+      "possession": "Low (45.5%)",
+      "directness": "High (Intensywne parcie do przodu)",
+      "pressing": "Very High (Nieustanny bieg za piłką)",
+      "style_desc": "4-3-3 / Chaos Pressing (Ciągły Atak)"
     },
-    "strengths": ["Dynamiczne i szybkie ataki skrzydłami", "Silna fizycznie para środkowych obrońców", "Wszechstronność w środku pola"],
-    "weaknesses": ["Podatność na kontuzje kluczowych napastników", "Ryzyko luki za plecami bocznych obrońców przy bardzo wysokim pressingu"]
+    "strengths": ["Energia", "Odzyskiwanie piłki", "Agresja"],
+    "weaknesses": ["Chaos w defensywie", "Naiwność taktyczna"]
   },
   "Nottingham Forest": {
     "players": ["John Victor", "Stefan Ortega", "Matz Sels", "Angus Gunn", "Murillo", "Nikola Milenković", "Morato", "Jair Cunha",
      "Zach Abbott", "Willy Boly", "Neco Williams", "Luca Netz", "Ola Aina", "Nicolò Savona", "Eric da Silva Moreira", "Ibrahim Sangaré",
       "Elliot Anderson", "Nicolás Domínguez", "Ryan Yates", "Morgan Gibbs-White", "Omari Hutchinson", "James McAtee", 
       "Callum Hudson-Odoi", "Dan Ndoye", "Dilane Bakwa", "Lorenzo Lucca", "Igor Jesus", "Taiwo Awoniyi", "Chris Wood"],
-    "tactical_profile": {
-      "possession": "Medium (51%)",
-      "directness": "High",
-      "pressing": "High / Mid-block hybrid",
-      "style_desc": "Forest w tym sezonie stawia na kreatywność w tercji ataku, opierając się na trójce Gibbs-White, Hutchinson i McAtee, którzy operują między liniami. Defensywa dowodzona przez Murillo i Milenkovicia pozwala na bardzo fizyczną grę w kontakcie. W ataku drużyna dysponuje ogromnym wyborem 'dziewiątek' – od potężnego Lucci po dynamicznego Igora Jesusa. Styl opiera się na szybkich skrzydłach (Ndoye, Hudson-Odoi) i precyzyjnych dośrodkowaniach w pole karne."
+   "tactical_profile": {
+      "possession": "Low (47.4%)",
+      "directness": "Very High (Kontra dwoma podaniami)",
+      "pressing": "Very Low (Murowanie bramki)",
+      "style_desc": "4-2-3-1 / Deep Block Counter (Głęboka Obrona)"
     },
-    "strengths": ["Bardzo szeroka i jakościowa kadra na każdej pozycji", "Fizyczna dominacja w obu polach karnych", "Kreatywność i mobilność ofensywnych pomocników"],
-    "weaknesses": ["Trudność w utrzymaniu regularności przy tak dużej rotacji napastników", "Ryzyko luki w środku pola przy bardzo ofensywnym ustawieniu z McAtee i Gibbs-Whitem jednocześnie"]
+    "strengths": ["Szybkość w kontrataku", "Walka do końca", "Stałe fragmenty"],
+    "weaknesses": ["Pozwalanie rywalom na zbyt wiele strzałów"]
   },
 "Tottenham Hotspur": {
     "players": ["Guglielmo Vicario", "Antonín Kinský", "Brandon Austin", "Micky van de Ven", "Cristian Romero", "Radu Drăgușin",
@@ -251,13 +251,13 @@
       "Dejan Kulusevski", "James Maddison", "Wilson Odobert", "Mohammed Kudus", "Dominic Solanke", "Richarlison", "Mathys Tel",
        "Randal Kolo Muani"],
     "tactical_profile": {
-      "possession": "Very High (62% +)",
-      "directness": "Medium",
-      "pressing": "Extreme High Press (Aggressive)",
-      "style_desc": "Tottenham gra najbardziej bezkompromisowy futbol w lidze, oparty na ekstremalnie wysokiej linii obrony zabezpieczanej przez szybkość Van de Vena. Sprowadzenie João Palhinhi i Conora Gallaghera dodało drużynie niespotykanej agresji w odbiorze piłki. W fazie ataku Xavi Simons i James Maddison operują jako kreatywne 'dziesiątki', szukając prostopadłych podań do potężnego i wszechstronnego ataku, w którym rywalizują Solanke, Kolo Muani i Kudus."
+      "possession": "Medium (49.9%)",
+      "directness": "Medium High (Ryzykowne parcie naprzód)",
+      "pressing": "Very High (Ekstremalnie wysoka linia)",
+      "style_desc": "4-3-3 / Angeball (Suicide Line)"
     },
-    "strengths": ["Niezrównana intensywność pressingu (Gallagher, Palhinha, Sarr)", "Kreatywność światowej klasy (Simons, Maddison, Kulusevski)", "Najszybszy duet stoperów w Europie"],
-    "weaknesses": ["Ogromne ryzyko przy kontratakach rywala ze względu na ultra-wysoką linię obrony", "Trudność w zarządzaniu minutami tak wielu graczy o statusie gwiazd w ataku"]
+    "strengths": ["Wysokie odbiory", "Widowiskowość", "Liczba graczy w ataku"],
+    "weaknesses": ["Ogromne luki w obronie", "Ryzyko kontry"]
   },
   "Burnley": {
     "players": ["Max Weiß", "Martin Dúbravka", "Václav Hladký", "Maxime Estève", "Bashir Humphreys", "Hjalmar Ekdal", 
@@ -266,26 +266,26 @@
      "Jacob Bruun Larsen", "Loum Tchaouna", "Marcus Edwards", "Zian Flemming", "Lyle Foster",
       "Zeki Amdouni", "Armando Broja", "Ashley Barnes"],
     "tactical_profile": {
-      "possession": "Medium (52%)",
-      "directness": "Medium/High",
-      "pressing": "High / Positionally Disciplined",
-      "style_desc": "Burnley w tym sezonie stawia na solidność struktury z domieszką błysku indywidualnego. Florentino i Ugochukwu tworzą fizyczną barierę w środku pola, co pozwala Jamesowi Ward-Prowse'owi na swobodne kreowanie akcji i obsługiwanie napastników swoimi legendarnymi dośrodkowaniami. Na skrzydłach Marcus Edwards i Loum Tchaouna zapewniają drybling i dynamikę, a obecność Kyle'a Walkera w obronie pozwala na bardzo skuteczną asekurację przy szybkich atakach rywali."
+      "possession": "Low (41.3%)",
+      "directness": "Low (Schematyczne klepanie piłki)",
+      "pressing": "Medium (Próba kontroli przestrzeni)",
+      "style_desc": "4-3-3 / Positional Build-up (Budowanie)"
     },
-    "strengths": ["Zabójcze stałe fragmenty gry (Ward-Prowse)", "Szybkość i doświadczenie w defensywie (Walker, Estève)", "Duża rywalizacja i różnorodność w ataku (Broja, Foster, Amdouni)"],
-    "weaknesses": ["Wiek kluczowych liderów formacji obronnej", "Ryzyko braku zgrania przy dużej rotacji w środkowej strefie"]
+    "strengths": ["Płynność podań", "Cierpliwość", "Schematy rozegrania"],
+    "weaknesses": ["Fizyczna dominacja rywali", "Błędy pod presją"]
   },
   "Wolverhampton Wanderers": {
     "players": ["José Sá", "Sam Johnstone", "Daniel Bentley", "Ladislav Krejčí", "Toti", "Yerson Mosquera", 
     "Santiago Bueno", "Hugo Bueno", "David Møller Wolfe", "Jackson Tchatchoua", "Pedro Lima", "Matt Doherty", "André",
      "João Gomes", "Jean-Ricner Bellegarde", "Rodrigo Gomes", "Mateus Mané", "Angel Gomes", "Enso González",
       "Tolu Arokodare", "Adam Armstrong", "Hee-chan Hwang", "Nathan Fraser"],
-    "tactical_profile": {
-      "possession": "Medium (50%)",
-      "directness": "High",
-      "pressing": "Aggressive / Mid-block focus",
-      "style_desc": "Wolves stawiają na bardzo solidny fundament defensywny z Ladislavem Krejčím jako liderem linii obrony. Środek pola oparty na duecie André i João Gomes zapewnia ogromną intensywność i agresję w odbiorze. W fazie ataku kluczową rolę odgrywa Angel Gomes, który odpowiada za kreatywność i prostopadłe podania do potężnego Tolu Arokodare lub dynamicznego Hwanga. Drużyna często wykorzystuje szybkość wahadłowych, takich jak Tchatchoua czy Rodrigo Gomes, do rozciągania gry."
+  "tactical_profile": {
+      "possession": "Low (43.0%)",
+      "directness": "Medium High (Szybkie wyjścia z obrony)",
+      "pressing": "Medium Low (Kompaktowe wyczekiwanie)",
+      "style_desc": "3-4-2-1 / Compact Counter (Zwarty Blok)"
     },
-    "strengths": ["Bardzo silny fizycznie środek pola", "Groźne stałe fragmenty gry (Krejčí, Arokodare)", "Szybkość w fazie przejścia do kontrataku"],
-    "weaknesses": ["Ryzyko braku kreatywności przy wyłączeniu z gry Angela Gomesa", "Względnie krótka ławka rezerwowych w formacji obronnej"]
+    "strengths": ["Zwartość formacji", "Szybkie przejścia", "Gra bokami"],
+    "weaknesses": ["Mało goli", "Brak klasycznej dziewiątki"]
   }
 }
