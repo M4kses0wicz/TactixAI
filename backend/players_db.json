@@ -1,17 +1,219 @@
 {
-  "Manchester City": {
-    "players": ["Gianluigi Donnarumma", "James Trafford", "Marcus Bettinelli", "Josko Gvardiol", "Marc Guéhi", "Rúben Dias", "Abdukodir Khusanov", "John Stones", 
-          "Nathan Aké", "Max Alleyne", "Nico O'Reilly", "Rayan Aït-Nouri", "Matheus Nunes", "Rico Lewis", "Rodri", "Nico González", "Tijjani Reijnders", "Sverre Nypan",
-           "Mateo Kovacic", "Phil Foden", "Rayan Cherki", "Bernardo Silva", "Jérémy Doku", "Savinho", "Antoine Semenyo", "Erling Haaland", "Omar Marmoush"],
-    "tactical_profile": {
-      "possession": "Very High (60.1%)",
-      "directness": "Very Low (Maksymalna cierpliwość)",
-      "pressing": "High (Zorganizowana presja po stracie)",
-      "style_desc": "3-2-4-1 / Juego de Posición (Atak Pozycyjny)"
-    },
-    "strengths": ["Dominacja w posiadaniu", "Kreowanie szans", "Skuteczność (Haaland)"],
-    "weaknesses": ["Podatność na szybkie kontrataki"]
+  "system_info": {
+    "wersja_taktyki": "TactixAI-v1",
+    "opis": "Kompletna baza danych łącząca statystyki zawodników ze strukturą poleceń FM26"
   },
+  "kluby": {
+    "Manchester City": {
+      "profil_ogolny": {
+        "tactical_profile": {
+          "possession": "Very High (60.1%)",
+          "style_desc": "3-2-4-1 / Juego de Posición"
+        },
+        "strengths": ["Dominacja w posiadaniu", "Skuteczność (Haaland)"],
+        "weaknesses": ["Podatność na szybkie kontrataki"]
+      },
+      "polecenia_zespolowe": {
+        "Przy pilce": {
+          "Bezposredniosc podan": "Krocej",
+          "Tempo": "Standardowo",
+          "Gra na czas": "Rzadziej",
+          "Faza przejscia w ofensywie": "Utrzymanie pozycji",
+          "Rozpietosc ataku": "Szerzej",
+          "Szukaj stalych fragmentow": "Utrzymuj pilke",
+          "Swoboda taktyczna": "Zrownowazona",
+          "Strategia rozgrywania": "Gra pod presingiem",
+          "Rzuty od bramki": "Krotko",
+          "Wyprowadzanie pilki przez obrone": "Srodkowi obroncy",
+          "Wejscia za pilka": "Zrownowazone",
+          "Drybling": "Zrownowazony",
+          "Wejscia": "Srodek",
+          "Odbior podan": "Podania do nogi",
+          "Cierpliwosc": "Podania w pole karne",
+          "Strzaly z dystansu": "Odradz",
+          "Styl dosrodkowan": "Niskie dosrodkowania",
+          "Wyprowadzanie pilki przez pomoc": "Zrownowazone"
+        },
+        "Bez pilki": {
+          "Linia nacisku": "Wysoki pressing",
+          "Linia defensywna": "Wyzej",
+          "Aktywacja pressingu": "Czesciej",
+          "Przejscie defensywne": "Kontrpressing",
+          "Atak na pilke": "Standardowo",
+          "Reakcja na dosrodkowania": "Powstrzymuj dosrodkowania",
+          "Kierunek pressingu": "Zrownowazony pressing",
+          "Krotkie wyprowadzania rywala": "Tak",
+          "Zachowanie linii defensywnej": "Graj wyzej"
+        }
+      },
+      "zawodnicy": [
+        {
+          "Nazwisko": "Gianluigi Donnarumma",
+          "Pozycja": "BR",
+          "Pozycje_Alternatywne": [],
+          "Atrybuty_Bramkarskie": { "Diving": 89, "Handling": 83, "Kicking": 76, "Reflexes": 90, "Speed": { "Overall": 52, "Acceleration": 50, "Sprint_Speed": 54 }, "Positioning": 85 }
+        },
+        {
+          "Nazwisko": "James Trafford",
+          "Pozycja": "BR",
+          "Pozycje_Alternatywne": [],
+          "Atrybuty_Bramkarskie": { "Diving": 78, "Handling": 74, "Kicking": 82, "Reflexes": 80, "Speed": { "Overall": 48, "Acceleration": 50, "Sprint_Speed": 46 }, "Positioning": 75 }
+        },
+        {
+          "Nazwisko": "Marcus Bettinelli",
+          "Pozycja": "BR",
+          "Pozycje_Alternatywne": [],
+          "Atrybuty_Bramkarskie": { "Diving": 70, "Handling": 68, "Kicking": 65, "Reflexes": 72, "Speed": { "Overall": 40, "Acceleration": 42, "Sprint_Speed": 38 }, "Positioning": 70 }
+        },
+        {
+          "Nazwisko": "Josko Gvardiol",
+          "Pozycja": "LO",
+          "Pozycje_Alternatywne": ["ŚO"],
+          "Atrybuty": { "Pace": { "Overall": 82, "Acceleration": 80, "Sprint_Speed": 84 }, "Shooting": { "Overall": 65, "Att_Position": 72, "Finishing": 60, "Shot_Power": 84, "Long_Shots": 76, "Volleys": 60, "Penalties": 55 }, "Passing": { "Overall": 83, "Vision": 78, "Crossing": 81, "FK_Acc": 65, "Short_Pass": 87, "Long_Pass": 85, "Curve": 74 }, "Dribbling": { "Overall": 85, "Agility": 82, "Balance": 86, "Reactions": 89, "Ball_Control": 87, "Dribbling": 84, "Composure": 88 }, "Defending": { "Overall": 87, "Interceptions": 88, "Heading_Acc": 83, "Def_Aware": 86, "Stand_Tackle": 88, "Slide_Tackle": 85 }, "Physical": { "Overall": 86, "Jumping": 84, "Stamina": 88, "Strength": 87, "Aggression": 83 } }
+        },
+        {
+          "Nazwisko": "Marc Guéhi",
+          "Pozycja": "ŚO",
+          "Pozycje_Alternatywne": [],
+          "Atrybuty": { "Pace": { "Overall": 76, "Acceleration": 75, "Sprint_Speed": 77 }, "Shooting": { "Overall": 40, "Att_Position": 42, "Finishing": 30, "Shot_Power": 60, "Long_Shots": 35, "Volleys": 38, "Penalties": 40 }, "Passing": { "Overall": 74, "Vision": 68, "Crossing": 55, "FK_Acc": 45, "Short_Pass": 82, "Long_Pass": 78, "Curve": 50 }, "Dribbling": { "Overall": 70, "Agility": 68, "Balance": 75, "Reactions": 85, "Ball_Control": 78, "Dribbling": 65, "Composure": 86 }, "Defending": { "Overall": 88, "Interceptions": 89, "Heading_Acc": 84, "Def_Aware": 90, "Stand_Tackle": 89, "Slide_Tackle": 84 }, "Physical": { "Overall": 84, "Jumping": 82, "Stamina": 83, "Strength": 85, "Aggression": 80 } }
+        },
+        {
+          "Nazwisko": "Rúben Dias",
+          "Pozycja": "ŚO",
+          "Pozycje_Alternatywne": [],
+          "Atrybuty": { "Pace": { "Overall": 68, "Acceleration": 65, "Sprint_Speed": 71 }, "Shooting": { "Overall": 42, "Att_Position": 45, "Finishing": 35, "Shot_Power": 65, "Long_Shots": 40, "Volleys": 42, "Penalties": 45 }, "Passing": { "Overall": 78, "Vision": 70, "Crossing": 45, "FK_Acc": 40, "Short_Pass": 85, "Long_Pass": 82, "Curve": 55 }, "Dribbling": { "Overall": 72, "Agility": 62, "Balance": 82, "Reactions": 92, "Ball_Control": 80, "Dribbling": 65, "Composure": 90 }, "Defending": { "Overall": 92, "Interceptions": 90, "Heading_Acc": 88, "Def_Aware": 94, "Stand_Tackle": 93, "Slide_Tackle": 85 }, "Physical": { "Overall": 89, "Jumping": 86, "Stamina": 85, "Strength": 92, "Aggression": 94 } }
+        },
+        {
+          "Nazwisko": "Abdukodir Khusanov",
+          "Pozycja": "ŚO",
+          "Pozycje_Alternatywne": [],
+          "Atrybuty": { "Pace": { "Overall": 79, "Acceleration": 78, "Sprint_Speed": 80 }, "Shooting": { "Overall": 38, "Att_Position": 35, "Finishing": 28, "Shot_Power": 70, "Long_Shots": 32, "Volleys": 30, "Penalties": 35 }, "Passing": { "Overall": 68, "Vision": 60, "Crossing": 48, "FK_Acc": 40, "Short_Pass": 76, "Long_Pass": 72, "Curve": 45 }, "Dribbling": { "Overall": 65, "Agility": 70, "Balance": 78, "Reactions": 80, "Ball_Control": 72, "Dribbling": 60, "Composure": 82 }, "Defending": { "Overall": 82, "Interceptions": 83, "Heading_Acc": 80, "Def_Aware": 81, "Stand_Tackle": 84, "Slide_Tackle": 80 }, "Physical": { "Overall": 85, "Jumping": 86, "Stamina": 80, "Strength": 88, "Aggression": 86 } }
+        },
+        {
+          "Nazwisko": "John Stones",
+          "Pozycja": "ŚO",
+          "Pozycje_Alternatywne": ["DP"],
+          "Atrybuty": { "Pace": { "Overall": 72, "Acceleration": 70, "Sprint_Speed": 74 }, "Shooting": { "Overall": 55, "Att_Position": 65, "Finishing": 45, "Shot_Power": 72, "Long_Shots": 58, "Volleys": 55, "Penalties": 60 }, "Passing": { "Overall": 86, "Vision": 84, "Crossing": 68, "FK_Acc": 60, "Short_Pass": 92, "Long_Pass": 89, "Curve": 70 }, "Dribbling": { "Overall": 84, "Agility": 76, "Balance": 80, "Reactions": 90, "Ball_Control": 88, "Dribbling": 82, "Composure": 94 }, "Defending": { "Overall": 89, "Interceptions": 91, "Heading_Acc": 86, "Def_Aware": 90, "Stand_Tackle": 90, "Slide_Tackle": 86 }, "Physical": { "Overall": 79, "Jumping": 84, "Stamina": 82, "Strength": 80, "Aggression": 78 } }
+        },
+        {
+          "Nazwisko": "Nathan Aké",
+          "Pozycja": "ŚO",
+          "Pozycje_Alternatywne": ["LO"],
+          "Atrybuty": { "Pace": { "Overall": 75, "Acceleration": 74, "Sprint_Speed": 76 }, "Shooting": { "Overall": 50, "Att_Position": 62, "Finishing": 40, "Shot_Power": 70, "Long_Shots": 45, "Volleys": 55, "Penalties": 50 }, "Passing": { "Overall": 78, "Vision": 72, "Crossing": 75, "FK_Acc": 60, "Short_Pass": 86, "Long_Pass": 80, "Curve": 65 }, "Dribbling": { "Overall": 76, "Agility": 78, "Balance": 82, "Reactions": 88, "Ball_Control": 80, "Dribbling": 74, "Composure": 88 }, "Defending": { "Overall": 88, "Interceptions": 90, "Heading_Acc": 89, "Def_Aware": 88, "Stand_Tackle": 89, "Slide_Tackle": 86 }, "Physical": { "Overall": 82, "Jumping": 90, "Stamina": 84, "Strength": 82, "Aggression": 80 } }
+        },
+        {
+          "Nazwisko": "Max Alleyne",
+          "Pozycja": "ŚO",
+          "Pozycje_Alternatywne": [],
+          "Atrybuty": { "Pace": { "Overall": 73, "Acceleration": 72, "Sprint_Speed": 74 }, "Shooting": { "Overall": 35, "Att_Position": 30, "Finishing": 25, "Shot_Power": 55, "Long_Shots": 30, "Volleys": 28, "Penalties": 35 }, "Passing": { "Overall": 65, "Vision": 58, "Crossing": 45, "FK_Acc": 35, "Short_Pass": 74, "Long_Pass": 70, "Curve": 40 }, "Dribbling": { "Overall": 62, "Agility": 65, "Balance": 70, "Reactions": 72, "Ball_Control": 68, "Dribbling": 58, "Composure": 76 }, "Defending": { "Overall": 74, "Interceptions": 75, "Heading_Acc": 76, "Def_Aware": 74, "Stand_Tackle": 76, "Slide_Tackle": 72 }, "Physical": { "Overall": 76, "Jumping": 78, "Stamina": 72, "Strength": 78, "Aggression": 74 } }
+        },
+        {
+          "Nazwisko": "Rayan Aït-Nouri",
+          "Pozycja": "LO",
+          "Pozycje_Alternatywne": ["LPP"],
+          "Atrybuty": { "Pace": { "Overall": 84, "Acceleration": 86, "Sprint_Speed": 82 }, "Shooting": { "Overall": 65, "Att_Position": 76, "Finishing": 62, "Shot_Power": 74, "Long_Shots": 68, "Volleys": 64, "Penalties": 60 }, "Passing": { "Overall": 80, "Vision": 78, "Crossing": 84, "FK_Acc": 68, "Short_Pass": 82, "Long_Pass": 76, "Curve": 80 }, "Dribbling": { "Overall": 86, "Agility": 88, "Balance": 84, "Reactions": 82, "Ball_Control": 85, "Dribbling": 88, "Composure": 80 }, "Defending": { "Overall": 76, "Interceptions": 78, "Heading_Acc": 68, "Def_Aware": 75, "Stand_Tackle": 78, "Slide_Tackle": 77 }, "Physical": { "Overall": 75, "Jumping": 68, "Stamina": 86, "Strength": 70, "Aggression": 74 } }
+        },
+        {
+          "Nazwisko": "Rico Lewis",
+          "Pozycja": "PO",
+          "Pozycje_Alternatywne": ["LO", "DP", "P Ś"],
+          "Atrybuty": { "Pace": { "Overall": 80, "Acceleration": 82, "Sprint_Speed": 78 }, "Shooting": { "Overall": 60, "Att_Position": 75, "Finishing": 58, "Shot_Power": 65, "Long_Shots": 55, "Volleys": 58, "Penalties": 55 }, "Passing": { "Overall": 84, "Vision": 86, "Crossing": 78, "FK_Acc": 62, "Short_Pass": 90, "Long_Pass": 84, "Curve": 72 }, "Dribbling": { "Overall": 85, "Agility": 90, "Balance": 88, "Reactions": 86, "Ball_Control": 88, "Dribbling": 84, "Composure": 88 }, "Defending": { "Overall": 78, "Interceptions": 82, "Heading_Acc": 58, "Def_Aware": 80, "Stand_Tackle": 80, "Slide_Tackle": 78 }, "Physical": { "Overall": 72, "Jumping": 55, "Stamina": 92, "Strength": 60, "Aggression": 74 } }
+        },
+        {
+          "Nazwisko": "Rodri",
+          "Pozycja": "DP",
+          "Pozycje_Alternatywne": ["P Ś"],
+          "Atrybuty": { "Pace": { "Overall": 65, "Acceleration": 62, "Sprint_Speed": 68 }, "Shooting": { "Overall": 78, "Att_Position": 80, "Finishing": 72, "Shot_Power": 92, "Long_Shots": 91, "Volleys": 78, "Penalties": 82 }, "Passing": { "Overall": 92, "Vision": 94, "Crossing": 72, "FK_Acc": 75, "Short_Pass": 96, "Long_Pass": 94, "Curve": 82 }, "Dribbling": { "Overall": 85, "Agility": 70, "Balance": 88, "Reactions": 95, "Ball_Control": 92, "Dribbling": 82, "Composure": 96 }, "Defending": { "Overall": 89, "Interceptions": 92, "Heading_Acc": 84, "Def_Aware": 92, "Stand_Tackle": 90, "Slide_Tackle": 82 }, "Physical": { "Overall": 86, "Jumping": 82, "Stamina": 94, "Strength": 88, "Aggression": 88 } }
+        },
+        {
+          "Nazwisko": "Nico González",
+          "Pozycja": "P Ś",
+          "Pozycje_Alternatywne": ["DP"],
+          "Atrybuty": { "Pace": { "Overall": 74, "Acceleration": 73, "Sprint_Speed": 75 }, "Shooting": { "Overall": 70, "Att_Position": 74, "Finishing": 68, "Shot_Power": 78, "Long_Shots": 72, "Volleys": 68, "Penalties": 70 }, "Passing": { "Overall": 80, "Vision": 82, "Crossing": 72, "FK_Acc": 68, "Short_Pass": 86, "Long_Pass": 82, "Curve": 75 }, "Dribbling": { "Overall": 82, "Agility": 78, "Balance": 84, "Reactions": 82, "Ball_Control": 85, "Dribbling": 82, "Composure": 86 }, "Defending": { "Overall": 76, "Interceptions": 80, "Heading_Acc": 78, "Def_Aware": 76, "Stand_Tackle": 78, "Slide_Tackle": 74 }, "Physical": { "Overall": 80, "Jumping": 80, "Stamina": 86, "Strength": 82, "Aggression": 84 } }
+        },
+        {
+          "Nazwisko": "Matheus Nunes",
+          "Pozycja": "P Ś",
+          "Pozycje_Alternatywne": ["OP L", "OP Ś"],
+          "Atrybuty": { "Pace": { "Overall": 83, "Acceleration": 84, "Sprint_Speed": 82 }, "Shooting": { "Overall": 72, "Att_Position": 78, "Finishing": 68, "Shot_Power": 82, "Long_Shots": 75, "Volleys": 70, "Penalties": 72 }, "Passing": { "Overall": 82, "Vision": 84, "Crossing": 76, "FK_Acc": 70, "Short_Pass": 86, "Long_Pass": 84, "Curve": 78 }, "Dribbling": { "Overall": 86, "Agility": 85, "Balance": 84, "Reactions": 84, "Ball_Control": 86, "Dribbling": 88, "Composure": 85 }, "Defending": { "Overall": 68, "Interceptions": 72, "Heading_Acc": 65, "Def_Aware": 68, "Stand_Tackle": 70, "Slide_Tackle": 65 }, "Physical": { "Overall": 79, "Jumping": 72, "Stamina": 88, "Strength": 78, "Aggression": 76 } }
+        },
+        {
+          "Nazwisko": "Tijjani Reijnders",
+          "Pozycja": "P Ś",
+          "Pozycje_Alternatywne": ["DP", "OP Ś"],
+          "Atrybuty": { "Pace": { "Overall": 78, "Acceleration": 79, "Sprint_Speed": 77 }, "Shooting": { "Overall": 76, "Att_Position": 78, "Finishing": 72, "Shot_Power": 84, "Long_Shots": 82, "Volleys": 74, "Penalties": 75 }, "Passing": { "Overall": 84, "Vision": 88, "Crossing": 78, "FK_Acc": 76, "Short_Pass": 89, "Long_Pass": 86, "Curve": 82 }, "Dribbling": { "Overall": 85, "Agility": 84, "Balance": 80, "Reactions": 84, "Ball_Control": 86, "Dribbling": 85, "Composure": 86 }, "Defending": { "Overall": 65, "Interceptions": 68, "Heading_Acc": 60, "Def_Aware": 65, "Stand_Tackle": 66, "Slide_Tackle": 60 }, "Physical": { "Overall": 78, "Jumping": 68, "Stamina": 92, "Strength": 74, "Aggression": 72 } }
+        },
+        {
+          "Nazwisko": "Mateo Kovacic",
+          "Pozycja": "P Ś",
+          "Pozycje_Alternatywne": ["DP"],
+          "Atrybuty": { "Pace": { "Overall": 74, "Acceleration": 78, "Sprint_Speed": 70 }, "Shooting": { "Overall": 68, "Att_Position": 74, "Finishing": 62, "Shot_Power": 78, "Long_Shots": 70, "Volleys": 74, "Penalties": 68 }, "Passing": { "Overall": 86, "Vision": 85, "Crossing": 72, "FK_Acc": 68, "Short_Pass": 92, "Long_Pass": 88, "Curve": 82 }, "Dribbling": { "Overall": 90, "Agility": 88, "Balance": 92, "Reactions": 88, "Ball_Control": 93, "Dribbling": 91, "Composure": 94 }, "Defending": { "Overall": 70, "Interceptions": 76, "Heading_Acc": 58, "Def_Aware": 72, "Stand_Tackle": 74, "Slide_Tackle": 68 }, "Physical": { "Overall": 76, "Jumping": 60, "Stamina": 84, "Strength": 78, "Aggression": 74 } }
+        },
+        {
+          "Nazwisko": "Bernardo Silva",
+          "Pozycja": "P Ś",
+          "Pozycje_Alternatywne": ["OP P", "OP Ś"],
+          "Atrybuty": { "Pace": { "Overall": 76, "Acceleration": 80, "Sprint_Speed": 72 }, "Shooting": { "Overall": 78, "Att_Position": 88, "Finishing": 79, "Shot_Power": 75, "Long_Shots": 78, "Volleys": 82, "Penalties": 80 }, "Passing": { "Overall": 90, "Vision": 95, "Crossing": 84, "FK_Acc": 78, "Short_Pass": 94, "Long_Pass": 88, "Curve": 85 }, "Dribbling": { "Overall": 94, "Agility": 95, "Balance": 94, "Reactions": 92, "Ball_Control": 96, "Dribbling": 95, "Composure": 94 }, "Defending": { "Overall": 68, "Interceptions": 72, "Heading_Acc": 55, "Def_Aware": 75, "Stand_Tackle": 70, "Slide_Tackle": 62 }, "Physical": { "Overall": 82, "Jumping": 52, "Stamina": 98, "Strength": 68, "Aggression": 84 } }
+        },
+        {
+          "Nazwisko": "Phil Foden",
+          "Pozycja": "OP P",
+          "Pozycje_Alternatywne": ["OP L", "OP Ś"],
+          "Atrybuty": { "Pace": { "Overall": 85, "Acceleration": 88, "Sprint_Speed": 82 }, "Shooting": { "Overall": 86, "Att_Position": 91, "Finishing": 88, "Shot_Power": 84, "Long_Shots": 86, "Volleys": 88, "Penalties": 82 }, "Passing": { "Overall": 89, "Vision": 94, "Crossing": 86, "FK_Acc": 82, "Short_Pass": 92, "Long_Pass": 85, "Curve": 89 }, "Dribbling": { "Overall": 92, "Agility": 94, "Balance": 92, "Reactions": 91, "Ball_Control": 95, "Dribbling": 93, "Composure": 90 }, "Defending": { "Overall": 55, "Interceptions": 58, "Heading_Acc": 52, "Def_Aware": 62, "Stand_Tackle": 55, "Slide_Tackle": 45 }, "Physical": { "Overall": 72, "Jumping": 58, "Stamina": 86, "Strength": 66, "Aggression": 74 } }
+        },
+        {
+          "Nazwisko": "Sverre Nypan",
+          "Pozycja": "OP Ś",
+          "Pozycje_Alternatywne": ["P Ś"],
+          "Atrybuty": { "Pace": { "Overall": 76, "Acceleration": 78, "Sprint_Speed": 74 }, "Shooting": { "Overall": 70, "Att_Position": 74, "Finishing": 70, "Shot_Power": 72, "Long_Shots": 70, "Volleys": 65, "Penalties": 72 }, "Passing": { "Overall": 78, "Vision": 84, "Crossing": 70, "FK_Acc": 68, "Short_Pass": 84, "Long_Pass": 78, "Curve": 74 }, "Dribbling": { "Overall": 82, "Agility": 84, "Balance": 78, "Reactions": 78, "Ball_Control": 84, "Dribbling": 84, "Composure": 82 }, "Defending": { "Overall": 48, "Interceptions": 50, "Heading_Acc": 52, "Def_Aware": 45, "Stand_Tackle": 48, "Slide_Tackle": 42 }, "Physical": { "Overall": 70, "Jumping": 65, "Stamina": 78, "Strength": 68, "Aggression": 65 } }
+        },
+        {
+          "Nazwisko": "Rayan Cherki",
+          "Pozycja": "OP Ś",
+          "Pozycje_Alternatywne": ["OP P", "OP L"],
+          "Atrybuty": { "Pace": { "Overall": 78, "Acceleration": 82, "Sprint_Speed": 74 }, "Shooting": { "Overall": 75, "Att_Position": 78, "Finishing": 74, "Shot_Power": 80, "Long_Shots": 78, "Volleys": 72, "Penalties": 78 }, "Passing": { "Overall": 84, "Vision": 89, "Crossing": 82, "FK_Acc": 80, "Short_Pass": 86, "Long_Pass": 82, "Curve": 86 }, "Dribbling": { "Overall": 91, "Agility": 92, "Balance": 88, "Reactions": 80, "Ball_Control": 92, "Dribbling": 94, "Composure": 84 }, "Defending": { "Overall": 35, "Interceptions": 38, "Heading_Acc": 42, "Def_Aware": 35, "Stand_Tackle": 32, "Slide_Tackle": 28 }, "Physical": { "Overall": 68, "Jumping": 55, "Stamina": 72, "Strength": 74, "Aggression": 65 } }
+        },
+        {
+          "Nazwisko": "Nico O'Reilly",
+          "Pozycja": "OP Ś",
+          "Pozycje_Alternatywne": ["P Ś"],
+          "Atrybuty": { "Pace": { "Overall": 74, "Acceleration": 75, "Sprint_Speed": 73 }, "Shooting": { "Overall": 68, "Att_Position": 72, "Finishing": 68, "Shot_Power": 72, "Long_Shots": 70, "Volleys": 65, "Penalties": 68 }, "Passing": { "Overall": 76, "Vision": 80, "Crossing": 68, "FK_Acc": 65, "Short_Pass": 82, "Long_Pass": 78, "Curve": 72 }, "Dribbling": { "Overall": 78, "Agility": 76, "Balance": 74, "Reactions": 78, "Ball_Control": 82, "Dribbling": 80, "Composure": 78 }, "Defending": { "Overall": 52, "Interceptions": 55, "Heading_Acc": 58, "Def_Aware": 50, "Stand_Tackle": 54, "Slide_Tackle": 48 }, "Physical": { "Overall": 74, "Jumping": 72, "Stamina": 75, "Strength": 74, "Aggression": 68 } }
+        },
+        {
+          "Nazwisko": "Jérémy Doku",
+          "Pozycja": "OP L",
+          "Pozycje_Alternatywne": ["OP P"],
+          "Atrybuty": { "Pace": { "Overall": 94, "Acceleration": 96, "Sprint_Speed": 92 }, "Shooting": { "Overall": 72, "Att_Position": 80, "Finishing": 70, "Shot_Power": 82, "Long_Shots": 68, "Volleys": 65, "Penalties": 70 }, "Passing": { "Overall": 75, "Vision": 78, "Crossing": 82, "FK_Acc": 65, "Short_Pass": 80, "Long_Pass": 68, "Curve": 78 }, "Dribbling": { "Overall": 92, "Agility": 95, "Balance": 92, "Reactions": 84, "Ball_Control": 88, "Dribbling": 96, "Composure": 78 }, "Defending": { "Overall": 38, "Interceptions": 42, "Heading_Acc": 45, "Def_Aware": 40, "Stand_Tackle": 35, "Slide_Tackle": 32 }, "Physical": { "Overall": 78, "Jumping": 65, "Stamina": 75, "Strength": 78, "Aggression": 72 } }
+        },
+        {
+          "Nazwisko": "Savinho",
+          "Pozycja": "OP P",
+          "Pozycje_Alternatywne": ["OP L"],
+          "Atrybuty": { "Pace": { "Overall": 88, "Acceleration": 90, "Sprint_Speed": 86 }, "Shooting": { "Overall": 75, "Att_Position": 82, "Finishing": 74, "Shot_Power": 78, "Long_Shots": 74, "Volleys": 70, "Penalties": 72 }, "Passing": { "Overall": 80, "Vision": 84, "Crossing": 84, "FK_Acc": 72, "Short_Pass": 82, "Long_Pass": 75, "Curve": 82 }, "Dribbling": { "Overall": 89, "Agility": 92, "Balance": 86, "Reactions": 82, "Ball_Control": 88, "Dribbling": 92, "Composure": 84 }, "Defending": { "Overall": 42, "Interceptions": 45, "Heading_Acc": 48, "Def_Aware": 40, "Stand_Tackle": 42, "Slide_Tackle": 38 }, "Physical": { "Overall": 72, "Jumping": 60, "Stamina": 82, "Strength": 68, "Aggression": 70 } }
+        },
+        {
+          "Nazwisko": "Antoine Semenyo",
+          "Pozycja": "OP P",
+          "Pozycje_Alternatywne": ["N"],
+          "Atrybuty": { "Pace": { "Overall": 86, "Acceleration": 88, "Sprint_Speed": 84 }, "Shooting": { "Overall": 78, "Att_Position": 84, "Finishing": 78, "Shot_Power": 86, "Long_Shots": 78, "Volleys": 75, "Penalties": 74 }, "Passing": { "Overall": 72, "Vision": 74, "Crossing": 78, "FK_Acc": 65, "Short_Pass": 76, "Long_Pass": 68, "Curve": 74 }, "Dribbling": { "Overall": 82, "Agility": 84, "Balance": 86, "Reactions": 80, "Ball_Control": 82, "Dribbling": 84, "Composure": 80 }, "Defending": { "Overall": 45, "Interceptions": 48, "Heading_Acc": 74, "Def_Aware": 42, "Stand_Tackle": 45, "Slide_Tackle": 40 }, "Physical": { "Overall": 84, "Jumping": 78, "Stamina": 84, "Strength": 88, "Aggression": 86 } }
+        },
+        {
+          "Nazwisko": "Erling Haaland",
+          "Pozycja": "N",
+          "Pozycje_Alternatywne": [],
+          "Atrybuty": { "Pace": { "Overall": 89, "Acceleration": 82, "Sprint_Speed": 94 }, "Shooting": { "Overall": 92, "Att_Position": 96, "Finishing": 98, "Shot_Power": 96, "Long_Shots": 82, "Volleys": 90, "Penalties": 92 }, "Passing": { "Overall": 65, "Vision": 72, "Crossing": 45, "FK_Acc": 60, "Short_Pass": 75, "Long_Pass": 55, "Curve": 62 }, "Dribbling": { "Overall": 80, "Agility": 76, "Balance": 85, "Reactions": 94, "Ball_Control": 84, "Dribbling": 78, "Composure": 88 }, "Defending": { "Overall": 45, "Interceptions": 40, "Heading_Acc": 92, "Def_Aware": 45, "Stand_Tackle": 42, "Slide_Tackle": 30 }, "Physical": { "Overall": 91, "Jumping": 95, "Stamina": 85, "Strength": 96, "Aggression": 88 } }
+        },
+        {
+          "Nazwisko": "Omar Marmoush",
+          "Pozycja": "N",
+          "Pozycje_Alternatywne": ["OP L", "OP Ś"],
+          "Atrybuty": { "Pace": { "Overall": 88, "Acceleration": 90, "Sprint_Speed": 86 }, "Shooting": { "Overall": 82, "Att_Position": 86, "Finishing": 84, "Shot_Power": 82, "Long_Shots": 78, "Volleys": 76, "Penalties": 80 }, "Passing": { "Overall": 76, "Vision": 78, "Crossing": 75, "FK_Acc": 82, "Short_Pass": 80, "Long_Pass": 72, "Curve": 84 }, "Dribbling": { "Overall": 86, "Agility": 89, "Balance": 84, "Reactions": 84, "Ball_Control": 85, "Dribbling": 88, "Composure": 82 }, "Defending": { "Overall": 42, "Interceptions": 44, "Heading_Acc": 68, "Def_Aware": 40, "Stand_Tackle": 42, "Slide_Tackle": 38 }, "Physical": { "Overall": 78, "Jumping": 72, "Stamina": 82, "Strength": 76, "Aggression": 80 } }
+        }
+      ]
+    }
+  },
+
+
   "Liverpool": {
     "players": ["Giorgi Mamardashvili", "Alisson", "Freddie Woodman", "Harvey Davies", "Ibrahima Konaté",
      "Giovanni Leoni", "Virgil van Dijk", "Joe Gomez", "Rhys Williams", "Milos Kerkez", "Andrew Robertson",

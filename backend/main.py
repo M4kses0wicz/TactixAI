@@ -4,6 +4,9 @@ import requests
 import json
 import uvicorn
 import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 # --- MAPA MOŻLIWOŚCI TAKTYCZNYCH (FM26) ---
 OPCJE_TAKTYCZNE = {
@@ -49,7 +52,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-MISTRAL_API_KEY = ""
+MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
 
 def get_local_team_data(team_name):
     try:
