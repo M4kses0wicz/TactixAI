@@ -1,0 +1,4 @@
+1. Rozbudowa bazy zawodników – przygotowałem szczegółowe dane dla topowych klubów (m.in. Man City, Arsenal, Man Utd), dbając o to, by każdy miał minimum 25 graczy z pełnymi statystykami.
+2. Analiza systemów AI – zrobiłem przegląd dostępnych modeli (Claude, GPT-4o, GLM) pod kątem ich przydatności dla TactixAI i wybrałem te najlepsze do analizy taktycznej.
+3. Planowanie silnika meczowego – opracowałem plan połączenia backendu z frontendem tak, aby statystyki meczu mogły wyświetlać się w czasie rzeczywistym.
+4. Optymalizacja kodu – poprawiłem strukturę plików w projekcie, aby łatwiej było dodawać kolejne zespoły i zmieniać modele AI bez psucia całego kodu.
