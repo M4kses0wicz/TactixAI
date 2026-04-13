@@ -1,0 +1,4 @@
+1. Rozbudowanie bazy danych zawodników
+2 Analiza systemów AI – zrobiłem przegląd dostępnych modeli (Claude, GPT-4o, GLM) pod kątem ich przydatności dla TactixAI i wybrałem te najlepsze do analizy taktycznej.
+3. Bug fixing w kodzie
+4. Połączyłem nasz projekt z AI aby łatwiej było go projektować.
