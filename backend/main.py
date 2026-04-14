@@ -53,6 +53,7 @@ app.add_middleware(
 )
 
 MISTRAL_API_KEY = os.getenv("MISTRAL_API_KEY")
+STATORIUM_API_KEY = os.getenv("STATORIUM_API_KEY")
 
 def get_local_team_data(team_name):
     try:
