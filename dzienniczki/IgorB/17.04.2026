@@ -1,0 +1,4 @@
+1. Walka z błędami: Rozwiązałem problemy techniczne, które blokowały uruchomienie programu na komputerze.
+2. Poprawienie komunikacji z bazą wyników: Naprawiłem błąd, przez który program nie potrafił odczytać nazw drużyn z internetowej bazy statystyk.
+3. Automatyczne zapamiętywanie: Ustawiłem wszystko tak, że gdy tylko sprawdzisz jakiś mecz, aplikacja sama zapisuje te drużyny „na potem”.
+4. Udany test bojowy: Sprawdziłem działanie na realnym przykładzie (mecz West Ham vs Tottenham) – system poprawnie pobrał dane i wyświetlił gotową analizę.

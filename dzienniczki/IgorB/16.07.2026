@@ -1,0 +1,3 @@
+1. Uruchomienie „mózgu” aplikacji: Stworzyłem główny program, który odbiera pytania od użytkownika i przesyła je dalej.
+2. Nauka taktyki: Połączyłem program z AI (Mistral) i nauczyłem go, jak ma analizować mecze, używając pojęć znanych z gry Football Manager.
+3. Stworzenie listy opcji: Przygotowałem listę konkretnych ustawień (np. styl pressingu czy tempo gry), o których AI ma decydować.
