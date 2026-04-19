@@ -1,0 +1,2 @@
+1. Stworzenie cyfrowego archiwum: Przygotowałem bazę danych, która na stałe zapamiętuje kluby i piłkarzy, żeby aplikacja nie musiała ich szukać od zera przy każdym uruchomieniu.
+2. Łączenie piłkarzy z klubami: Ustawiłem system tak, żeby automatycznie wiedział, który zawodnik gra w jakiej drużynie.

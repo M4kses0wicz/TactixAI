@@ -1,0 +1,4 @@
+1. Rozwiązywałem błędy które pojawiły się w projekcie
+2. Usuwałem zbędne pliki 
+3. Poprawienie komunikacji z bazą wyników: Naprawiłem błąd, przez który program nie potrafił odczytać nazw drużyn z internetowej bazy statystyk.
+4. Testowałem czy aplikacja pobiera odpowiednie dane podczas wyboru konkretnych drużyn
