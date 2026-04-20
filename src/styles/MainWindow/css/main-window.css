@@ -1,11 +1,40 @@
 main {
-  width: 100svw;
-  height: 100svh;
+  width: 100vw;
+  height: 100vh;
   color: #ffffff;
   display: flex;
 }
 main .right-sec {
   width: 60%;
+  padding-bottom: 20px;
+  padding-right: 20px;
+}
+main .right-sec .wrapper {
+  height: 90.5%;
+  width: 100%;
+  border: rgba(150, 150, 150, 0.5) 1px solid;
+  border-bottom-left-radius: 21px;
+  border-bottom-right-radius: 21px;
+  border-top-right-radius: 21px;
+}
+main .right-sec nav {
+  height: 9.5%;
+  width: 100%;
+  display: flex;
+  align-items: end;
+}
+main .right-sec nav p {
+  font-size: 17px;
+  letter-spacing: 1px;
+  font-family: "lato";
+  font-weight: 700;
+  margin-right: 30px;
+  border: rgba(150, 150, 150, 0.5) 1px solid;
+  padding: 10px 20px;
+  border-bottom: none;
+  margin-right: 3px;
+  border-top-left-radius: 21px;
+  border-top-right-radius: 21px;
 }
 main .left-sec {
   width: 40%;

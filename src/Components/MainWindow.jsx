@@ -13,7 +13,17 @@ function MainWindow() {
           </div>
           <PitchWindow />
         </section>
-        <section className="right-sec"></section>
+        <section className="right-sec">
+          <nav>
+            <p>Zawodnicy</p>
+            <p>Taktyka</p>
+            <p>Wytyczne</p>
+            <p>Notatki</p>
+          </nav>
+          <div className="wrapper">
+            <div className="components-container"></div>
+          </div>
+        </section>
       </main>
     </>
   );
