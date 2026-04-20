@@ -1,12 +1,11 @@
 import pitch from "../assets/pitch.svg";
+import "../styles/PitchWindow/css/pitch-window.css";
 
 function PitchWindow() {
   return (
-    <>
-      <div className="container">
-        <img src={pitch} alt="" height={100} />
-      </div>
-    </>
+    <div className="container">
+      <img src={pitch} alt="boisko" />
+    </div>
   );
 }
 
