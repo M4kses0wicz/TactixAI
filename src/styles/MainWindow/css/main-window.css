@@ -1,4 +1,38 @@
 main {
   width: 100svw;
   height: 100svh;
+  color: #ffffff;
+  display: flex;
+}
+main .right-sec {
+  width: 60%;
+}
+main .left-sec {
+  width: 40%;
+}
+main section {
+  height: 100%;
+}
+main section .header-container {
+  height: 7.5%;
+  padding: 10px 0px 0px 25px;
+  display: flex;
+  align-items: center;
+}
+main section .header-container img {
+  height: 100%;
+  margin-right: 20px;
+}
+main section .header-container p {
+  font-size: 30px;
+  font-family: "lato";
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+main section .header-container p::after {
+  content: "#2 Eredivisie";
+  position: absolute;
+  font-size: 15px;
+  font-weight: 700;
+  transform: translate(-347%, 200%);
 }/*# sourceMappingURL=main-window.css.map */

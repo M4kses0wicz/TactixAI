@@ -4,4 +4,40 @@ main {
   width: 100svw;
   height: 100svh;
   //   border: red 1px dashed;
+  color: $white;
+  display: flex;
+  .right-sec {
+    width: 60%;
+  }
+  .left-sec {
+    width: 40%;
+  }
+  section {
+    height: 100%;
+    // border: red 1px dashed;
+    .header-container {
+      height: 7.5%;
+      padding: 10px 0px 0px 25px;
+      display: flex;
+      align-items: center;
+      img {
+        height: 100%;
+        margin-right: 20px;
+      }
+      p {
+        font-size: 30px;
+        font-family: "lato";
+        font-weight: 800;
+        margin-bottom: 10px;
+
+        &::after {
+          content: "#2 Eredivisie";
+          position: absolute;
+          font-size: 15px;
+          font-weight: 700;
+          transform: translate(-347%, 200%);
+        }
+      }
+    }
+  }
 }

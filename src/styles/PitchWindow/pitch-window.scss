@@ -1,5 +1,8 @@
 @use "../base" as *;
 
 .container {
-  height: 95%;
+  height: 92.5%;
+  img {
+    height: 100%;
+  }
 }

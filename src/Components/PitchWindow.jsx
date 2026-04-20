@@ -1,4 +1,4 @@
-import pitch from "../assets/pitch.svg";
+import pitch from "../assets/pitch.png";
 import "../styles/PitchWindow/css/pitch-window.css";
 
 function PitchWindow() {
