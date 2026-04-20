@@ -1,0 +1,8 @@
+Konfiguracja aplikacji (Frontend):
+
+– Przygotowanie podstawowej struktury frontendu oraz wstępny setup środowiska pod rozwój interfejsu użytkownika
+– Zaprojektowanie i wykonanie nawigacji (navbar), określenie układu oraz rozmieszczenia głównych elementów
+– Stworzenie szkieletu dashboardu, podział widoku na dwie główne sekcje odpowiadające funkcjonalnościom aplikacji
+– Opracowanie designu boiska, rozmieszczenie elementów oraz przygotowanie wizualnej reprezentacji pozycji graczy
+– Implementacja globalnych stylów (kolory, typografia, spacing), ujednolicenie wyglądu całego interfejsu
+– Organizacja struktury plików frontendu w sposób umożliwiający dalszy rozwój i łatwą współpracę w zespole
