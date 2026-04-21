@@ -1,5 +1,72 @@
+@use "../base" as *;
+
 .d {
   height: 100px;
   width: 100px;
   background-color: red;
+}
+
+.AI-win {
+  height: 100%;
+  width: 100%;
+  gap: 20px;
+  font-family: "lato";
+
+  h2,
+  p {
+    width: 80%;
+    margin-left: 10%;
+    text-align: center;
+    letter-spacing: 1px;
+  }
+
+  h2 {
+    font-size: 54px;
+    font-weight: 900;
+  }
+
+  p {
+    font-size: 20px;
+    letter-spacing: 3px;
+    font-weight: 700;
+  }
+
+  img.tactix-logo {
+    width: 100%;
+    height: 50%;
+    object-fit: cover;
+  }
+
+  .inp {
+    width: 100%;
+    margin-top: 20%;
+    position: relative;
+    @include flex-center;
+
+    #AIInput {
+      width: 80%;
+      padding: 10px;
+      font-size: 14px;
+      border: $lightWhite 1px solid;
+      border-radius: 100px;
+      background: transparent;
+      color: $white;
+      transition: 0.25s;
+      padding: 14px;
+      letter-spacing: 1px;
+
+      &:focus {
+        outline: none;
+        border-color: $white;
+      }
+    }
+
+    span {
+      margin-left: 10px;
+      background: $white;
+      color: $black;
+      padding: 7px;
+      border-radius: 50%;
+    }
+  }
 }

@@ -1,1 +1,1 @@
-{"version":3,"sourceRoot":"","sources":["../ai-window.scss"],"names":[],"mappings":"AAAA;EACE;EACA;EACA","file":"ai-window.css"}
+{"version":3,"sourceRoot":"","sources":["../ai-window.scss","../../_base.scss"],"names":[],"mappings":"AAEA;EACE;EACA;EACA;;;AAGF;EACE;EACA;EACA;EACA;;AAEA;AAAA;EAEE;EACA;EACA;EACA;;AAGF;EACE;EACA;;AAGF;EACE;EACA;EACA;;AAGF;EACE;EACA;EACA;;AAGF;EACE;EACA;EACA;ECrCF;EACA;EACA;EACA,gBAJ6B;;ADyC3B;EACE;EACA;EACA;EACA;EACA;EACA;EACA,OCnDE;EDoDF;EACA;EACA;;AAEA;EACE;EACA,cC1DA;;AD8DJ;EACE;EACA,YChEE;EDiEF,OClEE;EDmEF;EACA","file":"ai-window.css"}
