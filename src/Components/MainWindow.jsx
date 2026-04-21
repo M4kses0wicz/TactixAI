@@ -5,7 +5,8 @@ import AIWindow from "./AIWindow";
 import NoteEditor from "./Noteeditor";
 // import LoadingScreen from "./LoadingScreen";
 // import PlayerList from "./PlayerList";
-import TacticsPanel from "./TacticsPanel";
+// import TacticsPanel from "./TacticsPanel";
+import PlayerTacticsPanel from "./PlayerTacticsPanel";
 
 function MainWindow() {
   return (
@@ -29,7 +30,8 @@ function MainWindow() {
             <div className="components-holder l">
               {/* <NoteEditor /> */}
               {/* <PlayerList /> */}
-              <TacticsPanel />
+              {/* <TacticsPanel /> */}
+              <PlayerTacticsPanel />
             </div>
             <div className="ai-win-container r">
               <AIWindow />
