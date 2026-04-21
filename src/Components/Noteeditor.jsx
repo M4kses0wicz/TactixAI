@@ -1,8 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "../styles/NoteEditor/css/NoteEditor.css";
 import personIcon from "../assets/user-icon.png";
 
 const generateId = () => Math.random().toString(36).slice(2, 8);
+
+// ─── Persistence keys ────────────────────────────────────────────────────────
+const LS_TITLE = "noteEditor_title";
+const LS_BLOCKS = "noteEditor_blocks";
 
 function DescBlock({ block, onChange, onRemove, preview }) {
   if (preview) {
@@ -88,7 +92,6 @@ function ListBlock({ block, onChange, onRemove, preview }) {
   );
 }
 
-// ─── Player card block ───────────────────────────────────────────────────────
 function PlayerCardBlock({ block, onChange, onRemove, preview }) {
   const set = (key, val) => onChange({ ...block, [key]: val });
   const fullName = [block.firstName, block.lastName].filter(Boolean).join(" ");
@@ -122,7 +125,6 @@ function PlayerCardBlock({ block, onChange, onRemove, preview }) {
         <div className="player-card__avatar">
           <img src={personIcon} alt="ikona człowieka" className="person-ico" />
         </div>
-
         <div className="player-card__body">
           <div className="player-card__name-row">
             <input
@@ -138,7 +140,6 @@ function PlayerCardBlock({ block, onChange, onRemove, preview }) {
               onChange={(e) => set("lastName", e.target.value)}
             />
           </div>
-
           <div className="player-card__position-row">
             <input
               className="player-card__position-input"
@@ -147,7 +148,6 @@ function PlayerCardBlock({ block, onChange, onRemove, preview }) {
               onChange={(e) => set("position", e.target.value)}
             />
           </div>
-
           <textarea
             className="player-card__desc-input"
             value={block.desc}
@@ -167,8 +167,23 @@ function PlayerCardBlock({ block, onChange, onRemove, preview }) {
 // ─── Main component ──────────────────────────────────────────────────────────
 export default function NoteEditor() {
   const [preview, setPreview] = useState(false);
-  const [title, setTitle] = useState("");
-  const [blocks, setBlocks] = useState([]);
+
+  // Odczyt z localStorage przy pierwszym renderze
+  const [title, setTitle] = useState(
+    () => localStorage.getItem(LS_TITLE) ?? "",
+  );
+  const [blocks, setBlocks] = useState(() =>
+    JSON.parse(localStorage.getItem(LS_BLOCKS) ?? "[]"),
+  );
+
+  // Zapis do localStorage przy każdej zmianie
+  useEffect(() => {
+    localStorage.setItem(LS_TITLE, title);
+  }, [title]);
+
+  useEffect(() => {
+    localStorage.setItem(LS_BLOCKS, JSON.stringify(blocks));
+  }, [blocks]);
 
   const addDesc = () =>
     setBlocks((b) => [...b, { id: generateId(), type: "desc", text: "" }]);
