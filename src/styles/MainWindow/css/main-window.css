@@ -24,6 +24,7 @@ main .right-sec .wrapper .l {
 }
 main .right-sec .wrapper .l {
   width: 62.5%;
+  overflow: auto;
 }
 main .right-sec .wrapper .r {
   width: 37.5%;

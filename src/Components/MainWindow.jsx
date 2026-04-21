@@ -3,6 +3,8 @@ import "../styles/MainWindow/css/main-window.css";
 import feyenoordLogo from "../assets/Feyenoord.png";
 import AIWindow from "./AIWindow";
 import NoteEditor from "./Noteeditor";
+// import LoadingScreen from "./LoadingScreen";
+import PlayerList from "./PlayerList";
 
 function MainWindow() {
   return (
@@ -24,7 +26,8 @@ function MainWindow() {
           </nav>
           <div className="wrapper">
             <div className="components-holder l">
-              <NoteEditor />
+              {/* <NoteEditor /> */}
+              <PlayerList />
             </div>
             <div className="ai-win-container r">
               <AIWindow />

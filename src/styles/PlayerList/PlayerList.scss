@@ -1,0 +1,180 @@
+@use "../base" as *;
+
+@import url("https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap");
+
+// ─── Extra colours ────────────────────────────────────────────────────────────
+$yellow: #ffff00;
+$green-bright: #00ff00;
+$green-dark: #008000;
+$red: #ff0000;
+
+// ─── Mixin ───────────────────────────────────────────────────────────────────
+@mixin lato {
+  font-family: "Lato", sans-serif;
+}
+
+// ─── Wrapper ─────────────────────────────────────────────────────────────────
+.pl-wrap {
+  width: 100%;
+  padding: 24px 24px 48px;
+}
+
+// ─── Section heading ─────────────────────────────────────────────────────────
+.pl-heading {
+  @include lato;
+  font-size: 28px;
+  font-weight: 900;
+  color: $white;
+  margin-bottom: 16px;
+
+  &--reserve {
+    margin-top: 40px;
+  }
+}
+
+// ─── List container ──────────────────────────────────────────────────────────
+.pl-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+// ─── Single row ──────────────────────────────────────────────────────────────
+.pl-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: $black;
+  border: 1px solid $lightWhite;
+  border-radius: 7px;
+  padding: 10px 16px 10px 0;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.15s;
+
+  &:hover {
+    border-color: $white;
+  }
+
+  // ── accent bar ──
+  &__accent {
+    flex-shrink: 0;
+    width: 5px;
+    align-self: stretch;
+  }
+
+  // ── position block ──
+  &__pos {
+    flex-shrink: 0;
+    width: 54px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2px;
+  }
+
+  &__pos-code {
+    @include lato;
+    font-size: 14px;
+    font-weight: 900;
+    color: $white;
+    line-height: 1;
+  }
+
+  &__pos-label {
+    @include lato;
+    font-size: 9px;
+    font-weight: 400;
+    color: $lightWhite;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  // ── nationality emoji flag ──
+  &__nat {
+    flex-shrink: 0;
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  // ── heart icon ──
+  &__heart {
+    flex-shrink: 0;
+    font-size: 16px;
+    line-height: 1;
+    transition: color 0.2s;
+  }
+
+  // ── avatar ──
+  &__avatar {
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: 1px solid $lightWhite;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba($white, 0.05);
+
+    img {
+      width: 22px;
+      height: 22px;
+      object-fit: contain;
+      filter: brightness(0.7);
+    }
+  }
+
+  &:hover &__avatar {
+    border-color: $white;
+  }
+
+  // ── name ──
+  &__name {
+    @include lato;
+    flex: 1;
+    font-size: 15px;
+    font-weight: 700;
+    color: $white;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  // ── status label (center) ──
+  &__status {
+    @include lato;
+    flex-shrink: 0;
+    font-size: 11px;
+    font-weight: 700;
+    min-width: 90px;
+    text-align: center;
+  }
+
+  // ── score ──
+  &__score-wrap {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 1px;
+    min-width: 48px;
+  }
+
+  &__score-label {
+    @include lato;
+    font-size: 9px;
+    font-weight: 400;
+    color: $lightWhite;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  &__score {
+    @include lato;
+    font-size: 16px;
+    font-weight: 900;
+    line-height: 1;
+  }
+}
