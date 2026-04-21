@@ -1,0 +1,10 @@
+Konfiguracja aplikacji (Frontend):
+
+– Przygotowanie struktury podstron aplikacji, podział na główne widoki odpowiadające funkcjonalnościom systemu
+– Implementacja sekcji notatek: możliwość dodawania tytułów, opisów oraz list, a także tworzenie kart z indywidualnymi opisami dla poszczególnych piłkarzy
+– Stworzenie sekcji zawodników: podział na wyjściową jedenastkę oraz rezerwę, zaprojektowanie czytelnego układu prezentacji graczy
+– Zaprojektowanie i wdrożenie okienka dla AI, integracja z interfejsem użytkownika jako dodatkowego modułu wspierającego
+– Opracowanie systemu wytycznych dla piłkarzy, przygotowanie logiki oraz wizualnej reprezentacji zaleceń
+– Stworzenie sekcji taktyki: implementacja kafelków reprezentujących poszczególne wytyczne i ich organizacja w przejrzysty sposób
+– Ujednolicenie stylów interfejsu (kolory, typografia, spacing) oraz dopracowanie spójności wizualnej aplikacji
+– Organizacja struktury plików frontendu pod kątem skalowalności i pracy zespołowej
