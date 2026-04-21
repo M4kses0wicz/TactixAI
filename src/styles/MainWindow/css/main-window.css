@@ -26,6 +26,19 @@ main .right-sec .wrapper .l {
   width: 62.5%;
   overflow: auto;
 }
+main .right-sec .wrapper .l::-webkit-scrollbar {
+  background: #070707;
+  width: 5px;
+}
+main .right-sec .wrapper .l::-webkit-scrollbar-thumb {
+  background: rgba(150, 150, 150, 0.5);
+  border-radius: 10px;
+  width: 5px;
+}
+main .right-sec .wrapper .l::-webkit-scrollbar-track {
+  background: transparent;
+  width: 5px;
+}
 main .right-sec .wrapper .r {
   width: 37.5%;
   border-left: rgba(150, 150, 150, 0.5) 1px solid;

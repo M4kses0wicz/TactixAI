@@ -26,6 +26,19 @@ main {
       .l {
         width: 62.5%;
         overflow: auto;
+        &::-webkit-scrollbar {
+          background: $black;
+          width: 5px;
+        }
+        &::-webkit-scrollbar-thumb {
+          background: $lightWhite;
+          border-radius: 10px;
+          width: 5px;
+        }
+        &::-webkit-scrollbar-track {
+          background: transparent;
+          width: 5px;
+        }
       }
       .r {
         width: 37.5%;
