@@ -17,6 +17,19 @@ main {
       border-bottom-left-radius: 21px;
       border-bottom-right-radius: 21px;
       border-top-right-radius: 21px;
+      display: flex;
+
+      .r,
+      .l {
+        height: 100%;
+      }
+      .l {
+        width: 62.5%;
+      }
+      .r {
+        width: 37.5%;
+        border-left: $lightWhite 1px solid;
+      }
     }
     nav {
       height: 9.5%;

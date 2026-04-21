@@ -16,6 +16,18 @@ main .right-sec .wrapper {
   border-bottom-left-radius: 21px;
   border-bottom-right-radius: 21px;
   border-top-right-radius: 21px;
+  display: flex;
+}
+main .right-sec .wrapper .r,
+main .right-sec .wrapper .l {
+  height: 100%;
+}
+main .right-sec .wrapper .l {
+  width: 62.5%;
+}
+main .right-sec .wrapper .r {
+  width: 37.5%;
+  border-left: rgba(150, 150, 150, 0.5) 1px solid;
 }
 main .right-sec nav {
   height: 9.5%;
