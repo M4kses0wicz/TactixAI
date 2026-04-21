@@ -4,7 +4,8 @@ import feyenoordLogo from "../assets/Feyenoord.png";
 import AIWindow from "./AIWindow";
 import NoteEditor from "./Noteeditor";
 // import LoadingScreen from "./LoadingScreen";
-import PlayerList from "./PlayerList";
+// import PlayerList from "./PlayerList";
+import TacticsPanel from "./TacticsPanel";
 
 function MainWindow() {
   return (
@@ -27,7 +28,8 @@ function MainWindow() {
           <div className="wrapper">
             <div className="components-holder l">
               {/* <NoteEditor /> */}
-              <PlayerList />
+              {/* <PlayerList /> */}
+              <TacticsPanel />
             </div>
             <div className="ai-win-container r">
               <AIWindow />
