@@ -4,7 +4,6 @@ import image2 from "../assets/image 2.png";
 import image4 from "../assets/image 4.png";
 import image6 from "../assets/image 6.png";
 import image7 from "../assets/image 7.png";
-import "./LoadingScreen.css";
 
 function LoadingScreen({ onClick }) {
   const images = [image1, image2, image4, image6, image7];
@@ -22,9 +21,17 @@ function LoadingScreen({ onClick }) {
     <div className="loading-screen" onClick={onClick}>
       <link rel="preconnect" href="https://fonts.googleapis.com" />
       <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-      <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap" rel="stylesheet" />
+      <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700;900&display=swap"
+        rel="stylesheet"
+      />
       <div className="player-background">
-        <img key={currentImageIndex} src={images[currentImageIndex]} alt="Zawodnik" className="background-image" />
+        <img
+          key={currentImageIndex}
+          src={images[currentImageIndex]}
+          alt="Zawodnik"
+          className="background-image"
+        />
       </div>
       <div className="dark-gradient"></div>
       <div className="text-content">
@@ -34,6 +41,5 @@ function LoadingScreen({ onClick }) {
     </div>
   );
 }
-
 
 export default LoadingScreen;

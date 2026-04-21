@@ -2,6 +2,7 @@ import PitchWindow from "./PitchWindow";
 import "../styles/MainWindow/css/main-window.css";
 import feyenoordLogo from "../assets/Feyenoord.png";
 import AIWindow from "./AIWindow";
+import NoteEditor from "./Noteeditor";
 
 function MainWindow() {
   return (
@@ -22,7 +23,9 @@ function MainWindow() {
             <p>Notatki</p>
           </nav>
           <div className="wrapper">
-            <div className="components-holder l"></div>
+            <div className="components-holder l">
+              <NoteEditor />
+            </div>
             <div className="ai-win-container r">
               <AIWindow />
             </div>

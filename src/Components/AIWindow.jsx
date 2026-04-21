@@ -9,7 +9,7 @@ function AIWindow() {
       <p>Jak mogę Ci pomóc?</p>
       <div className="inp">
         <input type="text" id="AIInput" placeholder="Zadaj pytanie..." />
-        <span class="material-symbols-outlined">arrow_upward</span>
+        <span className="material-symbols-outlined">arrow_upward</span>
       </div>
     </section>
   );
