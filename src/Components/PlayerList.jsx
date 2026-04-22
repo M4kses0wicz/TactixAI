@@ -1,5 +1,6 @@
 import personIcon from "../assets/user-icon.png";
 import "../styles/PlayerList/css/PlayerList.css";
+import { useGame } from "../context/GameContext";
 
 const STATUS_COLOR = {
   healthy: "#00FF00",
@@ -22,229 +23,32 @@ function scoreColor(score) {
   return "#FF0000";
 }
 
-// TUUUUUTAJ ZBIJAAAAAAAAK // TUUUUUTAJ ZBIJAAAAAAAAK // TUUUUUTAJ ZBIJAAAAAAAAK // TUUUUUTAJ ZBIJAAAAAAAAK
+const POS_LABEL_MAP = {
+  "BR": "Bramkarz",
+  "ŚO4": "Obrońca",
+  "ŚO3": "Obrońca",
+  "PO": "Obrońca",
+  "LO": "Obrońca",
+  "CLL": "Wahadłowy",
+  "CLP": "Wahadłowy",
+  "DP": "Pomocnik",
+  "ŚP": "Pomocnik",
+  "OP": "Pomocnik",
+  "PP": "Skrzydłowy",
+  "LP": "Skrzydłowy",
+  "PS": "Skrzydłowy",
+  "LS": "Skrzydłowy",
+  "N": "Napastnik"
+};
 
-// ─── Tutaj jest skład - tutaj zbijak trzea importować rzeczy z bazy danych     // TUUUUUTAJ ZBIJAAAAAAAAK
+const STATUS_MAP = {
+  "zdrowy": "healthy",
+  "lekki_uraz": "minor",
+  "kontuzja": "injured",
+  "zawieszony": "suspended"
+};
 
-// TUUUUUTAJ ZBIJAAAAAAAAK // TUUUUUTAJ ZBIJAAAAAAAAK // TUUUUUTAJ ZBIJAAAAAAAAK // TUUUUUTAJ ZBIJAAAAAAAAK
-
-const STARTING_XI = [
-  {
-    id: 1,
-    name: "Justin Bijlow",
-    nat: "🇳🇱",
-    natCode: "NL",
-    pos: "GK",
-    posLabel: "Bramkarz",
-    status: "minor",
-    score: 7.8,
-  },
-  {
-    id: 2,
-    name: "Lutsharel Geertruida",
-    nat: "🇳🇱",
-    natCode: "NL",
-    pos: "RB/CB",
-    posLabel: "Obrońca",
-    status: "healthy",
-    score: 8.6,
-  },
-  {
-    id: 3,
-    name: "David Hancko",
-    nat: "🇸🇰",
-    natCode: "SK",
-    pos: "CB",
-    posLabel: "Obrońca",
-    status: "healthy",
-    score: 8.2,
-  },
-  {
-    id: 4,
-    name: "Gernot Trauner",
-    nat: "🇦🇹",
-    natCode: "AT",
-    pos: "CB",
-    posLabel: "Obrońca",
-    status: "injured",
-    score: 7.3,
-  },
-  {
-    id: 5,
-    name: "Quilindschy Hartman",
-    nat: "🇳🇱",
-    natCode: "NL",
-    pos: "LB",
-    posLabel: "Obrońca",
-    status: "healthy",
-    score: 7.9,
-  },
-  {
-    id: 6,
-    name: "Mats Wieffer",
-    nat: "🇳🇱",
-    natCode: "NL",
-    pos: "CDM",
-    posLabel: "Pomocnik",
-    status: "suspended",
-    score: 8.4,
-  },
-  {
-    id: 7,
-    name: "Quinten Timber",
-    nat: "🇳🇱",
-    natCode: "NL",
-    pos: "CM",
-    posLabel: "Pomocnik",
-    status: "minor",
-    score: 7.7,
-  },
-  {
-    id: 8,
-    name: "Calvin Stengs",
-    nat: "🇳🇱",
-    natCode: "NL",
-    pos: "CAM/RW",
-    posLabel: "Pomocnik",
-    status: "healthy",
-    score: 8.1,
-  },
-  {
-    id: 9,
-    name: "Igor Paixão",
-    nat: "🇧🇷",
-    natCode: "BR",
-    pos: "LW",
-    posLabel: "Skrzydłowy",
-    status: "minor",
-    score: 7.6,
-  },
-  {
-    id: 10,
-    name: "Santiago Giménez",
-    nat: "🇲🇽",
-    natCode: "MX",
-    pos: "ST",
-    posLabel: "Napastnik",
-    status: "healthy",
-    score: 9.1,
-  },
-  {
-    id: 11,
-    name: "Yankuba Minteh",
-    nat: "🇬🇲",
-    natCode: "GM",
-    pos: "RW",
-    posLabel: "Skrzydłowy",
-    status: "minor",
-    score: 7.8,
-  },
-];
-
-const RESERVES = [
-  {
-    id: 12,
-    name: "Timon Wellenreuther",
-    nat: "🇩🇪",
-    natCode: "DE",
-    pos: "GK",
-    posLabel: "Bramkarz",
-    status: "healthy",
-    score: 7.2,
-  },
-  {
-    id: 13,
-    name: "Thomas Beelen",
-    nat: "🇳🇱",
-    natCode: "NL",
-    pos: "CB",
-    posLabel: "Obrońca",
-    status: "minor",
-    score: 6.9,
-  },
-  {
-    id: 14,
-    name: "Bart Nieuwkoop",
-    nat: "🇳🇱",
-    natCode: "NL",
-    pos: "RB",
-    posLabel: "Obrońca",
-    status: "healthy",
-    score: 7.1,
-  },
-  {
-    id: 15,
-    name: "Marcos López",
-    nat: "🇵🇪",
-    natCode: "PE",
-    pos: "LB",
-    posLabel: "Obrońca",
-    status: "injured",
-    score: 6.4,
-  },
-  {
-    id: 16,
-    name: "Ramiz Zerrouki",
-    nat: "🇩🇿",
-    natCode: "DZ",
-    pos: "CDM",
-    posLabel: "Pomocnik",
-    status: "healthy",
-    score: 7.6,
-  },
-  {
-    id: 17,
-    name: "Ondřej Lingr",
-    nat: "🇨🇿",
-    natCode: "CZ",
-    pos: "CAM",
-    posLabel: "Pomocnik",
-    status: "suspended",
-    score: 7.0,
-  },
-  {
-    id: 18,
-    name: "Antoni Milambo",
-    nat: "🇳🇱",
-    natCode: "NL",
-    pos: "CM",
-    posLabel: "Pomocnik",
-    status: "healthy",
-    score: 6.6,
-  },
-  {
-    id: 19,
-    name: "Alireza Jahanbakhsh",
-    nat: "🇮🇷",
-    natCode: "IR",
-    pos: "RW",
-    posLabel: "Skrzydłowy",
-    status: "minor",
-    score: 7.3,
-  },
-  {
-    id: 20,
-    name: "Ayase Ueda",
-    nat: "🇯🇵",
-    natCode: "JP",
-    pos: "ST",
-    posLabel: "Napastnik",
-    status: "healthy",
-    score: 7.8,
-  },
-  {
-    id: 21,
-    name: "Leo Sauer",
-    nat: "🇸🇰",
-    natCode: "SK",
-    pos: "LW",
-    posLabel: "Skrzydłowy",
-    status: "healthy",
-    score: 6.7,
-  },
-];
-
-function PlayerRow({ player }) {
+function PlayerRow({ player, getPlayerPhoto }) {
   const accentColor = STATUS_COLOR[player.status];
   const sc = scoreColor(player.score);
   const isHealthy = player.status === "healthy";
@@ -276,7 +80,16 @@ function PlayerRow({ player }) {
 
       {/* avatar */}
       <div className="pl-row__avatar">
-        <img src={personIcon} alt="gracz" />
+        <img 
+          src={getPlayerPhoto(player.name)} 
+          alt="gracz" 
+          style={{
+            filter: "none",
+            objectFit: getPlayerPhoto(player.name).includes('user-icon') ? 'contain' : 'cover',
+            width: getPlayerPhoto(player.name).includes('user-icon') ? '22px' : '100%',
+            height: getPlayerPhoto(player.name).includes('user-icon') ? '22px' : '100%'
+          }}
+        />
       </div>
 
       {/* name */}
@@ -299,20 +112,63 @@ function PlayerRow({ player }) {
 }
 
 // ─── Main component ───────────────────────────────────────────────────────────
-export default function PlayerList() {
+export default function PlayerList({ isOpponent }) {
+  const { currentTeam, getPlayerPhoto } = useGame();
+  
+  if (!currentTeam) return null;
+
+  if (isOpponent) {
+    // Opponent mode: show 11 empty placeholder slots
+    const formation = currentTeam.formacje?.find(f => f.nazwa === currentTeam.domyslna_formacja);
+    const positions = formation ? formation.pozycje : [];
+    const emptyPlayers = positions.map((pos, i) => ({
+      id: `opp-${i}`,
+      name: "Nieznany zawodnik",
+      nat: "🏳️",
+      pos: pos,
+      posLabel: POS_LABEL_MAP[pos] || "Zawodnik",
+      status: "healthy",
+      score: 6.00
+    }));
+
+    return (
+      <div className="pl-wrap">
+        <h2 className="pl-heading">Skład przeciwnika:</h2>
+        <div className="pl-list">
+          {emptyPlayers.map((p) => (
+            <PlayerRow key={p.id} player={p} getPlayerPhoto={getPlayerPhoto} />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  const mapPlayer = (p) => ({
+    id: p.id,
+    name: p.imie_nazwisko,
+    nat: p.narodowosc,
+    pos: p.pozycja_glowna,
+    posLabel: POS_LABEL_MAP[p.pozycja_glowna] || "Zawodnik",
+    status: STATUS_MAP[p.stan_aktualny?.kontuzja] || "healthy",
+    score: p.stan_aktualny?.forma_ostatnie_5_meczow || 6.0
+  });
+
+  const startingXi = currentTeam.zawodnicy.filter(p => p.isStarting).map(mapPlayer);
+  const reserves = currentTeam.zawodnicy.filter(p => !p.isStarting).map(mapPlayer);
+
   return (
     <div className="pl-wrap">
       <h2 className="pl-heading">Wyjściowy skład:</h2>
       <div className="pl-list">
-        {STARTING_XI.map((p) => (
-          <PlayerRow key={p.id} player={p} />
+        {startingXi.map((p) => (
+          <PlayerRow key={p.id} player={p} getPlayerPhoto={getPlayerPhoto} />
         ))}
       </div>
 
       <h2 className="pl-heading pl-heading--reserve">Rezerwa:</h2>
       <div className="pl-list">
-        {RESERVES.map((p) => (
-          <PlayerRow key={p.id} player={p} />
+        {reserves.map((p) => (
+          <PlayerRow key={p.id} player={p} getPlayerPhoto={getPlayerPhoto} />
         ))}
       </div>
     </div>

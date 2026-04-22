@@ -1,20 +1,28 @@
 import { useState } from "react";
 import "./App.css";
+import StartScreen from "./Components/StartScreen";
+import ClubSelection from "./Components/ClubSelection";
+import CustomClubForm from "./Components/CustomClubForm";
 import MainWindow from "./Components/MainWindow";
-import LoadingScreen from "./Components/LoadingScreen";
+import { useGame } from "./context/GameContext";
 
 function App() {
-  // const [isLoading, setIsLoading] = useState(true);
+  const { currentTeam } = useGame();
+  const [screen, setScreen] = useState(0); // 0: Start, 1: ClubSelection, 2: CustomClubForm
 
-  // const handleLoadingScreenClick = () => {
-  //   setIsLoading(false);
-  // };
+  if (currentTeam) {
+    return <MainWindow />;
+  }
 
-  return (
-    <>
-      <MainWindow />
-    </>
-  );
+  if (screen === 0) {
+    return <StartScreen onNext={() => setScreen(1)} onCreate={() => setScreen(2)} />;
+  }
+
+  if (screen === 2) {
+    return <CustomClubForm onBack={() => setScreen(0)} onComplete={() => setScreen(1)} />;
+  }
+
+  return <ClubSelection onBack={() => setScreen(0)} />;
 }
 
 export default App;

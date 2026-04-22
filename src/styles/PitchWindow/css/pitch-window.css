@@ -1,6 +1,247 @@
-.container {
+/* ── Variables ─────────────────────────────────────────────────── */
+:root {
+  --pitch-line: rgba(255, 255, 255, 0.25);
+  --pitch-line-w: 1px;
+  --pitch-pad-x: 6%;
+  --pitch-pad-y: 4%;
+  --pitch-radius: 14px;
+}
+
+/* ── Pitch wrapper ────────────────────────────────────────────── */
+.pitch-wrapper {
   height: 92.5%;
 }
-.container img {
+
+/* ── The pitch container (CSS pitch + player dots + tabs) ────── */
+.pitch-area {
+  width: 100%;
   height: 100%;
-}/*# sourceMappingURL=pitch-window.css.map */
+  position: relative;
+  overflow: hidden;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CSS-ONLY PITCH
+   ═══════════════════════════════════════════════════════════════ */
+.css-pitch {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Outer border – rounded corners, solid background */
+.css-pitch__outline {
+  position: absolute;
+  top: var(--pitch-pad-y);
+  left: var(--pitch-pad-x);
+  right: var(--pitch-pad-x);
+  bottom: var(--pitch-pad-y);
+  background: #111111;
+  border: var(--pitch-line-w) solid var(--pitch-line);
+  /* Top-left, Top-right (0 for seamless tab connection), Bottom-right, Bottom-left */
+  border-radius: var(--pitch-radius) 0 var(--pitch-radius) var(--pitch-radius);
+}
+
+/* Center line */
+.css-pitch__center-line {
+  position: absolute;
+  top: 50%;
+  left: var(--pitch-pad-x);
+  right: var(--pitch-pad-x);
+  height: 0;
+  border-top: var(--pitch-line-w) solid var(--pitch-line);
+}
+
+/* Center circle */
+.css-pitch__center-circle {
+  position: absolute;
+  width: 22%;
+  aspect-ratio: 1;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border: var(--pitch-line-w) solid var(--pitch-line);
+  border-radius: 50%;
+}
+
+/* Center dot */
+.css-pitch__center-dot {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--pitch-line);
+  border-radius: 50%;
+}
+
+/* ── Penalty areas ─────────────────────────────────────────────── */
+.css-pitch__penalty-area {
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  height: 16%;
+  border: var(--pitch-line-w) solid var(--pitch-line);
+}
+.css-pitch__penalty-area--top {
+  top: var(--pitch-pad-y);
+  border-top: none;
+}
+.css-pitch__penalty-area--bottom {
+  bottom: var(--pitch-pad-y);
+  border-bottom: none;
+}
+
+/* ── Goal areas (6-yard box) ───────────────────────────────────── */
+.css-pitch__goal-area {
+  position: absolute;
+  left: 30%;
+  right: 30%;
+  height: 7%;
+  border: var(--pitch-line-w) solid var(--pitch-line);
+}
+.css-pitch__goal-area--top {
+  top: var(--pitch-pad-y);
+  border-top: none;
+}
+.css-pitch__goal-area--bottom {
+  bottom: var(--pitch-pad-y);
+  border-bottom: none;
+}
+
+/* ── Penalty dots ──────────────────────────────────────────────── */
+.css-pitch__penalty-dot {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--pitch-line);
+  border-radius: 50%;
+}
+.css-pitch__penalty-dot--top {
+  top: 16%;
+}
+.css-pitch__penalty-dot--bottom {
+  bottom: 16%;
+}
+
+/* ── Penalty arcs ──────────────────────────────────────────────── */
+.css-pitch__penalty-arc {
+  position: absolute;
+  width: 16%;
+  aspect-ratio: 1;
+  left: 50%;
+  transform: translateX(-50%);
+  border: var(--pitch-line-w) solid var(--pitch-line);
+  border-radius: 50%;
+}
+.css-pitch__penalty-arc--top {
+  top: 14%;
+  clip-path: inset(50% 0 0 0);
+}
+.css-pitch__penalty-arc--bottom {
+  bottom: 14%;
+  clip-path: inset(0 0 50% 0);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   PLAYER DOTS
+   ═══════════════════════════════════════════════════════════════ */
+.pitch-player {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  z-index: 2;
+}
+
+.pitch-player__circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: transparent;
+  border: 1.5px solid rgba(255, 255, 255, 0.55);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.pitch-player__circle--opp {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.pitch-player__icon {
+  width: 20px;
+  height: 20px;
+  filter: invert(1);
+  opacity: 0.85;
+}
+
+.pitch-player__label {
+  font-family: "Lato", sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  color: #ffffff;
+  white-space: nowrap;
+  letter-spacing: 0.03em;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  padding: 2px 10px;
+  border-radius: 4px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SIDE TABS – attached to the right edge of the pitch outline,
+   bigger, rounded to match the pitch
+   ═══════════════════════════════════════════════════════════════ */
+.pitch-side-tabs {
+  position: absolute;
+  right: calc(var(--pitch-pad-x) - 29px); /* Moved 1px left to overlap border */
+  top: var(--pitch-pad-y);
+  height: 36%;
+  width: 30px;
+  display: flex;
+  flex-direction: column;
+  z-index: 3;
+}
+
+.pitch-side-tab {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  font-family: "Lato", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 16px 6px;
+  border: var(--pitch-line-w) solid var(--pitch-line);
+  border-left: none;
+  background: #080808; /* Inactive tab darker */
+  color: rgba(255, 255, 255, 0.35);
+  cursor: pointer;
+  transition: color 0.2s, background 0.2s;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pitch-side-tab:first-child {
+  border-bottom: none;
+  border-top-right-radius: var(--pitch-radius);
+}
+.pitch-side-tab:last-child {
+  border-bottom-right-radius: var(--pitch-radius);
+}
+
+.pitch-side-tab--active {
+  color: rgba(255, 255, 255, 0.9);
+  background: #111111; /* Matches pitch container seamlessly */
+}
+
+.pitch-side-tab:hover:not(.pitch-side-tab--active) {
+  color: rgba(255, 255, 255, 0.6);
+  background: #0a0a0a;
+}
