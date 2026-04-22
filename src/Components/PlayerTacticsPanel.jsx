@@ -14,9 +14,9 @@ const ICONS = {
           const y = 16 + i * 10;
           return (
             <g key={i} opacity={opacity}>
-              <line x1="10" y1={y} x2="44" y2={y} stroke="#D131F5" strokeWidth="2" strokeLinecap="round" />
-              <circle cx={44 + (isActive ? 6 : 0)} cy={y} r="3" fill="#D131F5" />
-              {isActive && <path d={`M44 ${y} L52 ${y}`} stroke="#D131F5" strokeWidth="2" strokeDasharray="2 2" />}
+              <line x1="10" y1={y} x2="44" y2={y} stroke="#FFEA00" strokeWidth="2.5" strokeLinecap="round" />
+              <circle cx={44 + (isActive ? 6 : 0)} cy={y} r="3.5" fill="#FFEA00" />
+              {isActive && <path d={`M44 ${y} L52 ${y}`} stroke="#FFEA00" strokeWidth="2" strokeDasharray="2 2" />}
             </g>
           );
         })}
@@ -29,11 +29,11 @@ const ICONS = {
     return (
       <svg viewBox="0 0 64 64" fill="none" className="ptac-icon">
         <path d="M12 48 A24 24 0 0 1 52 48" stroke="#4B4B4B" strokeWidth="6" strokeLinecap="round" fill="none" />
-        <path d="M12 48 A24 24 0 0 1 52 48" stroke="#D131F5" strokeWidth="6" strokeLinecap="round" fill="none" 
+        <path d="M12 48 A24 24 0 0 1 52 48" stroke="#FF9100" strokeWidth="6" strokeLinecap="round" fill="none" 
               strokeDasharray="100" strokeDashoffset={100 - progress * 100} />
         <g transform={`rotate(${angle}, 32, 48)`}>
-          <line x1="32" y1="48" x2="32" y2="28" stroke="white" strokeWidth="3" strokeLinecap="round" />
-          <circle cx="32" cy="48" r="4" fill="white" />
+          <line x1="32" y1="48" x2="32" y2="28" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
+          <circle cx="32" cy="48" r="5" fill="white" />
         </g>
       </svg>
     );
@@ -62,15 +62,15 @@ const ICONS = {
     const width = 10 + (idx / (total - 1)) * 40;
     return (
       <svg viewBox="0 0 64 48" fill="none" className="ptac-icon">
-        <rect x="4" y="8" width="56" height="32" stroke="#4B4B4B" strokeWidth="2" rx="2" />
-        <rect x={32 - width/2} y="8" width={width} height="32" fill="#D131F5" opacity="0.3" rx="1" />
+        <rect x="4" y="8" width="56" height="32" stroke="#4B4B4B" strokeWidth="2.5" rx="3" />
+        <rect x={32 - width/2} y="8" width={width} height="32" fill="#00E5FF" opacity="0.3" rx="2" />
         <g transform={`translate(${32 + width/2}, 24)`}>
-          <line x1="0" y1="0" x2="6" y2="0" stroke="#D131F5" strokeWidth="3" strokeLinecap="round" />
-          <polyline points="2,-4 6,0 2,4" stroke="#D131F5" strokeWidth="2.5" strokeLinejoin="round" fill="none" />
+          <line x1="0" y1="0" x2="6" y2="0" stroke="#00E5FF" strokeWidth="3" strokeLinecap="round" />
+          <polyline points="2,-4 6,0 2,4" stroke="#00E5FF" strokeWidth="2.5" strokeLinejoin="round" fill="none" />
         </g>
         <g transform={`translate(${32 - width/2}, 24) rotate(180)`}>
-          <line x1="0" y1="0" x2="6" y2="0" stroke="#D131F5" strokeWidth="3" strokeLinecap="round" />
-          <polyline points="2,-4 6,0 2,4" stroke="#D131F5" strokeWidth="2.5" strokeLinejoin="round" fill="none" />
+          <line x1="0" y1="0" x2="6" y2="0" stroke="#00E5FF" strokeWidth="3" strokeLinecap="round" />
+          <polyline points="2,-4 6,0 2,4" stroke="#00E5FF" strokeWidth="2.5" strokeLinejoin="round" fill="none" />
         </g>
       </svg>
     );
@@ -97,14 +97,14 @@ const ICONS = {
     const highlight = idx; // 0, 1, 2
     return (
       <svg viewBox="0 0 64 64" fill="none" className="ptac-icon">
-        <circle cx="32" cy="12" r="4" fill={highlight === 1 ? "#D131F5" : "#4B4B4B"} />
-        <circle cx="12" cy="52" r="4" fill={highlight === 0 ? "#D131F5" : "#4B4B4B"} />
-        <circle cx="52" cy="52" r="4" fill={highlight === 2 ? "#D131F5" : "#4B4B4B"} />
-        <path d="M16 48 L28 16" stroke={highlight === 0 ? "#D131F5" : "#4B4B4B"} strokeWidth="2" strokeDasharray="4 2" />
-        <path d="M48 48 L36 16" stroke={highlight === 2 ? "#D131F5" : "#4B4B4B"} strokeWidth="2" strokeDasharray="4 2" />
-        <path d="M18 52 L46 52" stroke="#4B4B4B" strokeWidth="2" strokeDasharray="4 2" />
-        <path d="M32 12 L32 32" stroke={highlight === 1 ? "#D131F5" : "#4B4B4B"} strokeWidth="3" strokeLinecap="round" />
-        <polyline points="28,26 32,32 36,26" stroke={highlight === 1 ? "#D131F5" : "#4B4B4B"} strokeWidth="2.5" fill="none" />
+        <circle cx="32" cy="12" r="5" fill={highlight === 1 ? "#00E676" : "#4B4B4B"} />
+        <circle cx="12" cy="52" r="5" fill={highlight === 0 ? "#00E676" : "#4B4B4B"} />
+        <circle cx="52" cy="52" r="5" fill={highlight === 2 ? "#00E676" : "#4B4B4B"} />
+        <path d="M16 48 L28 16" stroke={highlight === 0 ? "#00E676" : "#4B4B4B"} strokeWidth="2.5" strokeDasharray="4 3" />
+        <path d="M48 48 L36 16" stroke={highlight === 2 ? "#00E676" : "#4B4B4B"} strokeWidth="2.5" strokeDasharray="4 3" />
+        <path d="M18 52 L46 52" stroke="#4B4B4B" strokeWidth="2.5" strokeDasharray="4 3" />
+        <path d="M32 12 L32 32" stroke={highlight === 1 ? "#00E676" : "#4B4B4B"} strokeWidth="3" strokeLinecap="round" />
+        <polyline points="28,26 32,32 36,26" stroke={highlight === 1 ? "#00E676" : "#4B4B4B"} strokeWidth="3" strokeLinejoin="round" fill="none" />
       </svg>
     );
   },
@@ -113,25 +113,25 @@ const ICONS = {
     const targetY = 56 - heights[idx];
     return (
       <svg viewBox="0 0 64 64" fill="none" className="ptac-icon">
-        <rect x="20" y="52" width="24" height="8" stroke="white" strokeWidth="2" />
-        <path d={`M32 52 Q32 32 32 ${targetY}`} stroke="#D131F5" strokeWidth="3" strokeDasharray="4 2" strokeLinecap="round" />
-        <path d={`M32 52 Q20 35 12 ${targetY + 5}`} stroke="#D131F5" strokeWidth="2" opacity="0.4" strokeDasharray="4 2" />
-        <path d={`M32 52 Q44 35 52 ${targetY + 5}`} stroke="#D131F5" strokeWidth="2" opacity="0.4" strokeDasharray="4 2" />
-        <circle cx="32" cy={targetY} r="3" fill="#D131F5" />
+        <rect x="20" y="52" width="24" height="8" stroke="white" strokeWidth="2.5" rx="1" />
+        <path d={`M32 52 Q32 32 32 ${targetY}`} stroke="#FFEA00" strokeWidth="3" strokeDasharray="5 3" strokeLinecap="round" />
+        <path d={`M32 52 Q20 35 12 ${targetY + 5}`} stroke="#FFEA00" strokeWidth="2.5" opacity="0.4" strokeDasharray="5 3" />
+        <path d={`M32 52 Q44 35 52 ${targetY + 5}`} stroke="#FFEA00" strokeWidth="2.5" opacity="0.4" strokeDasharray="5 3" />
+        <circle cx="32" cy={targetY} r="3" fill="#FFEA00" />
       </svg>
     );
   },
   "Wyprowadzanie pilki przez bramkarza": ({ idx }) => {
     return (
       <svg viewBox="0 0 64 64" fill="none" className="ptac-icon">
-        <rect x="8" y="8" width="48" height="48" stroke="#4B4B4B" strokeWidth="2" rx="4" />
-        <line x1="8" y1="32" x2="56" y2="32" stroke="#4B4B4B" strokeWidth="1" strokeDasharray="4 2" />
-        {idx === 1 && <rect x="24" y="40" width="16" height="8" fill="#D131F5" rx="1" />}
-        {idx === 2 && <><rect x="12" y="40" width="8" height="8" fill="#D131F5" rx="1" /><rect x="44" y="40" width="8" height="8" fill="#D131F5" rx="1" /></>}
-        {idx === 3 && <><rect x="10" y="15" width="6" height="34" fill="#D131F5" rx="1" /><rect x="48" y="15" width="6" height="34" fill="#D131F5" rx="1" /></>}
-        {idx === 4 && <circle cx="32" cy="32" r="6" fill="#D131F5" />}
-        {idx === 5 && <circle cx="32" cy="18" r="6" fill="#D131F5" />}
-        <circle cx="32" cy="52" r="3" fill="white" />
+        <rect x="8" y="8" width="48" height="48" stroke="#4B4B4B" strokeWidth="2.5" rx="4" />
+        <line x1="8" y1="32" x2="56" y2="32" stroke="#4B4B4B" strokeWidth="1.5" strokeDasharray="5 3" />
+        {idx === 1 && <rect x="24" y="40" width="16" height="8" fill="#4499FF" rx="2" />}
+        {idx === 2 && <><rect x="12" y="40" width="8" height="8" fill="#4499FF" rx="2" /><rect x="44" y="40" width="8" height="8" fill="#4499FF" rx="2" /></>}
+        {idx === 3 && <><rect x="10" y="15" width="6" height="34" fill="#4499FF" rx="2" /><rect x="48" y="15" width="6" height="34" fill="#4499FF" rx="2" /></>}
+        {idx === 4 && <circle cx="32" cy="32" r="6" fill="#4499FF" />}
+        {idx === 5 && <circle cx="32" cy="18" r="6" fill="#4499FF" />}
+        <circle cx="32" cy="52" r="4" fill="white" />
       </svg>
     );
   },
@@ -153,44 +153,44 @@ const ICONS = {
     ];
     return (
       <svg viewBox="0 0 64 64" fill="none" className="ptac-icon">
-        <path d={paths[idx]} stroke="#D131F5" strokeWidth="4" strokeLinecap="round" fill="none" />
-        <polyline points="46,18 52,12 44,12" stroke="#D131F5" strokeWidth="3" strokeLinejoin="round" fill="none" />
-        <circle cx="12" cy="52" r="4" fill="white" />
+        <path d={paths[idx]} stroke="#D131F5" strokeWidth="4.5" strokeLinecap="round" fill="none" />
+        <polyline points="46,18 52,12 44,12" stroke="#D131F5" strokeWidth="3.5" strokeLinejoin="round" fill="none" />
+        <circle cx="12" cy="52" r="5" fill="white" />
       </svg>
     );
   },
   Wejscia: ({ idx }) => {
     return (
       <svg viewBox="0 0 64 64" fill="none" className="ptac-icon">
-        <rect x="8" y="8" width="48" height="48" stroke="#4B4B4B" strokeWidth="2" rx="4" />
-        <rect x="20" y="8" width="24" height="12" stroke="#4B4B4B" strokeWidth="2" />
-        {(idx === 0 || idx === 1 || idx === 4) && <path d="M32 48 L32 20" stroke="#D131F5" strokeWidth="3" strokeLinecap="round" />}
-        {(idx === 2 || idx === 4) && <path d="M16 40 Q16 20 28 15" stroke="#D131F5" strokeWidth="2.5" strokeLinecap="round" fill="none" />}
-        {(idx === 3 || idx === 4) && <path d="M48 40 Q48 20 36 15" stroke="#D131F5" strokeWidth="2.5" strokeLinecap="round" fill="none" />}
-        <circle cx="32" cy="52" r="3" fill="white" />
+        <rect x="8" y="8" width="48" height="48" stroke="#4B4B4B" strokeWidth="2.5" rx="4" />
+        <rect x="20" y="8" width="24" height="12" stroke="#4B4B4B" strokeWidth="2.5" />
+        {(idx === 0 || idx === 1 || idx === 4) && <path d="M32 48 L32 20" stroke="#00E676" strokeWidth="3.5" strokeLinecap="round" />}
+        {(idx === 2 || idx === 4) && <path d="M16 40 Q16 20 28 15" stroke="#00E676" strokeWidth="3" strokeLinecap="round" fill="none" />}
+        {(idx === 3 || idx === 4) && <path d="M48 40 Q48 20 36 15" stroke="#00E676" strokeWidth="3" strokeLinecap="round" fill="none" />}
+        <circle cx="32" cy="52" r="4" fill="white" />
       </svg>
     );
   },
   "Odbior podan": ({ idx }) => (
     <svg viewBox="0 0 64 64" fill="none" className="ptac-icon">
-      <circle cx="16" cy="48" r="4" fill="white" />
-      <circle cx="48" cy="24" r="5" stroke="#D131F5" strokeWidth="2" />
+      <circle cx="16" cy="48" r="5" fill="white" />
+      <circle cx="48" cy="24" r="6" stroke="#00E5FF" strokeWidth="2.5" />
       {idx === 0 ? (
-        <path d="M22 44 L42 28" stroke="#D131F5" strokeWidth="3" strokeLinecap="round" />
+        <path d="M22 44 L42 28" stroke="#00E5FF" strokeWidth="3.5" strokeLinecap="round" />
       ) : (
-        <path d="M20 48 Q35 48 44 32" stroke="#D131F5" strokeWidth="3" strokeLinecap="round" fill="none" />
+        <path d="M20 48 Q35 48 44 32" stroke="#00E5FF" strokeWidth="3.5" strokeLinecap="round" fill="none" />
       )}
-      <polyline points="38,28 42,28 42,34" stroke="#D131F5" strokeWidth="2.5" strokeLinejoin="round" fill="none" />
+      <polyline points="38,28 42,28 42,34" stroke="#00E5FF" strokeWidth="3" strokeLinejoin="round" fill="none" />
     </svg>
   ),
   Cierpliwosc: ({ idx }) => {
     return (
       <svg viewBox="0 0 64 64" fill="none" className="ptac-icon">
-        <rect x="12" y="40" width="40" height="4" fill="#4B4B4B" rx="2" />
-        {idx === 2 && <rect x="12" y="40" width="40" height="4" fill="#D131F5" rx="2" />}
-        <path d="M20 30 L32 30 L44 30" stroke="#D131F5" strokeWidth="2" strokeDasharray="4 4" />
-        <circle cx="32" cy="18" r="6" stroke="#D131F5" strokeWidth="3" />
-        <line x1="32" y1="24" x2="32" y2="40" stroke="#D131F5" strokeWidth="2" />
+        <rect x="12" y="40" width="40" height="6" fill="#4B4B4B" rx="3" />
+        {idx === 2 && <rect x="12" y="40" width="40" height="6" fill="#FF9100" rx="3" />}
+        <path d="M20 30 L32 30 L44 30" stroke="#FF9100" strokeWidth="2.5" strokeDasharray="5 5" />
+        <circle cx="32" cy="18" r="7" stroke="#FF9100" strokeWidth="3.5" />
+        <line x1="32" y1="25" x2="32" y2="40" stroke="#FF9100" strokeWidth="2.5" />
       </svg>
     );
   },
@@ -198,11 +198,11 @@ const ICONS = {
     const opacity = idx === 0 ? 0.2 : idx === 1 ? 0.5 : 1;
     return (
       <svg viewBox="0 0 64 64" fill="none" className="ptac-icon">
-        <rect x="16" y="8" width="32" height="12" stroke="white" strokeWidth="2" />
-        <path d="M32 52 L32 25" stroke="#D131F5" strokeWidth="4" strokeLinecap="round" opacity={opacity} />
-        <polyline points="26,32 32,25 38,32" stroke="#D131F5" strokeWidth="3" strokeLinejoin="round" fill="none" opacity={opacity} />
-        <circle cx="32" cy="52" r="4" fill="white" />
-        {idx === 2 && <path d="M20 40 L44 40" stroke="#D131F5" strokeWidth="1" opacity="0.3" />}
+        <rect x="16" y="8" width="32" height="12" stroke="white" strokeWidth="2.5" rx="1" />
+        <path d="M32 52 L32 25" stroke="#FF3D00" strokeWidth="4.5" strokeLinecap="round" opacity={opacity} />
+        <polyline points="26,32 32,25 38,32" stroke="#FF3D00" strokeWidth="3.5" strokeLinejoin="round" fill="none" opacity={opacity} />
+        <circle cx="32" cy="52" r="5" fill="white" />
+        {idx === 2 && <path d="M20 40 L44 40" stroke="#FF3D00" strokeWidth="1.5" opacity="0.3" />}
       </svg>
     );
   },
@@ -221,11 +221,11 @@ const ICONS = {
     return (
       <svg viewBox="0 0 64 64" fill="none" className="ptac-icon">
         <path d="M12 48 A24 24 0 0 1 52 48" stroke="#4B4B4B" strokeWidth="6" strokeLinecap="round" fill="none" />
-        <path d="M12 48 A24 24 0 0 1 52 48" stroke="#D131F5" strokeWidth="6" strokeLinecap="round" fill="none" 
+        <path d="M12 48 A24 24 0 0 1 52 48" stroke="#FF9100" strokeWidth="6" strokeLinecap="round" fill="none" 
               strokeDasharray="100" strokeDashoffset={100 - progress * 100} />
         <g transform={`rotate(${angle}, 32, 48)`}>
-          <line x1="32" y1="48" x2="32" y2="28" stroke="white" strokeWidth="3" strokeLinecap="round" />
-          <circle cx="32" cy="48" r="4" fill="white" />
+          <line x1="32" y1="48" x2="32" y2="28" stroke="white" strokeWidth="3.5" strokeLinecap="round" />
+          <circle cx="32" cy="48" r="5" fill="white" />
         </g>
       </svg>
     );

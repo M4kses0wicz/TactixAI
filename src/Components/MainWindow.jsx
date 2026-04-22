@@ -13,8 +13,8 @@ const assetImages = import.meta.glob('../assets/*.png', { eager: true });
 
 function getLogoSrc(logoName) {
   if (!logoName) return null;
-  // Try to find the asset by filename
-  const match = Object.entries(assetImages).find(([path]) => path.endsWith(`/${logoName}`));
+  const lowerLogo = logoName.toLowerCase();
+  const match = Object.entries(assetImages).find(([path]) => path.toLowerCase().endsWith(`/${lowerLogo}`));
   return match ? match[1].default : null;
 }
 
