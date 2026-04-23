@@ -1,93 +1,196 @@
-main {
+* {
+  box-sizing: border-box;
+}
+
+.main-container {
   width: 100vw;
   height: 100vh;
+  background-color: #070707;
   color: #ffffff;
   display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
 }
-main .right-sec {
-  width: 67%;
-  padding-bottom: 20px;
-  padding-right: 20px;
+
+/* ── Background Watermark ────────────────────────────────────── */
+.bg-watermark {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80vh;
+  height: 80vh;
+  opacity: 0.08; /* Subtle but visible */
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(12px); /* Slightly blurred */
 }
-main .right-sec .wrapper {
-  height: 90.5%;
+
+.bg-watermark img {
   width: 100%;
-  border: rgba(150, 150, 150, 0.5) 1px solid;
-  border-bottom-left-radius: 21px;
-  border-bottom-right-radius: 21px;
-  border-top-right-radius: 21px;
-  display: flex;
-}
-main .right-sec .wrapper .r,
-main .right-sec .wrapper .l {
   height: 100%;
+  object-fit: contain;
 }
-main .right-sec .wrapper .l {
-  width: 62.5%;
-  overflow: auto;
-}
-main .right-sec .wrapper .l::-webkit-scrollbar {
-  background: #070707;
-  width: 5px;
-}
-main .right-sec .wrapper .l::-webkit-scrollbar-thumb {
-  background: rgba(150, 150, 150, 0.5);
-  border-radius: 10px;
-  width: 5px;
-}
-main .right-sec .wrapper .l::-webkit-scrollbar-track {
-  background: transparent;
-  width: 5px;
-}
-main .right-sec .wrapper .r {
-  width: 37.5%;
-  border-left: rgba(150, 150, 150, 0.5) 1px solid;
-}
-main .right-sec nav {
-  height: 9.5%;
+
+/* ── Global Header ───────────────────────────────────────────── */
+.main-header {
+  height: 80px;
   width: 100%;
+  padding: 0 40px;
   display: flex;
-  align-items: end;
+  justify-content: space-between;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  z-index: 10;
 }
-main .right-sec nav p {
-  font-size: 17px;
+
+.team-info {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.header-logo {
+  height: 50px;
+  width: auto;
+}
+
+.team-text h1 {
+  font-family: "Lato", sans-serif;
+  font-size: 24px;
+  font-weight: 900;
+  margin: 0;
   letter-spacing: 1px;
-  font-family: "lato";
+  text-transform: uppercase;
+}
+
+.league-info {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
   font-weight: 700;
-  margin-right: 30px;
-  border: rgba(150, 150, 150, 0.5) 1px solid;
-  padding: 10px 20px;
-  border-bottom: none;
-  margin-right: 3px;
-  border-top-left-radius: 21px;
-  border-top-right-radius: 21px;
 }
-main .left-sec {
-  width: 33%;
+
+.opponent-badge {
+  background: #FF3B3B;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
 }
-main section {
-  height: 100%;
-}
-main section .header-container {
-  height: 7.5%;
-  padding: 10px 0px 0px 25px;
+
+.back-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.7);
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.2s;
   display: flex;
   align-items: center;
 }
-main section .header-container img {
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* ── Main Content Area ────────────────────────────────────────── */
+.main-content {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 500px 1fr 400px;
+  width: 100%;
+  padding: 20px 40px;
+  gap: 25px;
+  z-index: 1;
+  min-height: 0;
+}
+
+.left-sec, .mid-sec, .right-sec {
   height: 100%;
-  margin-right: 20px;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
 }
-main section .header-container p {
-  font-size: 30px;
-  font-family: "lato";
-  font-weight: 800;
-  margin-bottom: 10px;
+
+/* ── Tab Navigation ──────────────────────────────────────────── */
+.tab-nav {
+  display: flex;
+  gap: 5px;
+  margin-bottom: -1px;
 }
-main section .header-container p::after {
-  content: "#2 Eredivisie";
-  position: absolute;
-  font-size: 15px;
+
+.tab-nav p {
+  padding: 12px 20px;
+  font-family: "Lato", sans-serif;
+  font-size: 13px;
   font-weight: 700;
-  transform: translate(-347%, 200%);
-}/*# sourceMappingURL=main-window.css.map */
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: none;
+  border-radius: 12px 12px 0 0;
+  transition: all 0.2s;
+  background: rgba(255, 255, 255, 0.02);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.tab-nav p.active {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 -2px 10px rgba(255, 255, 255, 0.02);
+}
+
+.tab-nav p:hover:not(.active) {
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+/* ── Content Wrapper ─────────────────────────────────────────── */
+.content-wrapper, .pitch-content-wrapper {
+  flex: 1;
+  display: flex;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0 20px 20px 20px;
+  overflow: hidden;
+  position: relative;
+}
+
+.main-panel {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+}
+
+.main-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.main-panel::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+/* ── AI Panel ────────────────────────────────────────────────── */
+.ai-panel-container {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
+  overflow: hidden;
+  margin-top: 40px; /* Align with panels under tabs */
+}

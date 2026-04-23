@@ -1,0 +1,165 @@
+/* ─────────────────────────────────────────────────────────
+   StartScreen — Premium Minimalist
+   ───────────────────────────────────────────────────────── */
+
+:root {
+  --ss-dark: #050505;
+  --ss-text: #ffffff;
+  --ss-text-dim: rgba(255, 255, 255, 0.45);
+  --ss-slide-speed: 4s;
+}
+
+/* ── Full-screen wrapper ─────────────────────────────────── */
+.start-screen {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  background-color: var(--ss-dark);
+  color: var(--ss-text);
+  overflow: hidden;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  user-select: none;
+  position: relative;
+}
+
+/* ── Left Panel ──────────────────────────────────────────── */
+.left-panel {
+  width: 420px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 3rem 0 4.5rem;
+  z-index: 10;
+  position: relative;
+  background: linear-gradient(to right, var(--ss-dark) 70%, transparent 100%);
+}
+
+/* ── Logo ────────────────────────────────────────────────── */
+.logo-wrapper {
+  margin-bottom: 3.5rem;
+  width: auto;
+  height: auto;
+  overflow: visible;
+  animation: ssSlideUp 1s ease-out;
+}
+
+.logo-img {
+  /* Scale the 1024×683 PNG down and offset to crop
+     the transparent padding. The visible content (ball + text)
+     sits at roughly x:230 y:200 in the native image. */
+  width: 450px;
+  height: auto;
+  margin-top: 0;
+  margin-left: 10px; /* Aligned with the text after scaling */
+  display: block;
+  opacity: 0.95;
+  filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.04));
+}
+
+/* ── Menu ────────────────────────────────────────────────── */
+.menu-options {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-left: 25px; /* Shifting slightly to the right as requested */
+  animation: ssSlideUp 1s ease-out 0.15s both;
+}
+
+.menu-btn {
+  background: none;
+  border: none;
+  color: var(--ss-text-dim);
+  text-align: left;
+  font-size: 1.2rem;
+  font-weight: 400;
+  letter-spacing: 1.5px;
+  padding: 1rem 0;
+  cursor: pointer;
+  transition: color 0.3s ease, padding-left 0.3s ease;
+  width: fit-content;
+  position: relative;
+  font-family: inherit;
+}
+
+.menu-btn::after {
+  content: '';
+  position: absolute;
+  bottom: 0.4rem;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.5);
+  transition: width 0.35s ease;
+}
+
+.menu-btn:hover {
+  color: var(--ss-text);
+}
+
+.menu-btn:hover::after {
+  width: 100%;
+}
+
+/* ── Footer ──────────────────────────────────────────────── */
+.screen-footer {
+  position: absolute;
+  bottom: 3rem;
+  left: 4.5rem;
+  opacity: 0.15;
+  font-size: 0.65rem;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  animation: ssFadeIn 2s ease-out 1s both;
+}
+
+.footer-line {
+  display: none;
+}
+
+/* ── Background Carousel ─────────────────────────────────── */
+.right-panel-container {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.bg-slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity var(--ss-slide-speed) ease-in-out;
+  /* Keep the images bright and vivid */
+  filter: brightness(0.85) contrast(1.05);
+}
+
+.bg-slide.active {
+  opacity: 1;
+}
+
+/* Gradient overlay: solid dark on far left fading to
+   transparent so the footballer imagery shows through */
+.right-panel-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    var(--ss-dark) 0%,
+    rgba(5, 5, 5, 0.55) 30%,
+    transparent 70%
+  );
+  z-index: 2;
+}
+
+/* ── Animations ──────────────────────────────────────────── */
+@keyframes ssSlideUp {
+  from { opacity: 0; transform: translateY(15px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ssFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}

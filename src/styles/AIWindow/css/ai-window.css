@@ -1,65 +1,127 @@
-.d {
-  height: 100px;
-  width: 100px;
-  background-color: red;
-}
-
 .AI-win {
   height: 100%;
   width: 100%;
-  gap: 20px;
-  font-family: "lato";
+  display: flex;
+  flex-direction: column;
+  font-family: "Lato", sans-serif;
+  background: rgba(0, 0, 0, 0.2);
+  padding: 20px;
 }
-.AI-win h2,
-.AI-win p {
-  width: 80%;
-  margin-left: 10%;
-  text-align: center;
-  letter-spacing: 1px;
-}
+
 .AI-win h2 {
-  font-size: 54px;
+  font-size: 42px;
   font-weight: 900;
+  margin: 10px 0;
+  letter-spacing: 2px;
+  text-transform: uppercase;
 }
+
 .AI-win p {
-  font-size: 20px;
-  letter-spacing: 3px;
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.6);
   font-weight: 700;
+  margin-bottom: 20px;
 }
+
 .AI-win img.tactix-logo {
-  width: 100%;
-  height: 50%;
-  object-fit: cover;
+  width: 120px;
+  height: 120px;
+  object-fit: contain;
+  margin-bottom: 10px;
+  opacity: 0.8;
 }
+
+.messages-container {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-right: 8px;
+  margin-bottom: 20px;
+}
+
+.messages-container::-webkit-scrollbar {
+  width: 4px;
+}
+
+.messages-container::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+
+.message-bubble {
+  max-width: 85%;
+  padding: 12px 16px;
+  border-radius: 15px;
+  font-size: 14px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  position: relative;
+}
+
+.message-bubble.user {
+  align-self: flex-end;
+  background: #ffffff;
+  color: #000000;
+  border-bottom-right-radius: 4px;
+}
+
+.message-bubble.assistant {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.05);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom-left-radius: 4px;
+}
+
 .AI-win .inp {
   width: 100%;
-  margin-top: 20%;
   position: relative;
   display: flex;
-  justify-content: center;
   align-items: center;
-  flex-direction: row;
-}
-.AI-win .inp #AIInput {
-  width: 80%;
-  padding: 10px;
-  font-size: 14px;
-  border: rgba(150, 150, 150, 0.5) 1px solid;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 100px;
+  padding: 5px 5px 5px 15px;
+  transition: all 0.2s;
+}
+
+.AI-win .inp:focus-within {
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.AI-win .inp #AIInput {
+  flex: 1;
+  padding: 10px 0;
+  font-size: 14px;
+  border: none;
   background: transparent;
   color: #ffffff;
-  transition: 0.25s;
-  padding: 14px;
-  letter-spacing: 1px;
-}
-.AI-win .inp #AIInput:focus {
   outline: none;
-  border-color: #ffffff;
+  font-family: inherit;
 }
+
 .AI-win .inp span {
-  margin-left: 10px;
   background: #ffffff;
   color: #070707;
-  padding: 7px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 50%;
-}/*# sourceMappingURL=ai-window.css.map */
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.AI-win .inp span:hover {
+  transform: scale(1.05);
+  background: #f0f0f0;
+}
+
+.AI-win .inp span.disabled {
+  opacity: 0.3;
+  cursor: default;
+}

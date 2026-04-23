@@ -1,0 +1,22 @@
+export const clubs = [
+  { id: 1, name: "Manchester City", logo: "mancity.png" },
+  { id: 2, name: "Arsenal", logo: "arsenal.png" },
+  { id: 3, name: "Manchester United", logo: "manunited.png" },
+  { id: 4, name: "Liverpool", logo: "liverpool.png" },
+  { id: 5, name: "Chelsea", logo: "chelsea.png" },
+  { id: 6, name: "Barcelona", logo: "barcelona.png" },
+  { id: 7, name: "Real Madryt", logo: "realmadrid.png" },
+  { id: 8, name: "Atletico Madryt", logo: "atletico.png" },
+  { id: 9, name: "Real Betis", logo: "realbetis.png" },
+  { id: 10, name: "Al-Nassr", logo: "alnassr.png" },
+  { id: 11, name: "PSG", logo: "psg.png" },
+  { id: 12, name: "Inter Mediolan", logo: "inter.png" },
+  { id: 13, name: "Napoli", logo: "napoli.png" },
+  { id: 14, name: "AC Milan", logo: "acmilan.png" },
+  { id: 15, name: "Juventus", logo: "juventus.png" },
+  { id: 16, name: "AS Roma", logo: "asroma.png" },
+  { id: 17, name: "Bayern Monachium", logo: "bayern.png" },
+  { id: 18, name: "Borussia Dortmund", logo: "borussia.png" },
+  { id: 19, name: "Feyenoord", logo: "feyenoord_logo.png" },
+  { id: 20, name: "Ajax Amsterdam", logo: "ajax.png" }
+];

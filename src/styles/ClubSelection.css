@@ -1,0 +1,169 @@
+.club-selection-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+  background-color: #0a0a0a;
+  color: white;
+  overflow: hidden;
+  position: relative;
+  font-family: 'Inter', sans-serif;
+  user-select: none; /* Prevent text selection during drag */
+}
+
+.back-btn {
+  position: absolute;
+  top: 3rem;
+  right: 3rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.6);
+  padding: 0.6rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+  z-index: 100;
+}
+
+.back-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.selection-title {
+  font-size: 2.2rem;
+  font-weight: 600;
+  margin-bottom: 6rem;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  opacity: 0.9;
+  animation: fadeIn 1s ease-out;
+  text-align: center;
+}
+
+.carousel-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 350px;
+  position: relative;
+  cursor: grab;
+}
+
+.carousel-container:active {
+  cursor: grabbing;
+}
+
+.clubs-track {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  will-change: transform;
+}
+
+.club-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 170px;
+  max-width: 170px;
+  cursor: pointer;
+  transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+  opacity: 0.4; /* Brighter than 0.15 */
+  filter: grayscale(0.5) blur(1px); /* Less gray/blur */
+  transform: scale(0.9);
+}
+
+.club-item.active {
+  opacity: 1;
+  filter: grayscale(0) blur(0);
+  transform: scale(2.5); /* Bigger than 2.2 */
+  z-index: 10;
+}
+
+.club-logo-container {
+  width: 110px; /* Bigger than 100px */
+  height: 110px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.5s ease;
+}
+
+.club-logo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none; /* Crucial: prevents browser drag */
+}
+
+.club-name {
+  margin-top: 1.5rem;
+  font-size: 8px; /* Very small because it scales up with the item */
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  text-align: center;
+  width: 120%; /* Prevent wrapping */
+  position: absolute;
+  bottom: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.club-item.active .club-name {
+  opacity: 0.8;
+}
+
+.select-btn {
+  margin-top: 6rem;
+  background: white;
+  color: black;
+  border: none;
+  padding: 1.2rem 5rem;
+  border-radius: 40px;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
+}
+
+.select-btn:hover {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 15px 40px rgba(255, 255, 255, 0.2);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 0.9; transform: translateY(0); }
+}
+
+.club-placeholder-logo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #333, #111);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  font-weight: 700;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+.club-item.active .club-placeholder-logo {
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+}

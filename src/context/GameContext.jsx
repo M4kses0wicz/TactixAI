@@ -24,10 +24,24 @@ export function GameProvider({ children }) {
     const saved = localStorage.getItem("tactixai_db");
     const parsedDb = saved ? JSON.parse(saved) : initialData.druzyny;
     
+    // Always sync logos from initialData to ensure we have the latest SVG/PNG filenames
+    // This fixes issues where a single club (e.g. PSG) might have an outdated logo filename in localStorage
+    const syncedDb = parsedDb.map(club => {
+      const initialClub = initialData.druzyny.find(c => c.id === club.id);
+      if (initialClub && initialClub.logo !== club.logo) {
+        return { ...club, logo: initialClub.logo };
+      }
+      return club;
+    });
+
+    if (syncedDb.length !== initialData.druzyny.length) {
+      return initialData.druzyny;
+    }
+
     // Ensure all teams have structural data so the app doesn't crash
-    if (parsedDb.length > 0) {
+    if (syncedDb.length > 0) {
       const template = initialData.druzyny[0];
-      return parsedDb.map(team => ({
+      return syncedDb.map(team => ({
         ...team,
         taktyka_druzyny: team.taktyka_druzyny || template.taktyka_druzyny,
         formacje: team.formacje?.length > 0 ? team.formacje : template.formacje,
@@ -36,7 +50,7 @@ export function GameProvider({ children }) {
         zawodnicy: team.zawodnicy?.length > 0 ? team.zawodnicy : JSON.parse(JSON.stringify(template.zawodnicy))
       }));
     }
-    return parsedDb;
+    return syncedDb;
   });
 
   const [currentTeam, setCurrentTeam] = useState(() => {
@@ -53,6 +67,11 @@ export function GameProvider({ children }) {
     return parsed;
   });
 
+  const [opponentTeam, setOpponentTeam] = useState(() => {
+    const saved = localStorage.getItem("tactixai_opponentTeam");
+    return saved ? JSON.parse(saved) : null;
+  });
+
   useEffect(() => {
     localStorage.setItem("tactixai_db", JSON.stringify(db));
   }, [db]);
@@ -67,13 +86,39 @@ export function GameProvider({ children }) {
     }
   }, [currentTeam]);
 
+  useEffect(() => {
+    if (opponentTeam) {
+      localStorage.setItem("tactixai_opponentTeam", JSON.stringify(opponentTeam));
+    } else {
+      localStorage.removeItem("tactixai_opponentTeam");
+    }
+  }, [opponentTeam]);
+
   const selectTeam = (teamId) => {
     const team = db.find(t => t.id === teamId);
     if (team) setCurrentTeam(team);
   };
 
+  const selectOpponentTeam = (teamId) => {
+    const team = db.find(t => t.id === teamId);
+    if (team) setOpponentTeam(team);
+  };
+
   const updateTactics = (type, key, value) => {
     setCurrentTeam(prev => ({
+      ...prev,
+      taktyka_druzyny: {
+        ...prev.taktyka_druzyny,
+        [type]: {
+          ...prev.taktyka_druzyny[type],
+          [key]: value
+        }
+      }
+    }));
+  };
+
+  const updateOpponentTactics = (type, key, value) => {
+    setOpponentTeam(prev => ({
       ...prev,
       taktyka_druzyny: {
         ...prev.taktyka_druzyny,
@@ -120,11 +165,15 @@ export function GameProvider({ children }) {
   const value = {
     db,
     currentTeam,
+    opponentTeam,
     selectTeam,
+    selectOpponentTeam,
     updateTactics,
+    updateOpponentTactics,
     updateFormation,
     updatePlayerRole,
     setCurrentTeam,
+    setOpponentTeam,
     getPlayerPhoto,
   };
 

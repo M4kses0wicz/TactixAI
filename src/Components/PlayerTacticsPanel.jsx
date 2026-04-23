@@ -464,8 +464,8 @@ const DISPLAY_NAMES = {
 };
 
 // ─── Single tile ──────────────────────────────────────────────────────────────
-function RoleTile({ tabKey, player, options }) {
-  const { updatePlayerRole } = useGame();
+function RoleTile({ tabKey, player, options, isOpponent }) {
+  const { updatePlayerRole, updateOpponentPlayerRole } = useGame();
   
   const type = tabKey === "Przy pilce" ? "przy_pilce" : "bez_pilki";
   const currentRole = player.wybrane_role?.[type] || options[0];
@@ -479,7 +479,11 @@ function RoleTile({ tabKey, player, options }) {
   const next = () => {
     if (options.length === 0) return;
     const newIdx = (idx + 1) % options.length;
-    updatePlayerRole(player.id, type, options[newIdx]);
+    if (isOpponent) {
+      updateOpponentPlayerRole(player.id, type, options[newIdx]);
+    } else {
+      updatePlayerRole(player.id, type, options[newIdx]);
+    }
   };
 
   return (
@@ -527,8 +531,10 @@ function TacTile({ settingKey, options }) {
 }
 
 // ─── Single player panel ──────────────────────────────────────────────────────
-function PlayerTacticsPanel({ player }) {
-  const { currentTeam, getPlayerPhoto } = useGame();
+function PlayerTacticsPanel({ player, isOpponent }) {
+  const { currentTeam, opponentTeam, getPlayerPhoto } = useGame();
+  
+  const activeTeam = isOpponent ? (opponentTeam || currentTeam) : currentTeam;
   const tabs = ["Przy pilce", "Bez pilki"];
   const [activeTab, setActiveTab] = useState(tabs[0]);
 
@@ -543,7 +549,7 @@ function PlayerTacticsPanel({ player }) {
      queryPos = form.startsWith("3") || form.startsWith("5") ? "ŚO3" : "ŚO4";
   }
 
-  const roleOptions = currentTeam.role_zawodnikow[type]?.[queryPos] || [];
+  const roleOptions = activeTeam.role_zawodnikow[type]?.[queryPos] || [];
 
   return (
     <div className="ptac-wrap">
@@ -585,7 +591,7 @@ function PlayerTacticsPanel({ player }) {
       {/* ── Horizontal scroll strip ── */}
       <div className="ptac-scroll-wrap">
         <div className="ptac-scroll-track">
-          <RoleTile tabKey={activeTab} player={player} options={roleOptions} />
+          <RoleTile tabKey={activeTab} player={player} options={roleOptions} isOpponent={isOpponent} />
           {Object.entries(OPTIONS[activeTab]).map(([key, opts]) => (
             <TacTile key={key} settingKey={key} options={opts} />
           ))}
@@ -597,38 +603,13 @@ function PlayerTacticsPanel({ player }) {
 
 // ─── Main exported list ───────────────────────────────────────────────────────
 export default function PlayerTacticsList({ isOpponent }) {
-  const { currentTeam } = useGame();
+  const { currentTeam, opponentTeam } = useGame();
   
   if (!currentTeam) return null;
 
-  if (isOpponent) {
-    // Show generic position-based placeholder entries
-    const formation = currentTeam.formacje?.find(f => f.nazwa === currentTeam.domyslna_formacja);
-    const positions = formation ? formation.pozycje : [];
-    const fakePlayers = positions.map((pos, i) => ({
-      id: `opp-${i}`,
-      imie_nazwisko: `Zawodnik ${i + 1}`,
-      pozycja_glowna: pos,
-      isStarting: true,
-      wybrane_role: {}
-    }));
+  const activeTeam = isOpponent ? (opponentTeam || currentTeam) : currentTeam;
 
-    return (
-      <div className="ptac-list">
-        <div style={{ padding: "20px 20px 10px", color: "rgba(255,255,255,0.5)", fontSize: "13px", fontFamily: "'Lato', sans-serif", fontWeight: 700 }}>
-          Wytyczne przeciwnika
-        </div>
-        {fakePlayers.map((player) => (
-          <div key={player.id} className="ptac-list__item">
-            <PlayerTacticsPanel player={player} />
-            <div className="ptac-list__divider" />
-          </div>
-        ))}
-      </div>
-    );
-  }
-
-  const starters = currentTeam.zawodnicy.filter(p => p.isStarting);
+    const starters = activeTeam.zawodnicy.filter(p => p.isStarting);
 
   return (
     <div className="ptac-list">
@@ -637,7 +618,7 @@ export default function PlayerTacticsList({ isOpponent }) {
           key={player.id}
           className="ptac-list__item"
         >
-          <PlayerTacticsPanel player={player} />
+          <PlayerTacticsPanel player={player} isOpponent={isOpponent} />
           <div className="ptac-list__divider" />
         </div>
       ))}

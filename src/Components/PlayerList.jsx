@@ -113,35 +113,11 @@ function PlayerRow({ player, getPlayerPhoto }) {
 
 // ─── Main component ───────────────────────────────────────────────────────────
 export default function PlayerList({ isOpponent }) {
-  const { currentTeam, getPlayerPhoto } = useGame();
+  const { currentTeam, opponentTeam, getPlayerPhoto } = useGame();
   
   if (!currentTeam) return null;
 
-  if (isOpponent) {
-    // Opponent mode: show 11 empty placeholder slots
-    const formation = currentTeam.formacje?.find(f => f.nazwa === currentTeam.domyslna_formacja);
-    const positions = formation ? formation.pozycje : [];
-    const emptyPlayers = positions.map((pos, i) => ({
-      id: `opp-${i}`,
-      name: "Nieznany zawodnik",
-      nat: "🏳️",
-      pos: pos,
-      posLabel: POS_LABEL_MAP[pos] || "Zawodnik",
-      status: "healthy",
-      score: 6.00
-    }));
-
-    return (
-      <div className="pl-wrap">
-        <h2 className="pl-heading">Skład przeciwnika:</h2>
-        <div className="pl-list">
-          {emptyPlayers.map((p) => (
-            <PlayerRow key={p.id} player={p} getPlayerPhoto={getPlayerPhoto} />
-          ))}
-        </div>
-      </div>
-    );
-  }
+  const activeTeam = isOpponent ? (opponentTeam || currentTeam) : currentTeam;
 
   const mapPlayer = (p) => ({
     id: p.id,
@@ -153,8 +129,8 @@ export default function PlayerList({ isOpponent }) {
     score: p.stan_aktualny?.forma_ostatnie_5_meczow || 6.0
   });
 
-  const startingXi = currentTeam.zawodnicy.filter(p => p.isStarting).map(mapPlayer);
-  const reserves = currentTeam.zawodnicy.filter(p => !p.isStarting).map(mapPlayer);
+  const startingXi = activeTeam.zawodnicy.filter(p => p.isStarting).map(mapPlayer);
+  const reserves = activeTeam.zawodnicy.filter(p => !p.isStarting).map(mapPlayer);
 
   return (
     <div className="pl-wrap">

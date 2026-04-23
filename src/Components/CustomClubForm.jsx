@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useGame } from "../context/GameContext";
+import "../styles/CustomClubForm.css";
 
 export default function CustomClubForm({ onBack, onComplete }) {
   const { db, setCurrentTeam } = useGame();
@@ -9,7 +10,6 @@ export default function CustomClubForm({ onBack, onComplete }) {
   const [formacja, setFormacja] = useState("4-3-3");
   const [zawodnicy, setZawodnicy] = useState([]);
 
-  // Default tactics
   const defaultTactics = {
     "przy_pilce": {
       "bezposredniosc_podan": "Standardowo",
@@ -64,13 +64,12 @@ export default function CustomClubForm({ onBack, onComplete }) {
   const handleSave = () => {
     if (!nazwa) return alert("Podaj nazwę klubu!");
     
-    // We get the structural elements from db[0] to copy formacje, opcje_taktyczne and role_zawodnikow
-    const template = db[0];
+    const template = db[0] || { formacje: [], opcje_taktyczne: {}, role_zawodnikow: [] };
 
     const newTeam = {
       id: Date.now(),
       nazwa,
-      logo,
+      logo: logo || "https://via.placeholder.com/150",
       domyslna_formacja: formacja,
       taktyka_druzyny: defaultTactics,
       zawodnicy,
@@ -79,79 +78,104 @@ export default function CustomClubForm({ onBack, onComplete }) {
       role_zawodnikow: template.role_zawodnikow
     };
     
-    // Technically we should save this to `db` in context, but currently GameContext doesn't expose `addTeam`.
-    // Let's assume we just set it as current team for now (or modify GameContext to support adding).
     setCurrentTeam(newTeam);
     onComplete();
   };
 
   return (
-    <div style={{ padding: "2rem", color: "white", backgroundColor: "#111", height: "100vh", overflowY: "auto" }}>
-      <button onClick={onBack} style={{ marginBottom: "2rem" }}>Wróć</button>
-      <h1 style={{ marginBottom: "2rem" }}>Stwórz własny klub</h1>
-      
-      <div style={{ display: "flex", flexDirection: "column", gap: "1rem", maxWidth: "600px" }}>
-        <input 
-          placeholder="Nazwa klubu" 
-          value={nazwa} 
-          onChange={e => setNazwa(e.target.value)} 
-          style={{ padding: "0.5rem" }}
-        />
-        <input 
-          placeholder="URL Logo (opcjonalnie)" 
-          value={logo} 
-          onChange={e => setLogo(e.target.value)} 
-          style={{ padding: "0.5rem" }}
-        />
-        <select value={formacja} onChange={e => setFormacja(e.target.value)} style={{ padding: "0.5rem" }}>
-          {db[0]?.formacje.map(f => <option key={f.nazwa} value={f.nazwa}>{f.nazwa}</option>)}
-        </select>
-        
-        <h3>Zawodnicy ({zawodnicy.length})</h3>
-        {zawodnicy.map((p, idx) => (
-          <div key={p.id} style={{ display: "flex", gap: "1rem", alignItems: "center", background: "#222", padding: "1rem", borderRadius: "8px" }}>
-            <input 
-              placeholder="Imię i Nazwisko" 
-              value={p.imie_nazwisko}
-              onChange={e => {
-                const newZ = [...zawodnicy];
-                newZ[idx].imie_nazwisko = e.target.value;
-                setZawodnicy(newZ);
-              }}
-            />
-            <select 
-              value={p.pozycja_glowna}
-              onChange={e => {
-                const newZ = [...zawodnicy];
-                newZ[idx].pozycja_glowna = e.target.value;
-                setZawodnicy(newZ);
-              }}
-            >
-              <option value="BR">BR</option>
-              <option value="ŚO4">ŚO</option>
-              <option value="LO">LO</option>
-              <option value="PO">PO</option>
-              <option value="DP">DP</option>
-              <option value="ŚP">ŚP</option>
-              <option value="LP">LP</option>
-              <option value="PP">PP</option>
-              <option value="OP">OP</option>
-              <option value="N">N</option>
-            </select>
-            <label>
-              Skład?
-              <input type="checkbox" checked={p.isStarting} onChange={e => {
-                const newZ = [...zawodnicy];
-                newZ[idx].isStarting = e.target.checked;
-                setZawodnicy(newZ);
-              }} />
-            </label>
-            <button onClick={() => setZawodnicy(zawodnicy.filter(z => z.id !== p.id))}>X</button>
-          </div>
-        ))}
-        <button onClick={addPlayer} style={{ padding: "0.5rem", background: "#444", color: "white" }}>+ Dodaj zawodnika</button>
+    <div className="custom-form-container">
+      <div className="form-header">
+        <button className="back-btn" onClick={onBack}>← Wróć</button>
+        <h1 style={{ margin: 0, fontSize: "1.8rem", letterSpacing: "2px" }}>KREATOR KLUBU</h1>
+        <div style={{ width: "80px" }}></div> {/* Spacer */}
+      </div>
 
-        <button onClick={handleSave} style={{ padding: "1rem", background: "green", color: "white", marginTop: "2rem" }}>Zapisz i Graj</button>
+      <div className="form-card">
+        <div className="form-group">
+          <label>Nazwa Klubu</label>
+          <input 
+            className="form-input"
+            placeholder="Wpisz nazwę swojego klubu..." 
+            value={nazwa} 
+            onChange={e => setNazwa(e.target.value)} 
+          />
+        </div>
+
+        <div className="form-group">
+          <label>URL Logo (opcjonalnie)</label>
+          <input 
+            className="form-input"
+            placeholder="http://..." 
+            value={logo} 
+            onChange={e => setLogo(e.target.value)} 
+          />
+        </div>
+
+        <div className="form-group">
+          <label>Domyslna Formacja</label>
+          <select 
+            className="form-input"
+            value={formacja} 
+            onChange={e => setFormacja(e.target.value)}
+          >
+            {db[0]?.formacje.map(f => <option key={f.nazwa} value={f.nazwa}>{f.nazwa}</option>)}
+          </select>
+        </div>
+        
+        <div style={{ marginTop: "3rem" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1rem" }}>
+            <h3 style={{ margin: 0, textTransform: "uppercase", fontSize: "0.9rem", color: "rgba(255,255,255,0.6)" }}>
+              KADRA ZAWODNICZA ({zawodnicy.length})
+            </h3>
+          </div>
+
+          {zawodnicy.map((p, idx) => (
+            <div key={p.id} className="player-item">
+              <input 
+                className="form-input"
+                style={{ flex: 2 }}
+                placeholder="Imię i Nazwisko" 
+                value={p.imie_nazwisko}
+                onChange={e => {
+                  const newZ = [...zawodnicy];
+                  newZ[idx].imie_nazwisko = e.target.value;
+                  setZawodnicy(newZ);
+                }}
+              />
+              <select 
+                className="form-input"
+                style={{ flex: 1 }}
+                value={p.pozycja_glowna}
+                onChange={e => {
+                  const newZ = [...zawodnicy];
+                  newZ[idx].pozycja_glowna = e.target.value;
+                  setZawodnicy(newZ);
+                }}
+              >
+                {["BR", "ŚO", "LO", "PO", "DP", "ŚP", "LP", "PP", "OP", "N"].map(pos => (
+                  <option key={pos} value={pos}>{pos}</option>
+                ))}
+              </select>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", whiteSpace: "nowrap" }}>
+                <span style={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.5)" }}>SKŁAD?</span>
+                <input type="checkbox" checked={p.isStarting} onChange={e => {
+                  const newZ = [...zawodnicy];
+                  newZ[idx].isStarting = e.target.checked;
+                  setZawodnicy(newZ);
+                }} />
+              </div>
+              <button className="remove-btn" onClick={() => setZawodnicy(zawodnicy.filter(z => z.id !== p.id))}>×</button>
+            </div>
+          ))}
+
+          <button className="add-player-btn" onClick={addPlayer}>
+            + DODAJ ZAWODNIKA
+          </button>
+        </div>
+
+        <button className="submit-btn" onClick={handleSave}>
+          ZAPISZ I ROZPOCZNIJ KARIERĘ
+        </button>
       </div>
     </div>
   );

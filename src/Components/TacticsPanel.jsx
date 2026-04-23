@@ -488,7 +488,9 @@ const DISPLAY_NAMES = {
 
 // ─── Single tile ──────────────────────────────────────────────────────────────
 function TacTile({ tabKey, settingKey, options, isOpponent }) {
-  const { currentTeam, updateTactics } = useGame();
+  const { currentTeam, opponentTeam, updateTactics, updateOpponentTactics } = useGame();
+  
+  const activeTeam = isOpponent ? (opponentTeam || currentTeam) : currentTeam;
   
   const jsonKey = settingKey.toLowerCase().replace(/ /g, "_");
   const jsonTab = tabKey === "Przy pilce" ? "przy_pilce" : "bez_pilki";
@@ -517,16 +519,24 @@ function TacTile({ tabKey, settingKey, options, isOpponent }) {
   }
 
   // Team mode: read/write from context
-  const currentValue = currentTeam.taktyka_druzyny[jsonTab]?.[jsonKey] || options[0];
+  const currentValue = activeTeam.taktyka_druzyny[jsonTab]?.[jsonKey] || options[0];
   const idx = Math.max(0, options.indexOf(currentValue));
 
   const prev = () => {
     const newIdx = (idx - 1 + options.length) % options.length;
-    updateTactics(jsonTab, jsonKey, options[newIdx]);
+    if (isOpponent) {
+      updateOpponentTactics(jsonTab, jsonKey, options[newIdx]);
+    } else {
+      updateTactics(jsonTab, jsonKey, options[newIdx]);
+    }
   };
   const next = () => {
     const newIdx = (idx + 1) % options.length;
-    updateTactics(jsonTab, jsonKey, options[newIdx]);
+    if (isOpponent) {
+      updateOpponentTactics(jsonTab, jsonKey, options[newIdx]);
+    } else {
+      updateTactics(jsonTab, jsonKey, options[newIdx]);
+    }
   };
 
   return (
@@ -550,7 +560,7 @@ function TacTile({ tabKey, settingKey, options, isOpponent }) {
 
 // ─── Main component ───────────────────────────────────────────────────────────
 export default function TacticsPanel({ isOpponent }) {
-  const { currentTeam, updateFormation } = useGame();
+  const { currentTeam, opponentTeam, updateFormation } = useGame();
   const tabs = Object.keys(OPTIONS);
   const [activeTab, setActiveTab] = useState(tabs[0]);
   const currentSettings = OPTIONS[activeTab];

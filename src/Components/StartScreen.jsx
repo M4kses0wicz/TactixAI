@@ -1,28 +1,60 @@
-import React from "react";
-import logo from "../assets/Feyenoord.png"; // Placeholder
-import "../styles/MainWindow/css/main-window.css"; // Reuse some styles or create new
+import React, { useState, useEffect } from "react";
+import logo from "../assets/tactix_logo_main.png";
+import bg1 from "../assets/lewandowski_bg.jpg";
+import bg2 from "../assets/yildiz_bg.jpg";
+import bg3 from "../assets/bruno_bg.jpg";
+import "../styles/StartScreen.css";
+
+const backgrounds = [bg1, bg2, bg3];
 
 export default function StartScreen({ onNext, onCreate }) {
+  const [currentBg, setCurrentBg] = useState(0);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentBg((prev) => (prev + 1) % backgrounds.length);
+    }, 6000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <div style={{ display: "flex", height: "100vh", backgroundColor: "#111", color: "white" }}>
-      <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
-        <h1 style={{ fontSize: "3rem", marginBottom: "2rem" }}>Football Manager Clone</h1>
+    <div className="start-screen">
+      <div className="left-panel">
+        <div className="logo-wrapper">
+          <img src={logo} alt="Tactix AI" className="logo-img" />
+        </div>
         
-        <button 
-          onClick={onNext}
-          style={{ padding: "1rem 2rem", fontSize: "1.2rem", marginBottom: "1rem", backgroundColor: "#333", color: "white", border: "1px solid #555", borderRadius: "8px", cursor: "pointer" }}
-        >
-          Rozpocznij grę istniejącym klubem
-        </button>
-        
-        <button 
-          onClick={onCreate}
-          style={{ padding: "1rem 2rem", fontSize: "1.2rem", backgroundColor: "#222", color: "white", border: "1px solid #444", borderRadius: "8px", cursor: "pointer" }}
-        >
-          Stwórz własny klub
-        </button>
+        <div className="menu-options">
+          <button className="menu-btn" onClick={onNext}>
+            Rozpocznij grę istniejącymi klubami
+          </button>
+          
+          <button className="menu-btn" onClick={onCreate}>
+            Stwórz własny klub
+          </button>
+
+          <button className="menu-btn" style={{ cursor: "default" }}>
+            Ustawienia (wkrótce)
+          </button>
+        </div>
+
+        <div className="screen-footer">
+          <div className="footer-line"></div>
+          <div className="footer-text">
+            Tactix AI &copy; 2026 | Early Access v0.4.2
+          </div>
+        </div>
       </div>
-      <div style={{ flex: 1, backgroundImage: "url('https://images.unsplash.com/photo-1579952363873-27f3bade9f55?q=80&w=1000&auto=format&fit=crop')", backgroundSize: "cover", backgroundPosition: "center" }}>
+      
+      <div className="right-panel-container">
+        {backgrounds.map((bg, index) => (
+          <div 
+            key={index}
+            className={`bg-slide ${index === currentBg ? "active" : ""}`}
+            style={{ backgroundImage: `url(${bg})` }}
+          />
+        ))}
+        <div className="right-panel-overlay"></div>
       </div>
     </div>
   );

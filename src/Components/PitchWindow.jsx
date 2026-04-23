@@ -43,40 +43,17 @@ const OPP_COORDS = {
 function CssPitch() {
   return (
     <div className="css-pitch">
-      {/* Outer border */}
       <div className="css-pitch__outline" />
-
-      {/* Center line */}
       <div className="css-pitch__center-line" />
-
-      {/* Center circle */}
       <div className="css-pitch__center-circle" />
-
-      {/* Center dot */}
       <div className="css-pitch__center-dot" />
-
-      {/* Top penalty area */}
       <div className="css-pitch__penalty-area css-pitch__penalty-area--top" />
-
-      {/* Top goal area */}
       <div className="css-pitch__goal-area css-pitch__goal-area--top" />
-
-      {/* Top penalty dot */}
       <div className="css-pitch__penalty-dot css-pitch__penalty-dot--top" />
-
-      {/* Top penalty arc */}
       <div className="css-pitch__penalty-arc css-pitch__penalty-arc--top" />
-
-      {/* Bottom penalty area */}
       <div className="css-pitch__penalty-area css-pitch__penalty-area--bottom" />
-
-      {/* Bottom goal area */}
       <div className="css-pitch__goal-area css-pitch__goal-area--bottom" />
-
-      {/* Bottom penalty dot */}
       <div className="css-pitch__penalty-dot css-pitch__penalty-dot--bottom" />
-
-      {/* Bottom penalty arc */}
       <div className="css-pitch__penalty-arc css-pitch__penalty-arc--bottom" />
     </div>
   );
@@ -104,72 +81,54 @@ function PlayerDot({ coords, label, isOpponent, photo }) {
   );
 }
 
-function PitchWindow({ view, onViewChange }) {
-  const { currentTeam, getPlayerPhoto } = useGame();
+function PitchWindow({ view }) {
+  const { currentTeam, opponentTeam, getPlayerPhoto } = useGame();
 
   if (!currentTeam) return null;
 
-  const formation = currentTeam.formacje?.find(f => f.nazwa === currentTeam.domyslna_formacja);
-  const positions = formation ? formation.pozycje : [];
-  const starters = currentTeam.zawodnicy?.filter(p => p.isStarting) || [];
-
   const isOpponent = view === "opponent";
+  const activeTeam = isOpponent ? (opponentTeam || currentTeam) : currentTeam;
+
+  const formation = activeTeam.formacje?.find(f => f.nazwa === activeTeam.domyslna_formacja);
+  const positions = formation ? formation.pozycje : [];
+  const starters = activeTeam.zawodnicy?.filter(p => p.isStarting) || [];
+
   const coordsMap = isOpponent ? OPP_COORDS : POS_COORDS;
 
   const posCounts = {};
 
   return (
-    <div className="pitch-wrapper">
-      <div className="pitch-area">
-        <CssPitch />
+    <div className="pitch-area">
+      <CssPitch />
 
-        {positions.map((pos, index) => {
-          const count = posCounts[pos] || 0;
-          posCounts[pos] = count + 1;
+      {positions.map((pos, index) => {
+        const count = posCounts[pos] || 0;
+        posCounts[pos] = count + 1;
 
-          const coordsArray = coordsMap[pos];
-          const coords = coordsArray && coordsArray[count] ? coordsArray[count] : { top: "50%", left: "50%" };
+        const coordsArray = coordsMap[pos];
+        const coords = coordsArray && coordsArray[count] ? coordsArray[count] : { top: "50%", left: "50%" };
 
-          let label = pos;
-          let photoName = null;
-          if (!isOpponent) {
-            const playersForPos = starters.filter(p => p.pozycja_glowna === pos);
-            const player = playersForPos[count];
-            if (player) {
-              label = player.imie_nazwisko.split(" ").pop();
-              photoName = player.imie_nazwisko;
-            }
-          } else {
-            label = "player";
-          }
+        const playersForPos = starters.filter(p => p.pozycja_glowna === pos);
+        const player = playersForPos[count];
+        
+        let label = pos;
+        let photoName = null;
+        
+        if (player) {
+          label = player.imie_nazwisko.split(" ").pop();
+          photoName = player.imie_nazwisko;
+        }
 
-          return (
-            <PlayerDot
-              key={index}
-              coords={coords}
-              label={label}
-              isOpponent={isOpponent}
-              photo={getPlayerPhoto(photoName)}
-            />
-          );
-        })}
-
-        {/* Vertical side tabs – inside pitch-area, attached to outline */}
-        <div className="pitch-side-tabs">
-          <button
-            className={`pitch-side-tab ${view === "team" ? "pitch-side-tab--active" : ""}`}
-            onClick={() => onViewChange("team")}
-          >
-            Twój skład
-          </button>
-          <button
-            className={`pitch-side-tab ${view === "opponent" ? "pitch-side-tab--active" : ""}`}
-            onClick={() => onViewChange("opponent")}
-          >
-            Przeciwnik
-          </button>
-        </div>
-      </div>
+        return (
+          <PlayerDot
+            key={index}
+            coords={coords}
+            label={label}
+            isOpponent={isOpponent}
+            photo={getPlayerPhoto(photoName)}
+          />
+        );
+      })}
     </div>
   );
 }

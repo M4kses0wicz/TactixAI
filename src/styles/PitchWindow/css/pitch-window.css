@@ -2,22 +2,27 @@
 :root {
   --pitch-line: rgba(255, 255, 255, 0.25);
   --pitch-line-w: 1px;
-  --pitch-pad-x: 6%;
-  --pitch-pad-y: 4%;
+  --pitch-pad-x: 5%;
+  --pitch-pad-y: 3%;
   --pitch-radius: 14px;
 }
 
 /* ── Pitch wrapper ────────────────────────────────────────────── */
-.pitch-wrapper {
-  height: 92.5%;
-}
-
-/* ── The pitch container (CSS pitch + player dots + tabs) ────── */
+/* ── The pitch container (CSS pitch + player dots) ────── */
 .pitch-area {
   width: 100%;
   height: 100%;
   position: relative;
   overflow: hidden;
+}
+
+/* ── The pitch container (CSS pitch + player dots) ────── */
+.pitch-area {
+  flex: 1;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  min-height: 0;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -36,10 +41,9 @@
   left: var(--pitch-pad-x);
   right: var(--pitch-pad-x);
   bottom: var(--pitch-pad-y);
-  background: #111111;
+  background: rgba(17, 17, 17, 0.85);
   border: var(--pitch-line-w) solid var(--pitch-line);
-  /* Top-left, Top-right (0 for seamless tab connection), Bottom-right, Bottom-left */
-  border-radius: var(--pitch-radius) 0 var(--pitch-radius) var(--pitch-radius);
+  border-radius: var(--pitch-radius);
 }
 
 /* Center line */
@@ -191,57 +195,4 @@
   border: 1px solid rgba(255, 255, 255, 0.22);
   padding: 2px 10px;
   border-radius: 4px;
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   SIDE TABS – attached to the right edge of the pitch outline,
-   bigger, rounded to match the pitch
-   ═══════════════════════════════════════════════════════════════ */
-.pitch-side-tabs {
-  position: absolute;
-  right: calc(var(--pitch-pad-x) - 29px); /* Moved 1px left to overlap border */
-  top: var(--pitch-pad-y);
-  height: 36%;
-  width: 30px;
-  display: flex;
-  flex-direction: column;
-  z-index: 3;
-}
-
-.pitch-side-tab {
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-  font-family: "Lato", sans-serif;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  padding: 16px 6px;
-  border: var(--pitch-line-w) solid var(--pitch-line);
-  border-left: none;
-  background: #080808; /* Inactive tab darker */
-  color: rgba(255, 255, 255, 0.35);
-  cursor: pointer;
-  transition: color 0.2s, background 0.2s;
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.pitch-side-tab:first-child {
-  border-bottom: none;
-  border-top-right-radius: var(--pitch-radius);
-}
-.pitch-side-tab:last-child {
-  border-bottom-right-radius: var(--pitch-radius);
-}
-
-.pitch-side-tab--active {
-  color: rgba(255, 255, 255, 0.9);
-  background: #111111; /* Matches pitch container seamlessly */
-}
-
-.pitch-side-tab:hover:not(.pitch-side-tab--active) {
-  color: rgba(255, 255, 255, 0.6);
-  background: #0a0a0a;
 }

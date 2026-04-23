@@ -36,12 +36,9 @@ function AIWindow() {
     setIsLoading(true);
 
     try {
-      // Przygotowanie kontekstu z GameContext
       let teamContext = "Jesteś asystentem trenera piłkarskiego w grze typu Football Manager. Odpowiadaj krótko, zwięźle i fachowo po polsku.";
       if (currentTeam) {
         const starters = currentTeam.zawodnicy?.filter(p => p.isStarting).map(p => `${p.imie_nazwisko} (${p.pozycja_glowna})`).join(", ") || "Brak";
-        
-        // Dodanie dostępnych opcji taktycznych do promptu
         const tacticalOptions = JSON.stringify(currentTeam.opcje_taktyczne, null, 2);
         const playerRoles = JSON.stringify(currentTeam.role_zawodnikow, null, 2);
 
@@ -65,7 +62,6 @@ Zawsze odpowiadaj w sposób ustrukturyzowany, używając:
 Zachowaj profesjonalny, analityczny ton.`;
       }
 
-      // Format the messages for Mistral API
       const apiMessages = [
         { role: "system", content: teamContext },
         ...messages.map(m => ({ role: m.role, content: m.content })),
@@ -100,10 +96,10 @@ Zachowaj profesjonalny, analityczny ton.`;
   };
 
   return (
-    <section className="AI-win" style={{ display: "flex", flexDirection: "column", height: "100%", justifyContent: "space-between" }}>
+    <section className="AI-win">
       {isEditingKey ? (
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: "20px" }}>
-          <img src={TactixAILogo} alt="Tactix AI Logo" className="tactix-logo" style={{ width: "150px", marginBottom: "20px" }} />
+        <div className="api-key-setup" style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center", padding: "20px" }}>
+          <img src={TactixAILogo} alt="Tactix AI Logo" className="tactix-logo" />
           <h3 style={{ marginBottom: "15px", letterSpacing: "1px" }}>Klucz API Mistral</h3>
           <input 
             type="password" 
@@ -121,45 +117,34 @@ Zachowaj profesjonalny, analityczny ton.`;
         </div>
       ) : (
         <>
-          <div style={{ flex: 1, overflowY: "auto", display: "flex", flexDirection: "column", paddingRight: "10px" }}>
+          <div className="messages-container">
             {messages.length === 0 ? (
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%" }}>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100%", opacity: 0.8 }}>
                 <img src={TactixAILogo} alt="Tactix AI Logo" className="tactix-logo" />
                 <h2>Witaj!</h2>
                 <p>Jak mogę Ci pomóc?</p>
                 <button 
                   onClick={() => setIsEditingKey(true)} 
-                  style={{ background: "none", border: "none", color: "#555", cursor: "pointer", marginTop: "15px", fontSize: "12px", textDecoration: "underline" }}
+                  style={{ background: "none", border: "none", color: "rgba(255,255,255,0.3)", cursor: "pointer", marginTop: "15px", fontSize: "11px", textDecoration: "underline" }}
                 >
                   Zmień klucz API
                 </button>
               </div>
             ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginTop: "20px" }}>
+              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
                 <button 
                   onClick={() => setIsEditingKey(true)} 
-                  style={{ alignSelf: "center", background: "none", border: "none", color: "#555", cursor: "pointer", marginBottom: "10px", fontSize: "12px", textDecoration: "underline" }}
+                  style={{ alignSelf: "center", background: "none", border: "none", color: "rgba(255,255,255,0.3)", cursor: "pointer", marginBottom: "10px", fontSize: "11px", textDecoration: "underline" }}
                 >
                   Zmień klucz API
                 </button>
                 {messages.map((msg, idx) => (
-                  <div key={idx} style={{
-                    alignSelf: msg.role === "user" ? "flex-end" : "flex-start",
-                    backgroundColor: msg.role === "user" ? "#ffffff" : "#1a1a1a",
-                    color: msg.role === "user" ? "#000000" : "#ffffff",
-                    padding: "10px 15px",
-                    borderRadius: "15px",
-                    maxWidth: "85%",
-                    fontSize: "14px",
-                    lineHeight: "1.4",
-                    border: msg.role === "user" ? "none" : "1px solid #333",
-                    whiteSpace: "pre-wrap"
-                  }}>
+                  <div key={idx} className={`message-bubble ${msg.role}`}>
                     {msg.content}
                   </div>
                 ))}
                 {isLoading && (
-                  <div style={{ alignSelf: "flex-start", color: "#aaa", fontSize: "12px", padding: "10px" }}>
+                  <div className="message-bubble assistant" style={{ opacity: 0.6 }}>
                     Analizowanie...
                   </div>
                 )}
@@ -168,7 +153,7 @@ Zachowaj profesjonalny, analityczny ton.`;
             )}
           </div>
           
-          <div className="inp" style={{ marginTop: "10px", paddingBottom: "10px" }}>
+          <div className="inp">
             <input 
               type="text" 
               id="AIInput" 
@@ -178,9 +163,8 @@ Zachowaj profesjonalny, analityczny ton.`;
               onKeyDown={(e) => e.key === "Enter" && handleSend()}
             />
             <span 
-              className="material-symbols-outlined" 
+              className={`material-symbols-outlined ${(isLoading || !input.trim()) ? 'disabled' : ''}`}
               onClick={handleSend}
-              style={{ cursor: "pointer", opacity: isLoading || !input.trim() ? 0.5 : 1 }}
             >
               arrow_upward
             </span>
