@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import PitchWindow from "./PitchWindow";
 import "../styles/MainWindow/css/main-window.css";
 import AIWindow from "./AIWindow";
@@ -14,6 +14,18 @@ function MainWindow() {
   const { currentTeam, opponentTeam, setCurrentTeam, setOpponentTeam, getClubLogo } = useGame();
   const [activeTab, setActiveTab] = useState("Zawodnicy");
   const [pitchView, setPitchView] = useState("team");
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const menuRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   if (!currentTeam) return null;
 
@@ -49,13 +61,32 @@ function MainWindow() {
             <span className="material-symbols-outlined" style={{ color: '#4CAF50', fontSize: '20px' }}>play_arrow</span>
             Rozpocznij symulację
           </button>
-          <button 
-            className="header-back-btn"
-            onClick={handleBackToMenu}
-          >
-            <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>arrow_back</span>
-            Wróć do menu
-          </button>
+          <div className="header-menu-container" ref={menuRef}>
+            <button 
+              className={`menu-trigger-btn ${isMenuOpen ? 'active' : ''}`}
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              title="Menu"
+            >
+              <span className="material-symbols-outlined">more_vert</span>
+            </button>
+
+            {isMenuOpen && (
+              <div className="header-dropdown-menu">
+                <button className="menu-item" onClick={() => { handleBackToMenu(); setIsMenuOpen(false); }}>
+                  <span className="material-symbols-outlined">logout</span>
+                  Wróć do menu
+                </button>
+                <button className="menu-item" onClick={() => setIsMenuOpen(false)}>
+                  <span className="material-symbols-outlined">settings</span>
+                  Ustawienia
+                </button>
+                <button className="menu-item" onClick={() => setIsMenuOpen(false)}>
+                  <span className="material-symbols-outlined">help</span>
+                  Pomoc
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </header>
 

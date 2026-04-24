@@ -54,6 +54,7 @@ export function GameProvider({ children }) {
         ...team,
         taktyka_druzyny: team.taktyka_druzyny || template.taktyka_druzyny,
         formacje: team.formacje?.length > 0 ? team.formacje : template.formacje,
+        mentalnosc: team.mentalnosc || "Wyważona",
         opcje_taktyczne: team.opcje_taktyczne && Object.keys(team.opcje_taktyczne).length > 0 ? team.opcje_taktyczne : template.opcje_taktyczne,
         role_zawodnikow: team.role_zawodnikow && Object.keys(team.role_zawodnikow).length > 0 ? team.role_zawodnikow : template.role_zawodnikow,
         zawodnicy: team.zawodnicy?.length > 0 ? team.zawodnicy : JSON.parse(JSON.stringify(template.zawodnicy))
@@ -69,6 +70,7 @@ export function GameProvider({ children }) {
       const template = initialData.druzyny[0];
       parsed.taktyka_druzyny = parsed.taktyka_druzyny || template.taktyka_druzyny;
       parsed.formacje = parsed.formacje?.length > 0 ? parsed.formacje : template.formacje;
+      parsed.mentalnosc = parsed.mentalnosc || "Wyważona";
       parsed.opcje_taktyczne = parsed.opcje_taktyczne && Object.keys(parsed.opcje_taktyczne).length > 0 ? parsed.opcje_taktyczne : template.opcje_taktyczne;
       parsed.role_zawodnikow = parsed.role_zawodnikow && Object.keys(parsed.role_zawodnikow).length > 0 ? parsed.role_zawodnikow : template.role_zawodnikow;
       parsed.zawodnicy = parsed.zawodnicy?.length > 0 ? parsed.zawodnicy : JSON.parse(JSON.stringify(template.zawodnicy));
@@ -153,6 +155,20 @@ export function GameProvider({ children }) {
       domyslna_formacja: formationName
     }) : null);
   };
+
+  const updateMentality = (mentality) => {
+    setCurrentTeam(prev => ({
+      ...prev,
+      mentalnosc: mentality
+    }));
+  };
+
+  const updateOpponentMentality = (mentality) => {
+    setOpponentTeam(prev => prev ? ({
+      ...prev,
+      mentalnosc: mentality
+    }) : null);
+  };
   
   const updatePlayerRole = (playerId, type, role) => {
       setCurrentTeam(prev => {
@@ -214,6 +230,8 @@ export function GameProvider({ children }) {
     updateOpponentTactics,
     updateFormation,
     updateOpponentFormation,
+    updateMentality,
+    updateOpponentMentality,
     updatePlayerRole,
     setCurrentTeam,
     setOpponentTeam,

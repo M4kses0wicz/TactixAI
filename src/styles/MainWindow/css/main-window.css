@@ -83,7 +83,7 @@
   gap: 15px;
 }
 
-.header-back-btn, .simulate-btn {
+.menu-trigger-btn, .simulate-btn {
   background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -102,18 +102,106 @@
   flex-shrink: 0;
 }
 
+.menu-trigger-btn {
+  padding: 8px;
+  width: 40px;
+  height: 40px;
+  justify-content: center;
+  border-radius: 12px;
+}
+
 .simulate-btn {
   background: rgba(255, 255, 255, 0.08);
   color: #fff;
   border-color: rgba(255, 255, 255, 0.2);
 }
 
-.header-back-btn:hover, .simulate-btn:hover {
+.menu-trigger-btn:hover, .simulate-btn:hover, .menu-trigger-btn.active {
   background: rgba(255, 255, 255, 0.12);
   color: #fff;
   border-color: rgba(255, 255, 255, 0.4);
   transform: translateY(-2px);
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* ── Dropdown Menu ───────────────────────────────────────────── */
+.header-menu-container {
+  position: relative;
+}
+
+.header-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 12px);
+  right: 0;
+  width: 220px;
+  background: rgba(15, 15, 15, 0.85);
+  backdrop-filter: blur(25px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  z-index: 100;
+  animation: dropdown-fade-in 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transform-origin: top right;
+}
+
+@keyframes dropdown-fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.menu-item {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.7);
+  padding: 12px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+  font-weight: 600;
+  transition: all 0.2s;
+  width: 100%;
+  text-align: left;
+}
+
+.menu-item .material-symbols-outlined {
+  font-size: 20px;
+  color: rgba(255, 255, 255, 0.4);
+  transition: all 0.2s;
+}
+
+.menu-item:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.menu-item:hover .material-symbols-outlined {
+  color: #fff;
+  transform: translateX(2px);
+}
+
+.menu-item:first-child {
+  color: #ff4b4b;
+}
+
+.menu-item:first-child .material-symbols-outlined {
+  color: #ff4b4b;
+}
+
+.menu-item:first-child:hover {
+  background: rgba(255, 75, 75, 0.1);
 }
 
 /* ── Main Content Area ────────────────────────────────────────── */

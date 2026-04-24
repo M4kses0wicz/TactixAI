@@ -64,13 +64,34 @@ function PlayerDot({ coords, label, isOpponent, photo }) {
   );
 }
 
+import CustomDropdown from "./CustomDropdown";
+
+const MENTALITY_OFFSETS = {
+  "Bardzo defensywna": 8,
+  "Defensywna": 5,
+  "Ostrożna": 2,
+  "Wyważona": 0,
+  "Pozytywna": -2,
+  "Ofensywna": -5,
+  "Bardzo ofensywna": -8
+};
+
 export default function PitchWindow({ team, isOpponent }) {
-  const { getPlayerPhoto, getClubLogo, updateFormation, updateOpponentFormation, currentTeam } = useGame();
+  const { 
+    getPlayerPhoto, 
+    getClubLogo, 
+    updateFormation, 
+    updateOpponentFormation, 
+    updateMentality, 
+    updateOpponentMentality, 
+    currentTeam 
+  } = useGame();
 
   if (!team && !currentTeam) return null;
   const activeTeam = team || currentTeam;
 
   const currentFormationName = activeTeam.domyslna_formacja || (activeTeam.formacje && activeTeam.formacje[0]?.nazwa);
+  const formationOptions = activeTeam.formacje?.map(f => f.nazwa) || [];
   const positions = activeTeam.formacje?.find(f => f.nazwa === currentFormationName)?.pozycje || activeTeam.formacje?.[0]?.pozycje || [];
   
   // Fallback: if no players are marked as starting, take first 11
@@ -83,13 +104,34 @@ export default function PitchWindow({ team, isOpponent }) {
   const posCounts = {};
   const logoSrc = getClubLogo(activeTeam.logo, activeTeam.nazwa);
 
-  const handleFormationChange = (e) => {
+  const handleFormationChange = (val) => {
     if (isOpponent) {
-      updateOpponentFormation(e.target.value);
+      updateOpponentFormation(val);
     } else {
-      updateFormation(e.target.value);
+      updateFormation(val);
     }
   };
+
+  const handleMentalityChange = (val) => {
+    if (isOpponent) {
+      updateOpponentMentality(val);
+    } else {
+      updateMentality(val);
+    }
+  };
+
+  const currentMentality = activeTeam.mentalnosc || "Wyważona";
+  const mentalityOptions = [
+    "Bardzo defensywna",
+    "Defensywna",
+    "Ostrożna",
+    "Wyważona",
+    "Pozytywna",
+    "Ofensywna",
+    "Bardzo ofensywna"
+  ];
+
+  const mentalityShift = MENTALITY_OFFSETS[currentMentality] || 0;
 
   return (
       <div className="pitch-area" key={`${activeTeam.id}-${isOpponent ? 'opp' : 'team'}`}>
@@ -112,19 +154,21 @@ export default function PitchWindow({ team, isOpponent }) {
         <div className="css-pitch__penalty-dot css-pitch__penalty-dot--bottom" />
       </div>
 
-      {/* Formation Dropdown */}
-      <div className="pitch-formation-selector">
-        <select 
-          value={currentFormationName} 
+      {/* Selectors Wrapper */}
+      <div className="pitch-selectors-wrapper">
+        <CustomDropdown 
+          label="MENTALNOŚĆ"
+          options={mentalityOptions}
+          value={currentMentality}
+          onChange={handleMentalityChange}
+        />
+
+        <CustomDropdown 
+          label="FORMACJA"
+          options={formationOptions}
+          value={currentFormationName}
           onChange={handleFormationChange}
-          className="formation-dropdown"
-        >
-          {activeTeam.formacje?.map(f => (
-            <option key={f.nazwa} value={f.nazwa}>
-              {f.nazwa}
-            </option>
-          ))}
-        </select>
+        />
       </div>
       
       {/* Separate background layer for the logo */}
@@ -143,14 +187,27 @@ export default function PitchWindow({ team, isOpponent }) {
         posCounts[pos] = count + 1;
 
         const coordsArray = coordsMap[pos];
-        const coords = coordsArray && coordsArray[count] ? coordsArray[count] : { top: "50%", left: "50%" };
+        const baseCoords = coordsArray && coordsArray[count] ? coordsArray[count] : { top: "50%", left: "50%" };
+
+        // Apply mentality shift
+        let adjustedTop = parseFloat(baseCoords.top);
+        if (pos !== "BR") {
+          // Team: positive shift moves down (defensive), negative moves up (offensive)
+          // Opponent: positive shift moves up (defensive), negative moves down (offensive)
+          const actualShift = isOpponent ? -mentalityShift : mentalityShift;
+          adjustedTop += actualShift;
+          
+          // Clamp to stay within pitch boundaries (8% to 92%)
+          adjustedTop = Math.max(10, Math.min(90, adjustedTop));
+        }
+
+        const coords = { ...baseCoords, top: `${adjustedTop}%` };
 
         // 1. Try to find player with matching position
         const playersForPos = starters.filter(p => p.pozycja_glowna === pos);
         let player = playersForPos[count];
         
         // 2. Fallback: if not found by position, take from the starters pool by index
-        // This ensures that even if positions don't match, we still see 11 players
         if (!player) {
           player = starters[index];
         }

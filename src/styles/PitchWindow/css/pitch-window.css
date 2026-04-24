@@ -251,39 +251,29 @@
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   FORMATION SELECTOR
+   SELECTORS (MENTALITY & FORMATION)
    ═══════════════════════════════════════════════════════════════ */
-.pitch-formation-selector {
+.pitch-selectors-wrapper {
   position: absolute;
-  top: 1.5%;
+  top: 10px;
   right: var(--pitch-pad-x);
   z-index: 20;
+  display: flex;
+  gap: 15px;
+  align-items: flex-end;
 }
 
-.formation-dropdown {
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.6);
-  padding: 4px 12px;
-  border-radius: 6px;
-  font-family: "Lato", sans-serif;
-  font-size: 13px;
-  font-weight: 900;
-  cursor: pointer;
-  outline: none;
-  transition: all 0.25s ease;
-  letter-spacing: 1px;
+.pitch-selector-item {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
-.formation-dropdown:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.2);
-  color: #ffffff;
-}
-
-.formation-dropdown option {
-  background: #111111;
-  color: #ffffff;
-  padding: 10px;
-  font-weight: 700;
+.selector-label {
+  font-size: 8px;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-left: 2px;
 }
