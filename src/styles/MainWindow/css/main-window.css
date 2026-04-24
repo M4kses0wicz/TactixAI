@@ -13,37 +13,19 @@
   overflow: hidden;
 }
 
-/* ── Background Watermark ────────────────────────────────────── */
-.bg-watermark {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 80vh;
-  height: 80vh;
-  opacity: 0.08; /* Subtle but visible */
-  pointer-events: none;
-  z-index: 0;
-  filter: blur(12px); /* Slightly blurred */
-}
 
-.bg-watermark img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
 
 /* ── Global Header ───────────────────────────────────────────── */
 .main-header {
-  height: 80px;
+  height: 90px;
   width: 100%;
-  padding: 0 40px;
+  padding: 0 50px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(15px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
   z-index: 10;
 }
 
@@ -54,23 +36,35 @@
 }
 
 .header-logo {
-  height: 50px;
+  height: 60px;
   width: auto;
+  flex-shrink: 0;
+  filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.1));
+}
+
+.team-text {
+  min-width: 0;
 }
 
 .team-text h1 {
   font-family: "Lato", sans-serif;
-  font-size: 24px;
+  font-size: 32px;
   font-weight: 900;
   margin: 0;
-  letter-spacing: 1px;
+  letter-spacing: 2px;
   text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 450px;
 }
 
 .league-info {
-  font-size: 12px;
-  color: rgba(255, 255, 255, 0.5);
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.6);
   font-weight: 700;
+  margin-top: 4px;
+  display: block;
 }
 
 .opponent-badge {
@@ -83,36 +77,53 @@
   letter-spacing: 1px;
 }
 
-.back-btn {
-  background: rgba(255, 255, 255, 0.05);
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.header-back-btn, .simulate-btn {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
   color: rgba(255, 255, 255, 0.7);
   padding: 8px 16px;
-  border-radius: 8px;
+  border-radius: 10px;
   cursor: pointer;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 1px;
-  transition: all 0.2s;
+  letter-spacing: 1.2px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
-.back-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
+.simulate-btn {
+  background: rgba(255, 255, 255, 0.08);
   color: #fff;
   border-color: rgba(255, 255, 255, 0.2);
+}
+
+.header-back-btn:hover, .simulate-btn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
 /* ── Main Content Area ────────────────────────────────────────── */
 .main-content {
   flex: 1;
   display: grid;
-  grid-template-columns: 500px 1fr 400px;
+  grid-template-columns: 650px 1fr 400px;
   width: 100%;
-  padding: 20px 40px;
-  gap: 25px;
+  padding: 10px 25px;
+  gap: 15px;
   z-index: 1;
   min-height: 0;
 }
@@ -188,9 +199,14 @@
 
 /* ── AI Panel ────────────────────────────────────────────────── */
 .ai-panel-container {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - 41px);
+  max-height: calc(100% - 41px);
+  margin-top: 41px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 20px;
   overflow: hidden;
-  margin-top: 40px; /* Align with panels under tabs */
+  min-height: 0;
 }

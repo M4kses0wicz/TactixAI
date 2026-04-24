@@ -4,16 +4,16 @@ import { useGame } from "../context/GameContext";
 
 // Coordinates for your team (attacking upward → GK at bottom)
 const POS_COORDS = {
-  "BR": [{ top: "92%", left: "50%" }],
-  "LO": [{ top: "75%", left: "15%" }],
-  "PO": [{ top: "75%", left: "85%" }],
-  "ŚO4": [{ top: "78%", left: "37%" }, { top: "78%", left: "63%" }],
-  "ŚO3": [{ top: "78%", left: "27%" }, { top: "78%", left: "50%" }, { top: "78%", left: "73%" }],
+  "BR": [{ top: "86%", left: "50%" }],
+  "LO": [{ top: "72%", left: "15%" }],
+  "PO": [{ top: "72%", left: "85%" }],
+  "ŚO4": [{ top: "75%", left: "37%" }, { top: "75%", left: "63%" }],
+  "ŚO3": [{ top: "75%", left: "27%" }, { top: "75%", left: "50%" }, { top: "75%", left: "73%" }],
   "CLL": [{ top: "62%", left: "12%" }],
   "CLP": [{ top: "62%", left: "88%" }],
-  "DP":  [{ top: "62%", left: "50%" }, { top: "62%", left: "37%" }, { top: "62%", left: "63%" }],
-  "ŚP":  [{ top: "52%", left: "37%" }, { top: "52%", left: "63%" }, { top: "52%", left: "50%" }],
-  "OP":  [{ top: "42%", left: "50%" }, { top: "42%", left: "37%" }, { top: "42%", left: "63%" }],
+  "DP":  [{ top: "60%", left: "50%" }, { top: "60%", left: "37%" }, { top: "60%", left: "63%" }],
+  "ŚP":  [{ top: "50%", left: "37%" }, { top: "50%", left: "63%" }, { top: "50%", left: "50%" }],
+  "OP":  [{ top: "40%", left: "50%" }, { top: "40%", left: "37%" }, { top: "40%", left: "63%" }],
   "LP":  [{ top: "48%", left: "14%" }],
   "PP":  [{ top: "48%", left: "86%" }],
   "LS":  [{ top: "32%", left: "22%" }],
@@ -23,16 +23,16 @@ const POS_COORDS = {
 
 // Mirror coords for opponent (attacking downward → GK at top)
 const OPP_COORDS = {
-  "BR": [{ top: "8%", left: "50%" }],
-  "LO": [{ top: "25%", left: "85%" }],
-  "PO": [{ top: "25%", left: "15%" }],
-  "ŚO4": [{ top: "22%", left: "63%" }, { top: "22%", left: "37%" }],
-  "ŚO3": [{ top: "22%", left: "73%" }, { top: "22%", left: "50%" }, { top: "22%", left: "27%" }],
+  "BR": [{ top: "14%", left: "50%" }],
+  "LO": [{ top: "28%", left: "85%" }],
+  "PO": [{ top: "28%", left: "15%" }],
+  "ŚO4": [{ top: "25%", left: "63%" }, { top: "25%", left: "37%" }],
+  "ŚO3": [{ top: "25%", left: "73%" }, { top: "25%", left: "50%" }, { top: "25%", left: "27%" }],
   "CLL": [{ top: "38%", left: "88%" }],
   "CLP": [{ top: "38%", left: "12%" }],
-  "DP":  [{ top: "38%", left: "50%" }, { top: "38%", left: "63%" }, { top: "38%", left: "37%" }],
-  "ŚP":  [{ top: "48%", left: "63%" }, { top: "48%", left: "37%" }, { top: "48%", left: "50%" }],
-  "OP":  [{ top: "58%", left: "50%" }, { top: "58%", left: "63%" }, { top: "58%", left: "37%" }],
+  "DP":  [{ top: "40%", left: "50%" }, { top: "40%", left: "63%" }, { top: "40%", left: "37%" }],
+  "ŚP":  [{ top: "50%", left: "63%" }, { top: "50%", left: "37%" }, { top: "50%", left: "50%" }],
+  "OP":  [{ top: "60%", left: "50%" }, { top: "60%", left: "63%" }, { top: "60%", left: "37%" }],
   "LP":  [{ top: "52%", left: "86%" }],
   "PP":  [{ top: "52%", left: "14%" }],
   "LS":  [{ top: "68%", left: "78%" }],
@@ -40,24 +40,7 @@ const OPP_COORDS = {
   "N":   [{ top: "78%", left: "50%" }, { top: "78%", left: "63%" }, { top: "78%", left: "37%" }],
 };
 
-function CssPitch() {
-  return (
-    <div className="css-pitch">
-      <div className="css-pitch__outline" />
-      <div className="css-pitch__center-line" />
-      <div className="css-pitch__center-circle" />
-      <div className="css-pitch__center-dot" />
-      <div className="css-pitch__penalty-area css-pitch__penalty-area--top" />
-      <div className="css-pitch__goal-area css-pitch__goal-area--top" />
-      <div className="css-pitch__penalty-dot css-pitch__penalty-dot--top" />
-      <div className="css-pitch__penalty-arc css-pitch__penalty-arc--top" />
-      <div className="css-pitch__penalty-area css-pitch__penalty-area--bottom" />
-      <div className="css-pitch__goal-area css-pitch__goal-area--bottom" />
-      <div className="css-pitch__penalty-dot css-pitch__penalty-dot--bottom" />
-      <div className="css-pitch__penalty-arc css-pitch__penalty-arc--bottom" />
-    </div>
-  );
-}
+
 
 function PlayerDot({ coords, label, isOpponent, photo }) {
   return (
@@ -68,7 +51,7 @@ function PlayerDot({ coords, label, isOpponent, photo }) {
           alt="" 
           className="pitch-player__icon" 
           style={{
-            filter: "none",
+            filter: photo.includes('user-icon') ? "invert(1)" : "none",
             borderRadius: photo.includes('user-icon') ? '0' : '50%',
             objectFit: photo.includes('user-icon') ? 'contain' : 'cover',
             width: photo.includes('user-icon') ? '20px' : '100%',
@@ -81,25 +64,79 @@ function PlayerDot({ coords, label, isOpponent, photo }) {
   );
 }
 
-function PitchWindow({ view }) {
-  const { currentTeam, opponentTeam, getPlayerPhoto } = useGame();
+export default function PitchWindow({ team, isOpponent }) {
+  const { getPlayerPhoto, getClubLogo, updateFormation, updateOpponentFormation, currentTeam } = useGame();
 
-  if (!currentTeam) return null;
+  if (!team && !currentTeam) return null;
+  const activeTeam = team || currentTeam;
 
-  const isOpponent = view === "opponent";
-  const activeTeam = isOpponent ? (opponentTeam || currentTeam) : currentTeam;
-
-  const formation = activeTeam.formacje?.find(f => f.nazwa === activeTeam.domyslna_formacja);
-  const positions = formation ? formation.pozycje : [];
-  const starters = activeTeam.zawodnicy?.filter(p => p.isStarting) || [];
+  const currentFormationName = activeTeam.domyslna_formacja || (activeTeam.formacje && activeTeam.formacje[0]?.nazwa);
+  const positions = activeTeam.formacje?.find(f => f.nazwa === currentFormationName)?.pozycje || activeTeam.formacje?.[0]?.pozycje || [];
+  
+  // Fallback: if no players are marked as starting, take first 11
+  let starters = activeTeam.zawodnicy?.filter(p => p.isStarting) || [];
+  if (starters.length === 0 && activeTeam.zawodnicy?.length > 0) {
+    starters = activeTeam.zawodnicy.slice(0, 11);
+  }
 
   const coordsMap = isOpponent ? OPP_COORDS : POS_COORDS;
-
   const posCounts = {};
+  const logoSrc = getClubLogo(activeTeam.logo, activeTeam.nazwa);
+
+  const handleFormationChange = (e) => {
+    if (isOpponent) {
+      updateOpponentFormation(e.target.value);
+    } else {
+      updateFormation(e.target.value);
+    }
+  };
 
   return (
-    <div className="pitch-area">
-      <CssPitch />
+      <div className="pitch-area" key={`${activeTeam.id}-${isOpponent ? 'opp' : 'team'}`}>
+      <div className="css-pitch">
+        <div className="css-pitch__outline" />
+        <div className="css-pitch__center-line" />
+        <div className="css-pitch__center-circle" />
+        <div className="css-pitch__center-dot" />
+        
+        {/* Arcs first - so they stay BEHIND areas */}
+        <div className="css-pitch__arc-new css-pitch__arc-new--top" />
+        <div className="css-pitch__arc-new css-pitch__arc-new--bottom" />
+
+        <div className="css-pitch__penalty-area css-pitch__penalty-area--top" />
+        <div className="css-pitch__goal-area css-pitch__goal-area--top" />
+        <div className="css-pitch__penalty-dot css-pitch__penalty-dot--top" />
+        
+        <div className="css-pitch__penalty-area css-pitch__penalty-area--bottom" />
+        <div className="css-pitch__goal-area css-pitch__goal-area--bottom" />
+        <div className="css-pitch__penalty-dot css-pitch__penalty-dot--bottom" />
+      </div>
+
+      {/* Formation Dropdown */}
+      <div className="pitch-formation-selector">
+        <select 
+          value={currentFormationName} 
+          onChange={handleFormationChange}
+          className="formation-dropdown"
+        >
+          {activeTeam.formacje?.map(f => (
+            <option key={f.nazwa} value={f.nazwa}>
+              {f.nazwa}
+            </option>
+          ))}
+        </select>
+      </div>
+      
+      {/* Separate background layer for the logo */}
+      {logoSrc && (
+        <div className="pitch-watermark-layer">
+          <img 
+            src={logoSrc}
+            alt=""
+            className="pitch-watermark-img" 
+          />
+        </div>
+      )}
 
       {positions.map((pos, index) => {
         const count = posCounts[pos] || 0;
@@ -108,8 +145,15 @@ function PitchWindow({ view }) {
         const coordsArray = coordsMap[pos];
         const coords = coordsArray && coordsArray[count] ? coordsArray[count] : { top: "50%", left: "50%" };
 
+        // 1. Try to find player with matching position
         const playersForPos = starters.filter(p => p.pozycja_glowna === pos);
-        const player = playersForPos[count];
+        let player = playersForPos[count];
+        
+        // 2. Fallback: if not found by position, take from the starters pool by index
+        // This ensures that even if positions don't match, we still see 11 players
+        if (!player) {
+          player = starters[index];
+        }
         
         let label = pos;
         let photoName = null;
@@ -121,7 +165,7 @@ function PitchWindow({ view }) {
 
         return (
           <PlayerDot
-            key={index}
+            key={`${index}-${player?.id || 'empty'}`}
             coords={coords}
             label={label}
             isOpponent={isOpponent}
@@ -132,5 +176,3 @@ function PitchWindow({ view }) {
     </div>
   );
 }
-
-export default PitchWindow;

@@ -5,8 +5,8 @@
 :root {
   --ss-dark: #050505;
   --ss-text: #ffffff;
-  --ss-text-dim: rgba(255, 255, 255, 0.45);
-  --ss-slide-speed: 4s;
+  --ss-text-dim: rgba(255, 255, 255, 0.7);
+  --ss-slide-speed: 2s;
 }
 
 /* ── Full-screen wrapper ─────────────────────────────────── */
@@ -17,7 +17,7 @@
   background-color: var(--ss-dark);
   color: var(--ss-text);
   overflow: hidden;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'Montserrat', sans-serif;
   user-select: none;
   position: relative;
 }
@@ -41,7 +41,7 @@
   width: auto;
   height: auto;
   overflow: visible;
-  animation: ssSlideUp 1s ease-out;
+  animation: ssSlideUp 0.75s ease-out;
 }
 
 .logo-img {
@@ -63,7 +63,7 @@
   flex-direction: column;
   gap: 0;
   margin-left: 25px; /* Shifting slightly to the right as requested */
-  animation: ssSlideUp 1s ease-out 0.15s both;
+  animation: ssSlideUp 0.75s ease-out 0.1s both;
 }
 
 .menu-btn {
@@ -71,30 +71,34 @@
   border: none;
   color: var(--ss-text-dim);
   text-align: left;
-  font-size: 1.2rem;
-  font-weight: 400;
-  letter-spacing: 1.5px;
-  padding: 1rem 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  padding: 1.2rem 0;
   cursor: pointer;
-  transition: color 0.3s ease, padding-left 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
   width: fit-content;
   position: relative;
   font-family: inherit;
+  text-transform: uppercase;
+  text-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
 }
 
 .menu-btn::after {
   content: '';
   position: absolute;
-  bottom: 0.4rem;
+  bottom: 0.6rem;
   left: 0;
   width: 0;
-  height: 1px;
-  background: rgba(255, 255, 255, 0.5);
-  transition: width 0.35s ease;
+  height: 2px;
+  background: linear-gradient(90deg, #fff, transparent);
+  transition: width 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
 }
 
 .menu-btn:hover {
   color: var(--ss-text);
+  padding-left: 10px;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.3));
 }
 
 .menu-btn:hover::after {
@@ -110,7 +114,7 @@
   font-size: 0.65rem;
   letter-spacing: 1.5px;
   text-transform: uppercase;
-  animation: ssFadeIn 2s ease-out 1s both;
+  animation: ssFadeIn 1s ease-out 0.5s both;
 }
 
 .footer-line {

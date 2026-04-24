@@ -112,12 +112,12 @@ function PlayerRow({ player, getPlayerPhoto }) {
 }
 
 // ─── Main component ───────────────────────────────────────────────────────────
-export default function PlayerList({ isOpponent }) {
-  const { currentTeam, opponentTeam, getPlayerPhoto } = useGame();
+export default function PlayerList({ team }) {
+  const { currentTeam, getPlayerPhoto } = useGame();
   
-  if (!currentTeam) return null;
+  if (!team && !currentTeam) return null;
 
-  const activeTeam = isOpponent ? (opponentTeam || currentTeam) : currentTeam;
+  const activeTeam = team || currentTeam;
 
   const mapPlayer = (p) => ({
     id: p.id,
@@ -129,8 +129,15 @@ export default function PlayerList({ isOpponent }) {
     score: p.stan_aktualny?.forma_ostatnie_5_meczow || 6.0
   });
 
-  const startingXi = activeTeam.zawodnicy.filter(p => p.isStarting).map(mapPlayer);
-  const reserves = activeTeam.zawodnicy.filter(p => !p.isStarting).map(mapPlayer);
+  // Fallback: if no players are marked as starting, take first 11
+  let startersRaw = activeTeam.zawodnicy?.filter(p => p.isStarting) || [];
+  if (startersRaw.length === 0 && activeTeam.zawodnicy?.length > 0) {
+    startersRaw = activeTeam.zawodnicy.slice(0, 11);
+  }
+
+  const startingXi = startersRaw.map(mapPlayer);
+  const reserveIds = new Set(startersRaw.map(p => p.id));
+  const reserves = (activeTeam.zawodnicy || []).filter(p => !reserveIds.has(p.id)).map(mapPlayer);
 
   return (
     <div className="pl-wrap">

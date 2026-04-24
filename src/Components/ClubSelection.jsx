@@ -2,26 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { useGame } from "../context/GameContext";
 import "../styles/ClubSelection.css";
 
-// Pre-load all images from assets folder for dynamic resolution
-const assetImages = import.meta.glob('../assets/**/*.svg', { eager: true });
-const pngImages = import.meta.glob('../assets/**/*.png', { eager: true });
-const allImages = { ...assetImages, ...pngImages };
-
-function getLogoSrc(logoName) {
-  if (!logoName) return null;
-  const lowerLogo = logoName.toLowerCase();
-  
-  // First check in /clubs/
-  let match = Object.entries(allImages).find(([path]) => path.toLowerCase().includes(`/clubs/${lowerLogo}`));
-  if (match) return match[1].default;
-  
-  // Then check in root assets
-  match = Object.entries(allImages).find(([path]) => path.toLowerCase().endsWith(`/${lowerLogo}`));
-  return match ? match[1].default : null;
-}
-
 export default function ClubSelection({ onBack }) {
-  const { db, selectTeam, selectOpponentTeam } = useGame();
+  const { db, selectTeam, selectOpponentTeam, getClubLogo } = useGame();
   const [phase, setPhase] = useState("user"); // "user" | "opponent"
   const [userClub, setUserClub] = useState(null);
   
@@ -46,8 +28,8 @@ export default function ClubSelection({ onBack }) {
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [dragOffset, setDragOffset] = useState(0);
-  const dragStartTime = useRef(0);
-  const itemWidth = 170 + 32; // width (170) + gap (32)
+  const [totalMove, setTotalMove] = useState(0);
+  const itemWidth = 170 + 40; // width (170) + gap (40px = 2.5rem)
 
   useEffect(() => {
     const middle = Math.floor(virtualClubs.length / 2);
@@ -61,15 +43,15 @@ export default function ClubSelection({ onBack }) {
     const baseLen = baseClubs.length;
     const total = virtualClubs.length;
     
-    // Jump if we are outside the "safe middle zone" (copies 2 and 3)
+    // Jump if we are outside the "safe middle zone"
     if (selectedIndex < baseLen || selectedIndex >= total - baseLen) {
-      setTimeout(() => {
+      const jumpTimer = setTimeout(() => {
         setIsJumping(true);
         const offset = selectedIndex % baseLen;
         setSelectedIndex(baseLen * 2 + offset);
-        // Turn off jump mode after a tiny delay to allow the state to update without transition
-        setTimeout(() => setIsJumping(false), 50);
-      }, 500); // Wait for the last transition to finish
+        setTimeout(() => setIsJumping(false), 30);
+      }, 800); 
+      return () => clearTimeout(jumpTimer);
     }
   }, [selectedIndex, isDragging, baseClubs.length, virtualClubs.length]);
 
@@ -110,7 +92,7 @@ export default function ClubSelection({ onBack }) {
     setIsDragging(true);
     setStartX(e.clientX);
     setDragOffset(0);
-    dragStartTime.current = Date.now();
+    setTotalMove(0);
   };
 
   const handleMouseMove = (e) => {
@@ -118,26 +100,30 @@ export default function ClubSelection({ onBack }) {
     const currentX = e.clientX;
     const diff = currentX - startX;
     setDragOffset(diff);
+    setTotalMove(prev => prev + Math.abs(diff - dragOffset));
   };
 
   const handleMouseUp = () => {
     if (!isDragging) return;
     setIsDragging(false);
     
-    const threshold = itemWidth / 3;
+    const threshold = 50; // pixels to trigger slide
     if (Math.abs(dragOffset) > threshold) {
       const shift = Math.round(-dragOffset / itemWidth);
-      setSelectedIndex(prev => {
-        const next = prev + shift;
-        return Math.max(0, Math.min(virtualClubs.length - 1, next));
-      });
+      if (shift !== 0) {
+        setSelectedIndex(prev => {
+          const next = prev + shift;
+          return Math.max(0, Math.min(virtualClubs.length - 1, next));
+        });
+      }
     }
     setDragOffset(0);
   };
 
   const getTransform = () => {
+    // 85 is half of item width (170/2)
     const centerOffset = (selectedIndex * itemWidth) - dragOffset;
-    return `translateX(calc(50% - ${centerOffset}px - 75px))`;
+    return `translateX(calc(50% - ${centerOffset}px - 85px))`;
   };
 
   return (
@@ -147,12 +133,13 @@ export default function ClubSelection({ onBack }) {
       onMouseLeave={handleMouseUp}
       onMouseMove={handleMouseMove}
     >
-      <button className="back-btn" onClick={handleBack}>
+      <button className="selection-back-btn" onClick={handleBack}>
+        <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>arrow_back</span>
         Wróć
       </button>
 
       <h1 className="selection-title">
-        {phase === "user" ? "Wybierz swój klub" : "Wybierz przeciwnika"}
+        {phase === "user" ? "Twoja drużyna" : "Rozpracuj rywala"}
       </h1>
 
       <div 
@@ -163,20 +150,20 @@ export default function ClubSelection({ onBack }) {
           className="clubs-track" 
           style={{ 
             transform: getTransform(),
-            transition: (isDragging || isJumping) ? "none" : "transform 0.6s cubic-bezier(0.23, 1, 0.32, 1)"
+            transition: (isDragging || isJumping) ? "none" : "transform 0.8s cubic-bezier(0.16, 1, 0.3, 1)"
           }}
         >
           {virtualClubs.map((club, index) => {
             const isActive = index === selectedIndex;
-            const src = getLogoSrc(club.logo);
+            const src = getClubLogo(club.logo, club.nazwa);
             
             return (
               <div 
                 key={club.vId} 
                 className={`club-item ${isActive ? "active" : ""}`}
                 onClick={() => {
-                  const duration = Date.now() - dragStartTime.current;
-                  if (duration < 200) {
+                  // Only select if we didn't drag much
+                  if (totalMove < 10) {
                     setSelectedIndex(index);
                   }
                 }}

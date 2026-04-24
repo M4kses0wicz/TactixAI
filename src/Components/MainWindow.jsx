@@ -8,33 +8,18 @@ import TacticsPanel from "./TacticsPanel";
 import PlayerTacticsPanel from "./PlayerTacticsPanel";
 import { useGame } from "../context/GameContext";
 
-// Pre-load all images from assets folder for dynamic resolution
-const assetImages = import.meta.glob('../assets/**/*.svg', { eager: true });
-const pngImages = import.meta.glob('../assets/**/*.png', { eager: true });
-const allImages = { ...assetImages, ...pngImages };
 
-function getLogoSrc(logoName) {
-  if (!logoName) return null;
-  const lowerLogo = logoName.toLowerCase();
-  
-  // First check in /clubs/
-  let match = Object.entries(allImages).find(([path]) => path.toLowerCase().includes(`/clubs/${lowerLogo}`));
-  if (match) return match[1].default;
-  
-  // Then check in root assets
-  match = Object.entries(allImages).find(([path]) => path.toLowerCase().endsWith(`/${lowerLogo}`));
-  return match ? match[1].default : null;
-}
 
 function MainWindow() {
-  const { currentTeam, opponentTeam, setCurrentTeam, setOpponentTeam } = useGame();
+  const { currentTeam, opponentTeam, setCurrentTeam, setOpponentTeam, getClubLogo } = useGame();
   const [activeTab, setActiveTab] = useState("Zawodnicy");
   const [pitchView, setPitchView] = useState("team");
 
   if (!currentTeam) return null;
 
-  const displayTeam = pitchView === "opponent" ? (opponentTeam || currentTeam) : currentTeam;
-  const logoSrc = getLogoSrc(displayTeam.logo);
+  const activeTeam = pitchView === "opponent" ? (opponentTeam || currentTeam) : currentTeam;
+  const isOppView = pitchView === "opponent";
+  const logoSrc = getClubLogo(activeTeam.logo, activeTeam.nazwa);
 
   const handleBackToMenu = () => {
     setCurrentTeam(null);
@@ -43,10 +28,7 @@ function MainWindow() {
 
   return (
     <div className="main-container">
-      {/* Background Watermark Logo */}
-      <div className="bg-watermark">
-        {logoSrc && <img src={logoSrc} alt="" />}
-      </div>
+
 
       <header className="main-header">
         <div className="header-left">
@@ -54,8 +36,8 @@ function MainWindow() {
             {logoSrc && <img src={logoSrc} alt="logo" className="header-logo" />}
             <div className="team-text">
               <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-                <h1>{displayTeam.nazwa}</h1>
-                {pitchView === "opponent" && <span className="opponent-badge">PRZECIWNIK</span>}
+                <h1>{activeTeam.nazwa}</h1>
+                {isOppView && <span className="opponent-badge">PRZECIWNIK</span>}
               </div>
               <span className="league-info">#2 Eredivisie</span>
             </div>
@@ -63,11 +45,15 @@ function MainWindow() {
         </div>
         
         <div className="header-right">
+          <button className="simulate-btn">
+            <span className="material-symbols-outlined" style={{ color: '#4CAF50', fontSize: '20px' }}>play_arrow</span>
+            Rozpocznij symulację
+          </button>
           <button 
-            className="back-btn"
+            className="header-back-btn"
             onClick={handleBackToMenu}
           >
-            <span className="material-symbols-outlined" style={{ fontSize: '14px', marginRight: '5px' }}>arrow_back</span>
+            <span className="material-symbols-outlined" style={{ fontSize: '14px' }}>arrow_back</span>
             Wróć do menu
           </button>
         </div>
@@ -90,7 +76,7 @@ function MainWindow() {
             </p>
           </nav>
           <div className="pitch-content-wrapper">
-            <PitchWindow view={pitchView} />
+            <PitchWindow team={activeTeam} isOpponent={isOppView} key={`${activeTeam.id}-${pitchView}`} />
           </div>
         </section>
         
@@ -104,9 +90,9 @@ function MainWindow() {
           
           <div className="content-wrapper">
             <div className="main-panel">
-              {activeTab === "Zawodnicy" && <PlayerList isOpponent={pitchView === "opponent"} />}
-              {activeTab === "Taktyka" && <TacticsPanel isOpponent={pitchView === "opponent"} />}
-              {activeTab === "Wytyczne" && <PlayerTacticsPanel isOpponent={pitchView === "opponent"} />}
+              {activeTab === "Zawodnicy" && <PlayerList team={activeTeam} />}
+              {activeTab === "Taktyka" && <TacticsPanel isOpponent={isOppView} />}
+              {activeTab === "Wytyczne" && <PlayerTacticsPanel isOpponent={isOppView} />}
               {activeTab === "Notatki" && <NoteEditor />}
             </div>
           </div>

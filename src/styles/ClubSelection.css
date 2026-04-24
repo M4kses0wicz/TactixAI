@@ -13,26 +13,41 @@
   user-select: none; /* Prevent text selection during drag */
 }
 
-.back-btn {
+.selection-back-btn {
   position: absolute;
   top: 3rem;
-  right: 3rem;
-  background: rgba(255, 255, 255, 0.05);
+  right: 3rem; /* Moved to right as requested */
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.1);
-  color: rgba(255, 255, 255, 0.6);
-  padding: 0.6rem 1.5rem;
-  border-radius: 4px;
+  color: rgba(255, 255, 255, 0.7);
+  padding: 12px 28px;
+  border-radius: 14px;
   cursor: pointer;
-  font-size: 0.8rem;
-  letter-spacing: 1px;
+  font-size: 11px;
+  font-weight: 700;
   text-transform: uppercase;
-  transition: all 0.3s ease;
+  letter-spacing: 2px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 100;
 }
 
-.back-btn:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: white;
+.selection-back-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateX(5px); /* Slide right instead of left */
+}
+
+.selection-back-btn .material-symbols-outlined {
+  transition: transform 0.3s ease;
+}
+
+.selection-back-btn:hover .material-symbols-outlined {
+  transform: translateX(-3px);
 }
 
 .selection-title {
@@ -63,8 +78,9 @@
 .clubs-track {
   display: flex;
   align-items: center;
-  gap: 2rem;
+  gap: 2.5rem; /* Increased gap slightly for better separation */
   will-change: transform;
+  transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .club-item {
@@ -75,17 +91,18 @@
   min-width: 170px;
   max-width: 170px;
   cursor: pointer;
-  transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
-  opacity: 0.4; /* Brighter than 0.15 */
-  filter: grayscale(0.5) blur(1px); /* Less gray/blur */
-  transform: scale(0.9);
+  transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  opacity: 0.3;
+  filter: grayscale(0.8) blur(2px);
+  transform: scale(0.8);
+  will-change: transform, opacity, filter;
 }
 
 .club-item.active {
   opacity: 1;
   filter: grayscale(0) blur(0);
-  transform: scale(2.5); /* Bigger than 2.2 */
-  z-index: 10;
+  transform: scale(2.4); 
+  z-index: 100;
 }
 
 .club-logo-container {

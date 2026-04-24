@@ -2,6 +2,10 @@ import React, { createContext, useContext, useState, useEffect } from "react";
 import initialData from "../data/initialData.json";
 import personIcon from "../assets/user-icon.png";
 
+// Manual imports for problematic logos to ensure they are bundled correctly
+import napoliLogo from "../assets/clubs/italy_napoli.football-logos.cc.svg";
+import interLogo from "../assets/clubs/italy_inter.football-logos.cc.svg";
+
 // Dynamically load all player photos from assets/players directory
 const playerPhotosRaw = import.meta.glob('../assets/players/*.{png,jpg,jpeg}', { eager: true });
 const playerPhotos = {};
@@ -12,6 +16,11 @@ for (const path in playerPhotosRaw) {
   playerPhotos[filename] = playerPhotosRaw[path].default;
   playerPhotos[filename.replace(/_/g, ' ')] = playerPhotosRaw[path].default;
 }
+
+// Dynamically load all club logos
+const assetImages = import.meta.glob('../assets/**/*.svg', { eager: true });
+const pngImages = import.meta.glob('../assets/**/*.png', { eager: true });
+const allLogos = { ...assetImages, ...pngImages };
 
 const GameContext = createContext();
 
@@ -89,6 +98,7 @@ export function GameProvider({ children }) {
   useEffect(() => {
     if (opponentTeam) {
       localStorage.setItem("tactixai_opponentTeam", JSON.stringify(opponentTeam));
+      setDb(prev => prev.map(t => t.id === opponentTeam.id ? opponentTeam : t));
     } else {
       localStorage.removeItem("tactixai_opponentTeam");
     }
@@ -96,12 +106,12 @@ export function GameProvider({ children }) {
 
   const selectTeam = (teamId) => {
     const team = db.find(t => t.id === teamId);
-    if (team) setCurrentTeam(team);
+    if (team) setCurrentTeam(JSON.parse(JSON.stringify(team)));
   };
 
   const selectOpponentTeam = (teamId) => {
     const team = db.find(t => t.id === teamId);
-    if (team) setOpponentTeam(team);
+    if (team) setOpponentTeam(JSON.parse(JSON.stringify(team)));
   };
 
   const updateTactics = (type, key, value) => {
@@ -136,6 +146,13 @@ export function GameProvider({ children }) {
       domyslna_formacja: formationName
     }));
   };
+
+  const updateOpponentFormation = (formationName) => {
+    setOpponentTeam(prev => prev ? ({
+      ...prev,
+      domyslna_formacja: formationName
+    }) : null);
+  };
   
   const updatePlayerRole = (playerId, type, role) => {
       setCurrentTeam(prev => {
@@ -162,6 +179,31 @@ export function GameProvider({ children }) {
     return photoUrl || personIcon;
   };
 
+  const getClubLogo = (logoName, teamName) => {
+    if (!logoName && !teamName) return null;
+    const target = (logoName || "").toLowerCase();
+    const name = (teamName || "").toLowerCase();
+    
+    // Explicit overrides for Napoli and Inter
+    if (name.includes('napoli')) return napoliLogo;
+    if (name.includes('inter')) return interLogo;
+    
+    const entries = Object.entries(allLogos);
+    
+    // 1. Try exact filename match
+    let match = target ? entries.find(([path]) => path.toLowerCase().includes(target)) : null;
+    
+    // 2. Try by cleaning the name (e.g. "Napoli", "Inter")
+    if (!match) {
+      const firstWord = name.split(' ')[0].replace(/[^a-z]/g, '');
+      if (firstWord.length > 2) {
+        match = entries.find(([path]) => path.toLowerCase().includes(firstWord));
+      }
+    }
+    
+    return match ? (match[1].default || match[1]) : null;
+  };
+
   const value = {
     db,
     currentTeam,
@@ -171,10 +213,12 @@ export function GameProvider({ children }) {
     updateTactics,
     updateOpponentTactics,
     updateFormation,
+    updateOpponentFormation,
     updatePlayerRole,
     setCurrentTeam,
     setOpponentTeam,
     getPlayerPhoto,
+    getClubLogo,
   };
 
   return <GameContext.Provider value={value}>{children}</GameContext.Provider>;
