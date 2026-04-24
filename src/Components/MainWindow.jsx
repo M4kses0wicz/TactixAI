@@ -10,11 +10,14 @@ import { useGame } from "../context/GameContext";
 
 
 
+import SimulationWindow from "./SimulationWindow";
+
 function MainWindow() {
   const { currentTeam, opponentTeam, setCurrentTeam, setOpponentTeam, getClubLogo } = useGame();
   const [activeTab, setActiveTab] = useState("Zawodnicy");
   const [pitchView, setPitchView] = useState("team");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSimulating, setIsSimulating] = useState(false);
   const menuRef = useRef(null);
 
   useEffect(() => {
@@ -38,6 +41,10 @@ function MainWindow() {
     setOpponentTeam(null);
   };
 
+  if (isSimulating) {
+    return <SimulationWindow onFinish={() => setIsSimulating(false)} />;
+  }
+
   return (
     <div className="main-container">
 
@@ -57,7 +64,7 @@ function MainWindow() {
         </div>
         
         <div className="header-right">
-          <button className="simulate-btn">
+          <button className="simulate-btn" onClick={() => setIsSimulating(true)}>
             <span className="material-symbols-outlined" style={{ color: '#4CAF50', fontSize: '20px' }}>play_arrow</span>
             Rozpocznij symulację
           </button>

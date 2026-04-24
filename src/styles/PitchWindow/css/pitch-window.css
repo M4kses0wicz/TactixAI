@@ -255,7 +255,7 @@
    ═══════════════════════════════════════════════════════════════ */
 .pitch-selectors-wrapper {
   position: absolute;
-  top: 10px;
+  top: 4px;
   right: var(--pitch-pad-x);
   z-index: 20;
   display: flex;
@@ -266,7 +266,7 @@
 .pitch-selector-item {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 2px;
 }
 
 .selector-label {

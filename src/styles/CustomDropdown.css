@@ -1,7 +1,7 @@
 .custom-dropdown-container {
   position: relative;
   width: auto;
-  min-width: 140px;
+  min-width: 120px;
 }
 
 .custom-dropdown-trigger {
