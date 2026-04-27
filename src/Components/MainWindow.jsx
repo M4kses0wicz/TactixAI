@@ -13,8 +13,7 @@ import { useGame } from "../context/GameContext";
 import SimulationWindow from "./SimulationWindow";
 
 function MainWindow() {
-  const { currentTeam, opponentTeam, setCurrentTeam, setOpponentTeam, getClubLogo } = useGame();
-  const [activeTab, setActiveTab] = useState("Zawodnicy");
+  const { currentTeam, opponentTeam, setCurrentTeam, setOpponentTeam, getClubLogo, activeTab, setActiveTab } = useGame();
   const [pitchView, setPitchView] = useState("team");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSimulating, setIsSimulating] = useState(false);
@@ -58,7 +57,7 @@ function MainWindow() {
                 <h1>{activeTeam.nazwa}</h1>
                 {isOppView && <span className="opponent-badge">PRZECIWNIK</span>}
               </div>
-              <span className="league-info">#2 Eredivisie</span>
+              <span className="league-info">{activeTeam.liga}</span>
             </div>
           </div>
         </div>

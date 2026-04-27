@@ -656,7 +656,20 @@ function PlayerTacticsPanel({ player, isOpponent }) {
             <span className="ptac-header__position-label">{pos}</span>
           </div>
           <p className="ptac-header__fullname">
-            {player.imie_nazwisko}
+            {player.imie_nazwisko}{" "}
+            {player.narodowosc && (
+              <img 
+                src={player.narodowosc} 
+                alt="flag" 
+                style={{ 
+                  width: "20px", 
+                  height: "auto", 
+                  verticalAlign: "middle", 
+                  marginLeft: "8px",
+                  borderRadius: "2px"
+                }} 
+              />
+            )}
           </p>
           {/* Tab switcher inline */}
           <div className="ptac-tabs">

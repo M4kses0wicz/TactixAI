@@ -1,6 +1,9 @@
+import { useState, useEffect, useRef } from "react";
 import "../styles/PitchWindow/css/pitch-window.css";
 import personIcon from "../assets/user-icon.png";
-import { useGame } from "../context/GameContext";
+import { useGame, normalizePos } from "../context/GameContext";
+import RoleModal from "./RoleModal";
+import CustomDropdown from "./CustomDropdown";
 
 // Coordinates for your team (attacking upward → GK at bottom)
 const POS_COORDS = {
@@ -40,11 +43,54 @@ const OPP_COORDS = {
   "N":   [{ top: "78%", left: "50%" }, { top: "78%", left: "63%" }, { top: "78%", left: "37%" }],
 };
 
+function PlayerDot({ 
+  player, coords, label, isOpponent, photo, onSubClick, onRoleClick, isSelected, pos,
+  index, onDragStart, onDragOver, onDrop 
+}) {
+  const [isHovered, setIsHovered] = useState(false);
+  const [showArrow, setShowArrow] = useState(false);
+  const [isJustSwapped, setIsJustSwapped] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const prevPlayerIdRef = useRef(player?.id);
 
+  useEffect(() => {
+    if (player?.id && prevPlayerIdRef.current && player.id !== prevPlayerIdRef.current) {
+        setIsJustSwapped(true);
+        setTimeout(() => setIsJustSwapped(false), 1500);
+    }
+    prevPlayerIdRef.current = player?.id;
+  }, [player?.id]);
 
-function PlayerDot({ coords, label, isOpponent, photo }) {
+  const handleMouseEnter = () => { if (!isOpponent) { setIsHovered(true); setShowArrow(true); } };
+  const handleMouseLeave = () => { setIsHovered(false); setTimeout(() => setShowArrow(false), 300); };
+
+  const handleDragStart = (e) => {
+    if (isOpponent || !player) return;
+    setIsDragging(true);
+    onDragStart(index);
+    const img = new Image();
+    img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+    e.dataTransfer.setDragImage(img, 0, 0);
+  };
+
+  const handleDragEnd = () => setIsDragging(false);
+
   return (
-    <div className="pitch-player" style={{ top: coords.top, left: coords.left }}>
+    <div 
+      className={`pitch-player ${isSelected ? 'pitch-player--selected' : ''} ${isJustSwapped ? 'pitch-player--just-swapped' : ''} ${isDragging ? 'pitch-player--dragging' : ''}`} 
+      style={{ top: coords.top, left: coords.left }}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+      onClick={() => !isOpponent && player && onRoleClick(player, pos)}
+      draggable={!isOpponent && !!player}
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
+      onDragOver={(e) => onDragOver(e, index)}
+      onDrop={(e) => onDrop(e, index)}
+    >
+      {!isOpponent && (isHovered || showArrow) && (
+        <div className="pitch-player__sub-arrow" onClick={(e) => { e.stopPropagation(); onSubClick(player.id); }}>▼</div>
+      )}
       <div className={`pitch-player__circle ${isOpponent ? "pitch-player__circle--opp" : ""}`}>
         <img 
           src={photo} 
@@ -64,172 +110,141 @@ function PlayerDot({ coords, label, isOpponent, photo }) {
   );
 }
 
-import CustomDropdown from "./CustomDropdown";
-
 const MENTALITY_OFFSETS = {
-  "Bardzo defensywna": 8,
-  "Defensywna": 5,
-  "Ostrożna": 2,
-  "Wyważona": 0,
-  "Pozytywna": -2,
-  "Ofensywna": -5,
-  "Bardzo ofensywna": -8
+  "Bardzo defensywna": 8, "Defensywna": 5, "Ostrożna": 2, "Wyważona": 0, "Pozytywna": -2, "Ofensywna": -5, "Bardzo ofensywna": -8
 };
 
 export default function PitchWindow({ team, isOpponent }) {
   const { 
-    getPlayerPhoto, 
-    getClubLogo, 
-    updateFormation, 
-    updateOpponentFormation, 
-    updateMentality, 
-    updateOpponentMentality, 
-    currentTeam 
+    getPlayerPhoto, getClubLogo, updateFormation, updateOpponentFormation, 
+    updateMentality, updateOpponentMentality, currentTeam, opponentTeam,
+    substitutionFocusId, setSubstitutionFocusId, setSubstitutionFocusPos, setActiveTab,
+    swapPlayersPositions
   } = useGame();
 
+  const [selectedRoleContext, setSelectedRoleContext] = useState(null);
+  const [draggedIndex, setDraggedIndex] = useState(null);
+
+  const handleRoleClick = (player, position) => setSelectedRoleContext({ playerId: player.id, position });
+
+  const handleDragStart = (index) => setDraggedIndex(index);
+  const handleDragOver = (e, index) => {
+    e.preventDefault();
+    if (index === draggedIndex) return;
+  };
+
+  const handleDrop = (e, index) => {
+    e.preventDefault();
+    if (draggedIndex !== null && draggedIndex !== index) {
+        swapPlayersPositions(draggedIndex, index);
+    }
+    setDraggedIndex(null);
+  };
+
   if (!team && !currentTeam) return null;
-  const activeTeam = team || currentTeam;
+  const activeTeam = isOpponent ? (opponentTeam || team) : (team || currentTeam);
 
   const currentFormationName = activeTeam.domyslna_formacja || (activeTeam.formacje && activeTeam.formacje[0]?.nazwa);
-  const formationOptions = activeTeam.formacje?.map(f => f.nazwa) || [];
   const positions = activeTeam.formacje?.find(f => f.nazwa === currentFormationName)?.pozycje || activeTeam.formacje?.[0]?.pozycje || [];
   
-  // Fallback: if no players are marked as starting, take first 11
-  let starters = activeTeam.zawodnicy?.filter(p => p.isStarting) || [];
-  if (starters.length === 0 && activeTeam.zawodnicy?.length > 0) {
-    starters = activeTeam.zawodnicy.slice(0, 11);
+  // STABILNA LOGIKA PRZYPISANIA
+  let assignedPlayers = activeTeam.assignedStarters || [];
+  
+  if (assignedPlayers.length === 0) {
+      const starters = activeTeam.zawodnicy?.filter(p => p.isStarting) || [];
+      const availableStarters = [...starters];
+      assignedPlayers = new Array(positions.length).fill(null);
+      
+      positions.forEach((pos, idx) => {
+          if (availableStarters.length > 0) {
+              const pIdx = availableStarters.findIndex(p => normalizePos(p.pozycja_glowna) === normalizePos(pos));
+              const finalIdx = pIdx !== -1 ? pIdx : 0;
+              assignedPlayers[idx] = availableStarters[finalIdx];
+              availableStarters.splice(finalIdx, 1);
+          }
+      });
   }
 
   const coordsMap = isOpponent ? OPP_COORDS : POS_COORDS;
   const posCounts = {};
   const logoSrc = getClubLogo(activeTeam.logo, activeTeam.nazwa);
 
-  const handleFormationChange = (val) => {
-    if (isOpponent) {
-      updateOpponentFormation(val);
-    } else {
-      updateFormation(val);
-    }
-  };
-
-  const handleMentalityChange = (val) => {
-    if (isOpponent) {
-      updateOpponentMentality(val);
-    } else {
-      updateMentality(val);
-    }
+  const handleSubClick = (id, pos) => {
+    setSubstitutionFocusId(id);
+    setSubstitutionFocusPos(pos);
+    setActiveTab("Zawodnicy");
   };
 
   const currentMentality = activeTeam.mentalnosc || "Wyważona";
-  const mentalityOptions = [
-    "Bardzo defensywna",
-    "Defensywna",
-    "Ostrożna",
-    "Wyważona",
-    "Pozytywna",
-    "Ofensywna",
-    "Bardzo ofensywna"
-  ];
-
+  const mentalityOptions = ["Bardzo defensywna", "Defensywna", "Ostrożna", "Wyważona", "Pozytywna", "Ofensywna", "Bardzo ofensywna"];
   const mentalityShift = MENTALITY_OFFSETS[currentMentality] || 0;
 
   return (
-      <div className="pitch-area" key={`${activeTeam.id}-${isOpponent ? 'opp' : 'team'}`}>
-      <div className="css-pitch">
+    <div className="pitch-area" key={`${activeTeam.id}-${isOpponent ? 'opp' : 'team'}`}>
+      <div className="css-pitch" onClick={() => setSelectedRoleContext(null)}>
         <div className="css-pitch__outline" />
         <div className="css-pitch__center-line" />
         <div className="css-pitch__center-circle" />
         <div className="css-pitch__center-dot" />
-        
-        {/* Arcs first - so they stay BEHIND areas */}
         <div className="css-pitch__arc-new css-pitch__arc-new--top" />
         <div className="css-pitch__arc-new css-pitch__arc-new--bottom" />
-
         <div className="css-pitch__penalty-area css-pitch__penalty-area--top" />
         <div className="css-pitch__goal-area css-pitch__goal-area--top" />
         <div className="css-pitch__penalty-dot css-pitch__penalty-dot--top" />
-        
         <div className="css-pitch__penalty-area css-pitch__penalty-area--bottom" />
         <div className="css-pitch__goal-area css-pitch__goal-area--bottom" />
         <div className="css-pitch__penalty-dot css-pitch__penalty-dot--bottom" />
       </div>
 
-      {/* Selectors Wrapper */}
       <div className="pitch-selectors-wrapper">
-        <CustomDropdown 
-          label="MENTALNOŚĆ"
-          options={mentalityOptions}
-          value={currentMentality}
-          onChange={handleMentalityChange}
-        />
-
-        <CustomDropdown 
-          label="FORMACJA"
-          options={formationOptions}
-          value={currentFormationName}
-          onChange={handleFormationChange}
-        />
+        <CustomDropdown label="MENTALNOŚĆ" options={mentalityOptions} value={currentMentality} onChange={(v) => isOpponent ? updateOpponentMentality(v) : updateMentality(v)} />
+        <CustomDropdown label="FORMACJA" options={activeTeam.formacje?.map(f => f.nazwa) || []} value={currentFormationName} onChange={(v) => isOpponent ? updateOpponentFormation(v) : updateFormation(v)} />
       </div>
       
-      {/* Separate background layer for the logo */}
-      {logoSrc && (
-        <div className="pitch-watermark-layer">
-          <img 
-            src={logoSrc}
-            alt=""
-            className="pitch-watermark-img" 
-          />
-        </div>
-      )}
+      {logoSrc && <div className="pitch-watermark-layer"><img src={logoSrc} alt="" className="pitch-watermark-img" /></div>}
 
       {positions.map((pos, index) => {
         const count = posCounts[pos] || 0;
         posCounts[pos] = count + 1;
-
         const coordsArray = coordsMap[pos];
         const baseCoords = coordsArray && coordsArray[count] ? coordsArray[count] : { top: "50%", left: "50%" };
-
-        // Apply mentality shift
         let adjustedTop = parseFloat(baseCoords.top);
         if (pos !== "BR") {
-          // Team: positive shift moves down (defensive), negative moves up (offensive)
-          // Opponent: positive shift moves up (defensive), negative moves down (offensive)
           const actualShift = isOpponent ? -mentalityShift : mentalityShift;
           adjustedTop += actualShift;
-          
-          // Clamp to stay within pitch boundaries (8% to 92%)
           adjustedTop = Math.max(10, Math.min(90, adjustedTop));
         }
-
         const coords = { ...baseCoords, top: `${adjustedTop}%` };
-
-        // 1. Try to find player with matching position
-        const playersForPos = starters.filter(p => p.pozycja_glowna === pos);
-        let player = playersForPos[count];
-        
-        // 2. Fallback: if not found by position, take from the starters pool by index
-        if (!player) {
-          player = starters[index];
-        }
-        
-        let label = pos;
-        let photoName = null;
-        
-        if (player) {
-          label = player.imie_nazwisko.split(" ").pop();
-          photoName = player.imie_nazwisko;
-        }
+        const player = assignedPlayers[index];
+        let label = player ? player.imie_nazwisko.split(" ").pop() : normalizePos(pos);
 
         return (
           <PlayerDot
             key={`${index}-${player?.id || 'empty'}`}
+            player={player}
             coords={coords}
             label={label}
             isOpponent={isOpponent}
-            photo={getPlayerPhoto(photoName)}
+            photo={getPlayerPhoto(player?.imie_nazwisko)}
+            onSubClick={(id) => handleSubClick(id, pos)}
+            onRoleClick={handleRoleClick}
+            isSelected={player?.id === substitutionFocusId}
+            pos={pos}
+            index={index}
+            onDragStart={handleDragStart}
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
           />
         );
       })}
+
+      {selectedRoleContext && (
+        <RoleModal 
+          player={activeTeam.zawodnicy?.find(p => p.id === selectedRoleContext.playerId)} 
+          position={selectedRoleContext.position}
+          onClose={() => setSelectedRoleContext(null)} 
+        />
+      )}
     </div>
   );
 }

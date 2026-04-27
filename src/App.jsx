@@ -7,7 +7,7 @@ import MainWindow from "./Components/MainWindow";
 import { useGame } from "./context/GameContext";
 
 function App() {
-  const { currentTeam } = useGame();
+  const { currentTeam, isLoadingDb } = useGame();
   const [screen, setScreen] = useState(0); // 0: Start, 1: ClubSelection, 2: CustomClubForm
   
   useEffect(() => {
@@ -15,6 +15,16 @@ function App() {
       setScreen(0);
     }
   }, [currentTeam]);
+
+  if (isLoadingDb) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', flexDirection: 'column', color: 'white', backgroundColor: '#1a1a2e' }}>
+        <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⚽</div>
+        <h2>Pobieranie danych z bazy...</h2>
+        <p style={{ opacity: 0.7 }}>Trwa ładowanie drużyn i zawodników</p>
+      </div>
+    );
+  }
 
   if (currentTeam) {
     return <MainWindow />;

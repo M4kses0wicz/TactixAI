@@ -28,17 +28,73 @@ def pobierz_druzyny():
         conn = psycopg2.connect(DATABASE_URL)
         cursor = conn.cursor()
         
+        # Mapowanie lig dla klubów
+        LIGI = {
+            "Arsenal": "Premier League",
+            "Bayern Monachium": "Bundesliga",
+            "Borussia Dortmund": "Bundesliga",
+            "AC Milan": "Serie A",
+            "Ajax Amsterdam": "Eredivisie",
+            "Al-Nassr": "Saudi Pro League",
+            "AS Roma": "Serie A",
+            "Atletico Madryt": "La Liga",
+            "FC Barcelona": "La Liga",
+            "Chelsea": "Premier League",
+            "Feyenoord": "Eredivisie",
+            "Inter Mediolan": "Serie A",
+            "Juventus": "Serie A",
+            "Liverpool": "Premier League",
+            "Real Madryt": "La Liga",
+            "Napoli": "Serie A",
+            "PSG": "Ligue 1",
+            "Real Betis": "La Liga",
+            "Manchester City": "Premier League",
+            "Manchester United": "Premier League"
+        }
+
         # Pobieramy dane z Twojej tabeli
         cursor.execute("SELECT id, nazwa, logo FROM druzyny;")
         wiersze = cursor.fetchall()
         
+        # Pobieramy taktyki "Przy Piłce"
+        cursor.execute("SELECT * FROM opcjetaktyczneprzypilce;")
+        kolumny_przy = [desc[0] for desc in cursor.description]
+        taktyki_przy = {
+            t[1]: {k: v for k, v in zip(kolumny_przy, t) if v is not None} 
+            for t in cursor.fetchall()
+        }
+
+        # Pobieramy taktyki "Bez Piłki"
+        cursor.execute("SELECT * FROM opcjetaktycznebezpilki;")
+        kolumny_bez = [desc[0] for desc in cursor.description]
+        taktyki_bez = {
+            t[1]: {k: v for k, v in zip(kolumny_bez, t) if v is not None} 
+            for t in cursor.fetchall()
+        }
+        
         # Pakujemy dane do formatu, który React łatwo zrozumie (lista słowników / JSON)
         druzyny_lista = []
         for w in wiersze:
+            team_id = w[0]
+            
+            # Formujemy strukturę taktyki
+            taktyka = {
+                "przy_pilce": taktyki_przy.get(team_id, {}),
+                "bez_pilki": taktyki_bez.get(team_id, {})
+            }
+
+            # Usuwamy techniczne pola 'id' i 'druzyna_id'
+            taktyka["przy_pilce"].pop("id", None)
+            taktyka["przy_pilce"].pop("druzyna_id", None)
+            taktyka["bez_pilki"].pop("id", None)
+            taktyka["bez_pilki"].pop("druzyna_id", None)
+
             druzyny_lista.append({
-                "id": w[0],
+                "id": team_id,
                 "nazwa": w[1],
-                "logo": w[2]
+                "logo": w[2],
+                "liga": LIGI.get(w[1], "Inna Liga"),
+                "taktyka_druzyny": taktyka
             })
             
         cursor.close()

@@ -1,6 +1,8 @@
+import { useState, useRef, useEffect } from "react";
 import personIcon from "../assets/user-icon.png";
 import "../styles/PlayerList/css/PlayerList.css";
 import { useGame } from "../context/GameContext";
+import PlayerModal from "./PlayerModal";
 
 const STATUS_COLOR = {
   healthy: "#00FF00",
@@ -23,8 +25,14 @@ function scoreColor(score) {
   return "#FF0000";
 }
 
+const normalizePos = (pos) => {
+  if (!pos) return "";
+  return pos.replace(/[0-9]/g, '');
+};
+
 const POS_LABEL_MAP = {
   "BR": "Bramkarz",
+  "ŚO": "Obrońca",
   "ŚO4": "Obrońca",
   "ŚO3": "Obrońca",
   "PO": "Obrońca",
@@ -48,13 +56,13 @@ const STATUS_MAP = {
   "zawieszony": "suspended"
 };
 
-function PlayerRow({ player, getPlayerPhoto }) {
+function PlayerRow({ player, getPlayerPhoto, onClick, showSubIcon, onSubClick, isHighlighted }) {
   const accentColor = STATUS_COLOR[player.status];
   const sc = scoreColor(player.score);
   const isHealthy = player.status === "healthy";
 
   return (
-    <div className="pl-row">
+    <div className={`pl-row ${isHighlighted ? 'pl-row--highlighted' : ''}`} onClick={() => onClick(player.id)}>
       {/* left accent bar */}
       <span className="pl-row__accent" style={{ background: accentColor }} />
 
@@ -66,7 +74,20 @@ function PlayerRow({ player, getPlayerPhoto }) {
 
       {/* nationality */}
       <span className="pl-row__nat" title={player.natCode}>
-        {player.nat}
+        {player.nat ? (
+          <img 
+            src={player.nat} 
+            alt="flag" 
+            style={{ 
+              width: "24px", 
+              height: "auto", 
+              borderRadius: "2px",
+              boxShadow: "0 0 2px rgba(0,0,0,0.5)"
+            }} 
+          />
+        ) : (
+          "🌍"
+        )}
       </span>
 
       {/* heart */}
@@ -93,7 +114,20 @@ function PlayerRow({ player, getPlayerPhoto }) {
       </div>
 
       {/* name */}
-      <span className="pl-row__name">{player.name}</span>
+      <span className="pl-row__name">
+        {player.name}
+        {showSubIcon && (
+          <span 
+            className="pl-row__sub-icon" 
+            onClick={(e) => {
+              e.stopPropagation();
+              onSubClick(player.id);
+            }}
+          >
+            ▲
+          </span>
+        )}
+      </span>
 
       {/* status label */}
       <span className="pl-row__status" style={{ color: accentColor }}>
@@ -113,18 +147,28 @@ function PlayerRow({ player, getPlayerPhoto }) {
 
 // ─── Main component ───────────────────────────────────────────────────────────
 export default function PlayerList({ team }) {
-  const { currentTeam, getPlayerPhoto } = useGame();
+  const { currentTeam, getPlayerPhoto, substitutionFocusId, substitutionFocusPos, substitutePlayer } = useGame();
+  const [selectedPlayerId, setSelectedPlayerId] = useState(null);
+  const reserveRef = useRef(null);
+
+  useEffect(() => {
+    if (substitutionFocusId && reserveRef.current) {
+      reserveRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [substitutionFocusId]);
   
   if (!team && !currentTeam) return null;
 
   const activeTeam = team || currentTeam;
 
+  const selectedPlayer = activeTeam.zawodnicy?.find(p => p.id === selectedPlayerId);
+
   const mapPlayer = (p) => ({
     id: p.id,
     name: p.imie_nazwisko,
     nat: p.narodowosc,
-    pos: p.pozycja_glowna,
-    posLabel: POS_LABEL_MAP[p.pozycja_glowna] || "Zawodnik",
+    pos: normalizePos(p.pozycja_glowna),
+    posLabel: POS_LABEL_MAP[normalizePos(p.pozycja_glowna)] || "Zawodnik",
     status: STATUS_MAP[p.stan_aktualny?.kontuzja] || "healthy",
     score: p.stan_aktualny?.forma_ostatnie_5_meczow || 6.0
   });
@@ -139,21 +183,52 @@ export default function PlayerList({ team }) {
   const reserveIds = new Set(startersRaw.map(p => p.id));
   const reserves = (activeTeam.zawodnicy || []).filter(p => !reserveIds.has(p.id)).map(mapPlayer);
 
+  const handleSubAction = (reserveId) => {
+    if (substitutionFocusId) {
+      substitutePlayer(substitutionFocusId, reserveId);
+    }
+  };
+
   return (
     <div className="pl-wrap">
       <h2 className="pl-heading">Wyjściowy skład:</h2>
       <div className="pl-list">
         {startingXi.map((p) => (
-          <PlayerRow key={p.id} player={p} getPlayerPhoto={getPlayerPhoto} />
+          <PlayerRow 
+            key={p.id} 
+            player={p} 
+            getPlayerPhoto={getPlayerPhoto} 
+            onClick={setSelectedPlayerId} 
+          />
         ))}
       </div>
 
-      <h2 className="pl-heading pl-heading--reserve">Rezerwa:</h2>
+      <h2 className="pl-heading pl-heading--reserve" ref={reserveRef}>Rezerwa:</h2>
       <div className="pl-list">
-        {reserves.map((p) => (
-          <PlayerRow key={p.id} player={p} getPlayerPhoto={getPlayerPhoto} />
-        ))}
+        {reserves.map((p) => {
+          // Check compatibility based on the POSITION ON PITCH (substitutionFocusPos)
+          const isCompatible = substitutionFocusPos && normalizePos(p.pos) === normalizePos(substitutionFocusPos);
+          return (
+            <PlayerRow 
+              key={p.id} 
+              player={p} 
+              getPlayerPhoto={getPlayerPhoto} 
+              onClick={setSelectedPlayerId} 
+              showSubIcon={!!substitutionFocusId}
+              onSubClick={handleSubAction}
+              isHighlighted={isCompatible}
+            />
+          );
+        })}
       </div>
+
+      {selectedPlayer && (
+        <PlayerModal 
+          player={selectedPlayer} 
+          team={activeTeam}
+          onClose={() => setSelectedPlayerId(null)} 
+        />
+      )}
     </div>
   );
 }

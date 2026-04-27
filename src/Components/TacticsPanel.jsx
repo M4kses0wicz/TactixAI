@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "../styles/TacticsPanel/css/TacticsPanel.css";
 import { useGame } from "../context/GameContext";
 
@@ -543,12 +543,29 @@ const DISPLAY_NAMES = {
 };
 
 // ─── Single tile ──────────────────────────────────────────────────────────────
-function TacTile({ settingKey, options }) {
-  const midIndex = Math.floor(options.length / 2);
-  const [idx, setIdx] = useState(midIndex);
+function TacTile({ settingKey, options, initialValue, onChange }) {
+  // Szukamy indeksu ignorując wielkość liter i białe znaki dla większej odporności
+  const findIdx = (val) => {
+    if (!val) return -1;
+    return options.findIndex(o => o.toLowerCase().trim() === val.toLowerCase().trim());
+  };
 
-  const prev = () => setIdx((i) => (i - 1 + options.length) % options.length);
-  const next = () => setIdx((i) => (i + 1) % options.length);
+  const initialIdx = findIdx(initialValue);
+  const [idx, setIdx] = useState(initialIdx !== -1 ? initialIdx : Math.floor(options.length / 2));
+
+  // Aktualizacja wewnętrznego stanu, gdy zmienia się drużyna (initialValue)
+  useEffect(() => {
+    const newIdx = findIdx(initialValue);
+    if (newIdx !== -1) setIdx(newIdx);
+  }, [initialValue]);
+
+  const updateIdx = (newIdx) => {
+    setIdx(newIdx);
+    if (onChange) onChange(options[newIdx]);
+  };
+
+  const prev = () => updateIdx((idx - 1 + options.length) % options.length);
+  const next = () => updateIdx((idx + 1) % options.length);
 
   return (
     <div className="tac-tile">
@@ -570,9 +587,39 @@ function TacTile({ settingKey, options }) {
 }
 
 // ─── Main Panel ───────────────────────────────────────────────────────────────
-export default function TacticsPanel() {
+export default function TacticsPanel({ isOpponent }) {
+  const { currentTeam, opponentTeam, setCurrentTeam, setOpponentTeam } = useGame();
   const tabs = ["Przy pilce", "Bez pilki"];
   const [activeTab, setActiveTab] = useState(tabs[0]);
+
+  // Wybieramy aktywną drużynę na podstawie prop isOpponent
+  const activeTeam = isOpponent ? (opponentTeam || currentTeam) : currentTeam;
+
+  if (!activeTeam) return <div className="tac-wrap">Ładowanie taktyki...</div>;
+
+  const handleTacticChange = (tab, key, value) => {
+    const updatedTeam = { ...activeTeam };
+    const tabKey = tab === "Przy pilce" ? "przy_pilce" : "bez_pilki";
+    
+    // Tworzymy kopię zagnieżdżonego obiektu taktyki
+    updatedTeam.taktyka_druzyny = {
+      ...updatedTeam.taktyka_druzyny,
+      [tabKey]: {
+        ...updatedTeam.taktyka_druzyny[tabKey],
+        [key]: value
+      }
+    };
+    
+    if (isOpponent) {
+      setOpponentTeam(updatedTeam);
+    } else {
+      setCurrentTeam(updatedTeam);
+    }
+  };
+
+  const currentTactics = activeTab === "Przy pilce" 
+    ? activeTeam.taktyka_druzyny.przy_pilce 
+    : activeTeam.taktyka_druzyny.bez_pilki;
 
   return (
     <div className="tac-wrap">
@@ -590,7 +637,13 @@ export default function TacticsPanel() {
 
       <div className="tac-grid">
         {Object.entries(OPTIONS[activeTab]).map(([key, opts]) => (
-          <TacTile key={key} settingKey={key} options={opts} />
+          <TacTile 
+            key={`${activeTeam.id}-${key}`} 
+            settingKey={key} 
+            options={opts} 
+            initialValue={currentTactics[key]}
+            onChange={(val) => handleTacticChange(activeTab, key, val)}
+          />
         ))}
       </div>
     </div>
