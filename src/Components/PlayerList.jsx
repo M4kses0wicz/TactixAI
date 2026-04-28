@@ -65,11 +65,17 @@ function PlayerRow({
   const sc = scoreColor(player.score);
   const isHealthy = player.status === "healthy";
 
+  const { aiHighlights } = useGame();
+  const isAiHighlighted = aiHighlights.some(h => h.toLowerCase() === player.name?.toLowerCase());
+
   return (
     <div 
       id={id}
-      className={`pl-row ${isHighlighted ? 'pl-row--highlighted' : ''}`} 
-      onClick={() => onClick(player.id)}
+      className={`pl-row ${isHighlighted ? 'pl-row--highlighted' : ''} ${isAiHighlighted ? 'ai-highlight' : ''}`} 
+      onClick={() => {
+        onClick(player.id);
+        removeAiHighlight(player.name);
+      }}
       draggable={!isOpponent}
       onDragStart={(e) => !isOpponent && onDragStart(e, player.id, isStarter)}
       onDragOver={(e) => !isOpponent && onDragOver(e)}

@@ -48,7 +48,7 @@ const MiniPitch = ({ team, players, isOpponent }) => {
 };
 
 const SimulationWindow = ({ onFinish }) => {
-  const { currentTeam, opponentTeam, getClubLogo } = useGame();
+  const { currentTeam, opponentTeam, getClubLogo, setMatchData } = useGame();
   const [time, setTime] = useState(0);
   const [score, setScore] = useState({ home: 0, away: 0 });
   const [events, setEvents] = useState([]);
@@ -85,10 +85,24 @@ const SimulationWindow = ({ onFinish }) => {
         }
         const nextTime = prev + 1;
         handleRandomEvent(nextTime);
+
+        // Push live data to context for AI
+        const lowRated = [...homePlayers, ...awayPlayers].filter(p => p.rating < 6.5).map(p => `${p.name} (${p.rating.toFixed(1)})`);
+        setMatchData({
+          time: nextTime,
+          scoreHome: score.home,
+          scoreAway: score.away,
+          lowRatedPlayers: lowRated,
+          recentEvents: events.slice(0, 5).map(e => `${e.time}' ${e.text}`)
+        });
+
         return nextTime;
       });
     }, 200);
-    return () => clearInterval(timerRef.current);
+    return () => {
+      clearInterval(timerRef.current);
+      setMatchData(null);
+    };
   }, [homePlayers, awayPlayers]);
 
   const addEvent = (text, type = "normal") => {

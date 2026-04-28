@@ -580,11 +580,13 @@ const TACTIC_DESCRIPTIONS = {
 
 // ─── Single tile ──────────────────────────────────────────────────────────────
 function RoleTile({ tabKey, player, options, isOpponent }) {
-  const { updatePlayerRole, updateOpponentPlayerRole } = useGame();
+  const { updatePlayerRole, updateOpponentPlayerRole, aiHighlights, removeAiHighlight } = useGame();
   
   const type = tabKey === "Przy pilce" ? "przy_pilce" : "bez_pilki";
   const currentRole = player.wybrane_role?.[type] || options[0];
   const idx = Math.max(0, options.indexOf(currentRole));
+  
+  const isAiHighlighted = aiHighlights.some(h => h.toLowerCase() === currentRole?.toLowerCase());
 
   const prev = () => {
     if (options.length === 0) return;
@@ -599,10 +601,11 @@ function RoleTile({ tabKey, player, options, isOpponent }) {
     } else {
       updatePlayerRole(player.id, type, options[newIdx]);
     }
+    removeAiHighlight(options[newIdx]);
   };
 
   return (
-    <div className="ptac-tile">
+    <div className={`ptac-tile ${isAiHighlighted ? "ai-highlight" : ""}`}>
       <h3 className="ptac-tile__title">Rola: {tabKey === "Przy pilce" ? "Przy piłce" : "Bez piłki"}</h3>
       <div className="ptac-tile__icon-wrap">
         <svg viewBox="0 0 64 64" fill="none" className="ptac-icon">
@@ -620,14 +623,39 @@ function RoleTile({ tabKey, player, options, isOpponent }) {
 }
 
 function TacTile({ settingKey, options }) {
+  const { aiHighlights, removeAiHighlight } = useGame();
   const midIndex = Math.floor(options.length / 2);
   const [idx, setIdx] = useState(midIndex);
 
-  const prev = () => setIdx((i) => (i - 1 + options.length) % options.length);
-  const next = () => setIdx((i) => (i + 1) % options.length);
+  const isAiHighlighted = aiHighlights.some(h => {
+    const hl = h?.toLowerCase?.()?.trim?.() || "";
+    const rawName = DISPLAY_NAMES[settingKey] ?? settingKey;
+    const dName = rawName?.toLowerCase?.()?.trim?.() || "";
+    
+    if (!hl || !dName) return false;
+
+    return hl.includes(dName) || dName.includes(hl) || 
+           options?.some(opt => {
+             const o = opt?.toLowerCase?.()?.trim?.() || "";
+             return o && (hl.includes(o) || o.includes(hl));
+           });
+  });
+
+  const prev = () => {
+    const nextIdx = (idx - 1 + options.length) % options.length;
+    setIdx(nextIdx);
+    removeAiHighlight(DISPLAY_NAMES[settingKey] ?? settingKey);
+    removeAiHighlight(options[nextIdx]);
+  };
+  const next = () => {
+    const nextIdx = (idx + 1) % options.length;
+    setIdx(nextIdx);
+    removeAiHighlight(DISPLAY_NAMES[settingKey] ?? settingKey);
+    removeAiHighlight(options[nextIdx]);
+  };
 
   return (
-    <div className="ptac-tile">
+    <div className={`ptac-tile ${isAiHighlighted ? "ai-highlight" : ""}`}>
       <div className="ptac-tile__header">
         <h3 className="ptac-tile__title">
           {DISPLAY_NAMES[settingKey] ?? settingKey}

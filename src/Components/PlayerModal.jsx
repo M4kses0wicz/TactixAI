@@ -4,7 +4,7 @@ import { useGame } from "../context/GameContext";
 import personIcon from "../assets/user-icon.png";
 
 export default function PlayerModal({ player, team, onClose }) {
-  const { getPlayerPhoto, getFlagUrl, currentTeam: userTeam } = useGame();
+  const { getPlayerPhoto, getFlagUrl, currentTeam: userTeam, aiHighlights } = useGame();
   const activeTeam = team || userTeam;
 
   if (!player) return null;
@@ -48,57 +48,69 @@ export default function PlayerModal({ player, team, onClose }) {
 
   const age = calculateAge(player.data_urodzenia);
 
-  // Funkcja pomocnicza do generowania atrybutów na podstawie formy i pozycji
-  const generateAttributes = (pos, score) => {
-    const base = Math.floor(score * 2); // 7.5 -> 15
+  // Funkcja mapująca atrybuty z bazy danych w dokładnej kolejności
+  const getAttributes = (playerAttrs, pos) => {
+    const t = playerAttrs || {};
+    
+    // Funkcja pomocnicza zabezpieczająca przed brakiem danych
+    const getVal = (val) => (val !== undefined && val !== null) ? val : 10;
+
     const attrs = {
       technical: {
-        "Dośrodkowania": base - 2, "Drybling": base + 1, "Wykończenie": base, 
-        "Pierwszy kontakt": base + 1, "Gra głową": base - 3, "Strzały z dystansu": base - 1,
-        "Długie rzuty": base - 5, "Krycie": base - 4, "Podania": base + 2,
-        "Odbiór": base - 3, "Technika": base + 2
+        "Dośrodkowania": getVal(t.dosrodkowania),
+        "Drybling": getVal(t.drybling),
+        "Gra głową": getVal(t.gra_glowa),
+        "Krycie": getVal(t.krycie),
+        "Odbiór piłki": getVal(t.odbior_pilki),
+        "Podania": getVal(t.podania),
+        "Przyjęcie piłki": getVal(t.przyjecie_pilki),
+        "Strzały z dystansu": getVal(t.strzaly_z_dystansu),
+        "Technika": getVal(t.technika),
+        "Wykańczanie akcji": getVal(t.wykanczanie_akcji),
+        "Długie wrzuty": getVal(t.dlugie_wrzuty),
+        "Rzuty karne": getVal(t.rzuty_karne),
+        "Rzuty rożne": getVal(t.rzuty_rozne),
+        "Rzuty wolne": getVal(t.rzuty_wolne)
       },
       mental: {
-        "Agresja": base - 2, "Antycypacja": base + 1, "Błyskotliwość": base + 2,
-        "Opanowanie": base + 1, "Koncentracja": base, "Decyzje": base + 1,
-        "Determinacja": base + 2, "Gra bez piłki": base + 1, "Przywództwo": base - 3,
-        "Ustawianie się": base - 1, "Współpraca": base + 1, "Pracowitość": base + 1
+        "Agresja": getVal(t.agresja),
+        "Błyskotliwość": getVal(t.blyskotliwosc),
+        "Decyzje": getVal(t.decyzje),
+        "Determinacja": getVal(t.determinacja),
+        "Gra bez piłki": getVal(t.gra_bez_pilki),
+        "Koncentracja": getVal(t.koncentracja),
+        "Opanowanie": getVal(t.opanowanie),
+        "Pracowitość": getVal(t.pracowitosc),
+        "Przegląd sytuacji": getVal(t.przeglad_sytuacji),
+        "Przewidywanie": getVal(t.przewidywanie),
+        "Przywództwo": getVal(t.przywodztwo),
+        "Ustawianie się": getVal(t.ustawianie_sie),
+        "Waleczność": getVal(t.walecznosc),
+        "Współpraca": getVal(t.wspolpraca)
       },
       physical: {
-        "Przyspieszenie": base + 2, "Zwinność": base + 2, "Równowaga": base + 1,
-        "Skoczność": base - 2, "Sprawność": base + 1, "Szybkość": base + 2,
-        "Wytrzymałość": base + 1, "Siła": base - 1
+        "Przyspieszenie": getVal(t.przyspieszenie),
+        "Równowaga": getVal(t.rownowaga),
+        "Siła": getVal(t.sila),
+        "Skoczność": getVal(t.skocznosc),
+        "Sprawność": getVal(t.sprawnosc),
+        "Szybkość": getVal(t.szybkosc),
+        "Wytrzymałość": getVal(t.wytrzymalosc),
+        "Zwinność": getVal(t.zwinnosc)
       }
     };
 
-    // Korekta pod pozycję
     if (pos === "BR") {
         attrs.technical = {
-            "Refleks": base + 3, "Chwytanie": base + 1, "Wykopy": base,
-            "Wyrzuty": base + 1, "Wyjścia": base, "Komunikacja": base + 1,
-            "Ekscentryczność": base - 2, "Gra na przedpolu": base + 1, "Jeden na jeden": base + 2
+            "Um. bramkarskie": getVal(t.umiejetnosci_bramkarskie),
+            ...attrs.technical
         };
-    } else if (pos.includes("O")) {
-        attrs.technical["Krycie"] += 5;
-        attrs.technical["Odbiór"] += 5;
-        attrs.technical["Gra głową"] += 3;
-        attrs.technical["Drybling"] -= 5;
-    } else if (pos === "N") {
-        attrs.technical["Wykończenie"] += 5;
-        attrs.technical["Gra głową"] += 3;
-        attrs.technical["Drybling"] += 2;
     }
-
-    // Clamp values 1-20
-    const clamp = (obj) => {
-        Object.keys(obj).forEach(k => obj[k] = Math.max(1, Math.min(20, obj[k])));
-    };
-    clamp(attrs.technical); clamp(attrs.mental); clamp(attrs.physical);
     
     return attrs;
   };
 
-  const attributes = generateAttributes(player.pozycja_glowna, player.stan_aktualny?.forma_ostatnie_5_meczow || 7.0);
+  const attributes = getAttributes(player.atrybuty, player.pozycja_glowna);
 
   const renderAttrColumn = (title, data) => (
     <div className="pm-attr-col">
@@ -185,11 +197,11 @@ export default function PlayerModal({ player, team, onClose }) {
             <div className="pm-section pm-position-box">
                 <h4 className="pm-section-title">Rola i Pozycja</h4>
                 <div className="pm-roles-list">
-                    <div className="pm-role-item pm-role-item--active">
+                    <div className={`pm-role-item pm-role-item--active ${aiHighlights.some(h => h.toLowerCase() === player.wybrane_role?.przy_pilce?.toLowerCase()) ? 'ai-highlight' : ''}`}>
                         <span className="pm-role-name">Przy piłce: {player.wybrane_role?.przy_pilce || 'Brak'}</span>
                         <div className="pm-role-stars">★★★★★</div>
                     </div>
-                    <div className="pm-role-item">
+                    <div className={`pm-role-item ${aiHighlights.some(h => h.toLowerCase() === player.wybrane_role?.bez_pilki?.toLowerCase()) ? 'ai-highlight' : ''}`}>
                         <span className="pm-role-name">Bez piłki: {player.wybrane_role?.bez_pilki || 'Brak'}</span>
                         <div className="pm-role-stars">★★★★☆</div>
                     </div>

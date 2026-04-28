@@ -53,6 +53,20 @@ const assignStartingEleven = (players, formationPositions) => {
 
         if (player) {
             player.isStarting = true;
+            
+            // Mapowanie roli na podstawie rzeczywistego stylu gry (przydatnosc z bazy)
+            const basePrzy = (player.przydatnosc_przy_pilce && player.przydatnosc_przy_pilce.length > 0) 
+                             ? player.przydatnosc_przy_pilce[0] 
+                             : player.wybrane_role?.przy_pilce;
+            const baseBez = (player.przydatnosc_bez_pilki && player.przydatnosc_bez_pilki.length > 0) 
+                            ? player.przydatnosc_bez_pilki[0] 
+                            : player.wybrane_role?.bez_pilki;
+            
+            player.wybrane_role = {
+                przy_pilce: adaptRoleToPosition(basePrzy, reqPos, 'przy_pilce'),
+                bez_pilki: adaptRoleToPosition(baseBez, reqPos, 'bez_pilki')
+            };
+
             assignedIds.add(player.id);
             assignedOrder.set(player.id, index);
         }
@@ -207,7 +221,41 @@ const DEFAULT_ROLES = {
   }
 };
 
-export { normalizePos, DEFAULT_ROLES };
+// Inteligentne mapowanie ról przy zmianie pozycji na podstawie archetypów (playstyle)
+const adaptRoleToPosition = (baseRole, targetPos, type) => {
+  if (!baseRole) return "";
+  const roles = DEFAULT_ROLES[targetPos] || DEFAULT_ROLES[normalizePos(targetPos)];
+  if (!roles) return baseRole;
+
+  const list = type === 'przy_pilce' ? roles.przy : roles.bez;
+  if (list.includes(baseRole)) return baseRole;
+
+  const ARCHETYPES = {
+    PLAYMAKER: ["Bramkarz grający piłką", "Grający Piłką Środkowy Obrońca", "Rozgrywający wysunięty boczny obrońca", "Cofnięty rozgrywający", "Rozgrywający pomocnik", "Wysunięty rozgrywający", "Rozgrywający skrzydłowy", "Wolna rola", "Fałszywy napastnik", "Cofnięty napastnik", "Swobodny rozgrywający"],
+    RUNNER: ["Obiegający Środkowy Obrońca", "Wysunięty boczny obrońca", "Zaawansowany boczny wysunięty obrońca", "Pomocnik długodystansowiec", "Wychodzący pomocnik", "Odwrócony skrzydłowy", "Schodzący napastnik", "Wychodzący napastnik", "Odwrócony wysunięty boczny obrońca"],
+    DEFENSIVE: ["Tradycyjny bramkarz", "Bramkarz", "Tradycyjny Środkowy Obrońca", "Środkowy Obrońca", "Blokujący Środkowy Obrońca", "Asekurujący Środkowy Obrońca", "Boczny obrońca", "Cofnięty boczny obrońca", "Defensywny pomocnik", "Łącznik defensywy", "Cofający się defensywny pomocnik", "Kryjący defensywny pomocnik", "Szeroko kryjący defensywny pomocnik", "Pressujący boczny obrońca", "Pressujący defensywny pomocnik", "Bramkarz grający na linii"],
+    WINGER: ["Boczny Środkowy Obrońca", "Boczny pomocnik", "Skrzydłowy", "Boczny napastnik", "Śledzący boczny pomocnik", "Boczny przyjmujący pomocnik", "Boczny przyjmujący skrzydłowy", "Odwrócony przyjmujący skrzydłowy"],
+    STRIKER: ["Odgrywający", "Środkowy napastnik", "Lis pola karnego", "Ofensywny pomocnik", "Podwieszony przyjmujący środkowy napastnik", "Centralny przyjmujący środkowy napastnik"],
+    BALANCED: ["Środkowy pomocnik", "Śledzący środkowy pomocnik", "Centralny przyjmujący ofensywny pomocnik", "Zaawansowany Środkowy Obrońca", "Bramkarz-libero"]
+  };
+
+  let baseArchetype = null;
+  for (const [arch, rolesList] of Object.entries(ARCHETYPES)) {
+      if (rolesList.includes(baseRole)) {
+          baseArchetype = arch;
+          break;
+      }
+  }
+
+  if (baseArchetype) {
+      const matchingRole = list.find(r => ARCHETYPES[baseArchetype].includes(r));
+      if (matchingRole) return matchingRole;
+  }
+
+  return list[0] || baseRole;
+};
+
+export { normalizePos, DEFAULT_ROLES, adaptRoleToPosition };
 
 export function useGame() {
   return useContext(GameContext);
@@ -222,6 +270,12 @@ export function GameProvider({ children }) {
   const [activeTab, setActiveTab] = useState("Zawodnicy");
   const [substitutionFocusId, setSubstitutionFocusId] = useState(null);
   const [substitutionFocusPos, setSubstitutionFocusPos] = useState(null);
+  const [aiHighlights, setAiHighlights] = useState([]);
+  const [matchData, setMatchData] = useState(null);
+
+  const removeAiHighlight = (name) => {
+    setAiHighlights(prev => prev.filter(h => h.toLowerCase() !== name.toLowerCase()));
+  };
 
   const updatePlayerRole = (playerId, type, roleName) => {
     setCurrentTeam(prev => {
@@ -261,18 +315,37 @@ export function GameProvider({ children }) {
         const subIn = prev.zawodnicy.find(p => p.id === reserveId);
         if (!subIn) return prev;
 
-        const newZawodnicy = prev.zawodnicy.map(p => {
-            if (p.id === starterId) return { ...p, isStarting: false };
-            if (p.id === reserveId) return { ...p, isStarting: true };
-            return p;
-        });
-
+        const newZawodnicy = [...prev.zawodnicy];
+        
+        // Zaktualizuj status w ogólnej tablicy
+        const sIndex = newZawodnicy.findIndex(p => p.id === starterId);
+        if (sIndex !== -1) newZawodnicy[sIndex] = { ...newZawodnicy[sIndex], isStarting: false };
+        
         const newAssignedStarters = [...(prev.assignedStarters || [])];
         const slotIndex = newAssignedStarters.findIndex(p => p?.id === starterId);
         
-        if (slotIndex !== -1) {
-            newAssignedStarters[slotIndex] = { ...subIn, isStarting: true };
+        let adaptedSubIn = { ...subIn, isStarting: true };
+        
+        // Jeśli podmieniamy na konkretnej pozycji (mamy indeks w wyjściowej 11), adaptuj rolę!
+        if (slotIndex !== -1 && prev.domyslna_formacja) {
+            const formation = prev.formacje?.find(f => f.nazwa === prev.domyslna_formacja);
+            if (formation && formation.pozycje) {
+                const targetPos = formation.pozycje[slotIndex];
+                
+                const basePrzy = (subIn.przydatnosc_przy_pilce && subIn.przydatnosc_przy_pilce.length > 0) ? subIn.przydatnosc_przy_pilce[0] : subIn.wybrane_role?.przy_pilce;
+                const baseBez = (subIn.przydatnosc_bez_pilki && subIn.przydatnosc_bez_pilki.length > 0) ? subIn.przydatnosc_bez_pilki[0] : subIn.wybrane_role?.bez_pilki;
+                
+                adaptedSubIn.wybrane_role = {
+                    przy_pilce: adaptRoleToPosition(basePrzy, targetPos, 'przy_pilce'),
+                    bez_pilki: adaptRoleToPosition(baseBez, targetPos, 'bez_pilki')
+                };
+            }
+            newAssignedStarters[slotIndex] = adaptedSubIn;
         }
+
+        // Zaktualizuj rezerwowego w ogólnej tablicy
+        const rIndex = newZawodnicy.findIndex(p => p.id === reserveId);
+        if (rIndex !== -1) newZawodnicy[rIndex] = adaptedSubIn;
 
         return { ...prev, zawodnicy: newZawodnicy, assignedStarters: newAssignedStarters };
     });
@@ -284,10 +357,48 @@ export function GameProvider({ children }) {
     setCurrentTeam(prev => {
       if (!prev || !prev.assignedStarters) return prev;
       const newStarters = [...prev.assignedStarters];
-      const temp = newStarters[idx1];
-      newStarters[idx1] = newStarters[idx2];
-      newStarters[idx2] = temp;
-      return { ...prev, assignedStarters: newStarters };
+      const newZawodnicy = [...prev.zawodnicy];
+      
+      const formation = prev.formacje?.find(f => f.nazwa === prev.domyslna_formacja);
+      
+      const p1 = newStarters[idx1];
+      const p2 = newStarters[idx2];
+      
+      let p1Adapted = { ...p1 };
+      let p2Adapted = { ...p2 };
+      
+      if (formation && formation.pozycje) {
+          const targetPosForP1 = formation.pozycje[idx2]; // p1 idzie na pozycje p2
+          const targetPosForP2 = formation.pozycje[idx1]; // p2 idzie na pozycje p1
+          
+          const b1Przy = (p1.przydatnosc_przy_pilce && p1.przydatnosc_przy_pilce.length > 0) ? p1.przydatnosc_przy_pilce[0] : p1.wybrane_role?.przy_pilce;
+          const b1Bez = (p1.przydatnosc_bez_pilki && p1.przydatnosc_bez_pilki.length > 0) ? p1.przydatnosc_bez_pilki[0] : p1.wybrane_role?.bez_pilki;
+          
+          const b2Przy = (p2.przydatnosc_przy_pilce && p2.przydatnosc_przy_pilce.length > 0) ? p2.przydatnosc_przy_pilce[0] : p2.wybrane_role?.przy_pilce;
+          const b2Bez = (p2.przydatnosc_bez_pilki && p2.przydatnosc_bez_pilki.length > 0) ? p2.przydatnosc_bez_pilki[0] : p2.wybrane_role?.bez_pilki;
+
+          p1Adapted.wybrane_role = {
+              przy_pilce: adaptRoleToPosition(b1Przy, targetPosForP1, 'przy_pilce'),
+              bez_pilki: adaptRoleToPosition(b1Bez, targetPosForP1, 'bez_pilki')
+          };
+          
+          p2Adapted.wybrane_role = {
+              przy_pilce: adaptRoleToPosition(b2Przy, targetPosForP2, 'przy_pilce'),
+              bez_pilki: adaptRoleToPosition(b2Bez, targetPosForP2, 'bez_pilki')
+          };
+      }
+      
+      newStarters[idx1] = p2Adapted;
+      newStarters[idx2] = p1Adapted;
+      
+      // Update the main array so the UI synchronizes
+      const zIndex1 = newZawodnicy.findIndex(p => p.id === p1.id);
+      if (zIndex1 !== -1) newZawodnicy[zIndex1] = p1Adapted;
+      
+      const zIndex2 = newZawodnicy.findIndex(p => p.id === p2.id);
+      if (zIndex2 !== -1) newZawodnicy[zIndex2] = p2Adapted;
+      
+      return { ...prev, zawodnicy: newZawodnicy, assignedStarters: newStarters };
     });
   };
 
@@ -297,17 +408,19 @@ export function GameProvider({ children }) {
     const fetchDbData = async () => {
       try {
         setIsLoadingDb(true);
-        const [teamsRes, playersRes] = await Promise.all([
+        const [teamsRes, playersRes, attributesRes] = await Promise.all([
           fetch('http://127.0.0.1:8000/api/druzyny'),
-          fetch('http://127.0.0.1:8000/api/zawodnicy')
+          fetch('http://127.0.0.1:8000/api/zawodnicy'),
+          fetch('http://127.0.0.1:8000/api/zawodnicy_atrybuty')
         ]);
         
-        if (!teamsRes.ok || !playersRes.ok) {
+        if (!teamsRes.ok || !playersRes.ok || !attributesRes.ok) {
           throw new Error("Failed to fetch data from backend");
         }
 
         const teamsData = await teamsRes.json();
         const playersData = await playersRes.json();
+        const attributesData = await attributesRes.json();
         
         const groupedPlayers = {};
         playersData.forEach(p => {
@@ -367,6 +480,8 @@ export function GameProvider({ children }) {
                 }
             }
 
+            const attrs = attributesData.find(a => a.zawodnik_id === p.id) || {};
+
             groupedPlayers[p.druzyna_id].push({
                 id: p.id,
                 imie_nazwisko: p.imie_nazwisko,
@@ -389,7 +504,8 @@ export function GameProvider({ children }) {
                 przydatnosc_przy_pilce: rolesPrzyPilce,
                 przydatnosc_bez_pilki: rolesBezPilki,
                 wybrane_role: defaultRoles,
-                instrukcje_krycia: defaultInstructions
+                instrukcje_krycia: defaultInstructions,
+                atrybuty: attrs
             });
         });
 
@@ -552,36 +668,7 @@ export function GameProvider({ children }) {
     }));
   };
 
-  // Inteligentne mapowanie ról przy zmianie pozycji
-  const adaptRoleToPosition = (currentRole, targetPos, type) => {
-    if (!currentRole) return "";
-    const roles = DEFAULT_ROLES[targetPos] || DEFAULT_ROLES[normalizePos(targetPos)];
-    if (!roles) return currentRole;
-
-    const list = type === 'przy_pilce' ? roles.przy : roles.bez;
-    
-    // 1. Jeśli rola już istnieje na nowej pozycji - zostawiamy
-    if (list.includes(currentRole)) return currentRole;
-
-    // 2. Mapowanie odpowiedników (Słownik adaptacji)
-    const adaptations = {
-        "Rozgrywający skrzydłowy": "Rozgrywający pomocnik",
-        "Skrzydłowy": "Boczny pomocnik",
-        "Odwrócony skrzydłowy": "Boczny pomocnik",
-        "Środkowy napastnik": "Ofensywny pomocnik",
-        "Lis pola karnego": "Środkowy napastnik",
-        "Łącznik defensywy": "Defensywny pomocnik",
-        "Cofnięty rozgrywający": "Rozgrywający pomocnik",
-        "Środkowy Obrońca": "Tradycyjny Środkowy Obrońca"
-    };
-
-    if (adaptations[currentRole] && list.includes(adaptations[currentRole])) {
-        return adaptations[currentRole];
-    }
-
-    // 3. Fallback: Pierwsza dostępna rola dla nowej pozycji
-    return list[0] || currentRole;
-  };
+  // (adaptRoleToPosition przeniesione wyżej, poza GameProvider, by było wspólne)
 
   const updateFormation = (formationName) => {
     setCurrentTeam(prev => {
@@ -608,16 +695,9 @@ export function GameProvider({ children }) {
               isStarting: starterIds.has(z.id)
           }));
           
-          // Adaptacja ról... (zachowujemy istniejącą logikę adaptacji)
-          newTeam.assignedStarters = newTeam.assignedStarters.map((p, idx) => {
-              const targetPos = formation.pozycje[idx];
-              if (targetPos && p.wybrane_role) {
-                  const newPrzy = adaptRoleToPosition(p.wybrane_role.przy_pilce, targetPos, 'przy_pilce');
-                  const newBez = adaptRoleToPosition(p.wybrane_role.bez_pilki, targetPos, 'bez_pilki');
-                  return { ...p, wybrane_role: { przy_pilce: newPrzy, bez_pilki: newBez } };
-              }
-              return p;
-          });
+          // Adaptacja ról jest teraz robiona bezpośrednio w assignStartingEleven, 
+          // więc nie musimy robić tego ponownie ręcznie.
+          // Ale musimy upewnić się, że cała tablica jest odpowiednio zaktualizowana.
       }
       return newTeam;
     });
@@ -745,7 +825,12 @@ export function GameProvider({ children }) {
     updatePlayerRole,
     updateOpponentPlayerRole,
     updateOpponentInstructions,
-    swapPlayersPositions
+    swapPlayersPositions,
+    aiHighlights,
+    setAiHighlights,
+    removeAiHighlight,
+    matchData,
+    setMatchData
   };
 
   return <GameContext.Provider value={value}>{children}</GameContext.Provider>;

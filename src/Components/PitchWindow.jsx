@@ -30,6 +30,7 @@ function PlayerDot({
   player, coords, label, isOpponent, photo, onSubClick, onRoleClick, onPlayerClick, isSelected, pos,
   index, onDragStart, onDragOver, onDragLeave, onDrop, isDragOver 
 }) {
+  const { aiHighlights } = useGame();
   const [isJustSwapped, setIsJustSwapped] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const prevPlayerIdRef = useRef(player?.id);
@@ -59,9 +60,41 @@ function PlayerDot({
 
   const handleDragEnd = () => setIsDragging(false);
 
-  return (
-    <div 
-      className={`pitch-player ${isSelected ? 'pitch-player--selected' : ''} ${isJustSwapped ? 'pitch-player--just-swapped' : ''} ${isDragging ? 'pitch-player--dragging' : ''} ${isDragOver ? 'pitch-player--drag-over' : ''}`} 
+    const isAiHighlighted = aiHighlights.some(h => {
+      const hl = h?.toLowerCase?.()?.trim?.() || "";
+      const pName = player?.imie_nazwisko?.toLowerCase?.()?.trim?.() || "";
+      const r1 = player?.wybrane_role?.przy_pilce?.toLowerCase?.()?.trim?.() || "";
+      const r2 = player?.wybrane_role?.bez_pilki?.toLowerCase?.()?.trim?.() || "";
+      
+      if (!hl) return false;
+
+      // Sprawdzamy czy to ten zawodnik
+      const isThisPlayer = pName && (hl.includes(pName) || pName.includes(hl));
+      if (!isThisPlayer) return false;
+
+      // Sprawdzamy czy AI sugeruje konkretną rolę w całej liście highlightów
+      const suggestedRoles = aiHighlights.filter(hr => {
+          const lowerH = hr.toLowerCase();
+          return lowerH !== pName && !lowerH.includes("-") && lowerH.length > 3;
+      });
+
+      if (suggestedRoles.length > 0) {
+          // Jeśli są sugerowane role, sprawdź czy gracz ma każdą z nich w przynajmniej jednym slocie
+          const unmetSuggestions = suggestedRoles.filter(sr => {
+              const srl = sr.toLowerCase();
+              const hasInR1 = r1 && (r1.includes(srl) || srl.includes(r1));
+              const hasInR2 = r2 && (r2.includes(srl) || srl.includes(r2));
+              return !hasInR1 && !hasInR2;
+          });
+          return unmetSuggestions.length > 0;
+      }
+      
+      return true;
+    });
+
+    return (
+      <div 
+        className={`pitch-player ${isSelected ? 'pitch-player--selected' : ''} ${isJustSwapped ? 'pitch-player--just-swapped' : ''} ${isDragging ? 'pitch-player--dragging' : ''} ${isDragOver ? 'pitch-player--drag-over' : ''} ${isAiHighlighted ? 'ai-highlight' : ''}`} 
       style={{ top: coords.top, left: coords.left }}
       draggable={!isOpponent && !!player}
       onDragStart={handleDragStart}
@@ -114,7 +147,7 @@ export default function PitchWindow({ team, isOpponent }) {
     getPlayerPhoto, getClubLogo, updateFormation, updateOpponentFormation, 
     updateMentality, updateOpponentMentality, currentTeam, opponentTeam,
     substitutionFocusId, setSubstitutionFocusId, setSubstitutionFocusPos, setActiveTab,
-    substitutePlayer, swapPlayersPositions
+    substitutePlayer, swapPlayersPositions, aiHighlights, removeAiHighlight
   } = useGame();
 
   const [selectedRoleContext, setSelectedRoleContext] = useState(null);

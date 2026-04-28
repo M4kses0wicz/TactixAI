@@ -417,8 +417,8 @@ const OPTIONS = {
       "Znacznie wolniej",
       "Wolniej",
       "Standardowo",
-      "Wyżej",
-      "Znacznie wyżej",
+      "Szybciej",
+      "Znacznie szybciej",
     ],
     "Gra na czas": ["Rzadziej", "Standardowo", "Częściej"],
     "Faza przejscia w ofensywie": [
@@ -574,8 +574,42 @@ const TACTIC_DESCRIPTIONS = {
 
 // ─── Single tile ──────────────────────────────────────────────────────────────
 function TacTile({ settingKey, options, initialValue, onChange }) {
+  const { aiHighlights, removeAiHighlight } = useGame();
+  
+  const displayName = DISPLAY_NAMES[settingKey] ?? settingKey;
+  const currentVal = options[findIdx(initialValue)]?.toLowerCase?.()?.trim?.() || "";
+  
+    const isHighlighted = aiHighlights.some(h => {
+      const hl = h?.toLowerCase?.()?.trim?.() || "";
+      const dName = displayName?.toLowerCase?.()?.trim?.() || "";
+      
+      if (!hl || !dName) return false;
+
+      // Jeśli format to 'Kafel: Opcja', parsujemy go dla precyzji
+      if (hl.includes(":")) {
+        const parts = hl.split(":");
+        const suggestedSetting = parts[0].trim();
+        const suggestedValue = parts[1]?.trim() || "";
+
+        // Czy to jest ten kafelek?
+        const isTargetTile = dName === suggestedSetting || dName.includes(suggestedSetting) || suggestedSetting.includes(dName);
+        
+        if (isTargetTile) {
+            // Podświetl tylko jeśli aktualna wartość jest inna niż sugerowana
+            return currentVal !== suggestedValue && !currentVal.includes(suggestedValue) && !suggestedValue.includes(currentVal);
+        }
+        return false;
+      }
+
+      // Fallback dla prostych stringów
+      const isThisSettingSuggested = hl === dName || hl.includes(dName) || dName.includes(hl);
+      const isValueCorrect = currentVal && (hl === currentVal || hl.includes(currentVal) || currentVal.includes(hl));
+      
+      return isThisSettingSuggested && !isValueCorrect;
+    });
+
   // Szukamy indeksu ignorując wielkość liter i białe znaki dla większej odporności
-  const findIdx = (val) => {
+  function findIdx(val) {
     if (!val) return -1;
     return options.findIndex(o => o.toLowerCase().trim() === val.toLowerCase().trim());
   };
@@ -598,7 +632,7 @@ function TacTile({ settingKey, options, initialValue, onChange }) {
   const next = () => updateIdx((idx + 1) % options.length);
 
   return (
-    <div className="tac-tile">
+    <div className={`tac-tile ${isHighlighted ? "ai-highlight" : ""}`}>
       <div className="tac-tile__header">
         <h3 className="tac-tile__title">
           {DISPLAY_NAMES[settingKey] ?? settingKey}

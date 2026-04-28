@@ -81,7 +81,7 @@ const ROLE_DESCRIPTIONS = {
 };
 
 export default function RoleModal({ player, position, onClose, isOpponent }) {
-  const { getPlayerPhoto, updatePlayerRole, updateOpponentPlayerRole } = useGame();
+  const { getPlayerPhoto, updatePlayerRole, updateOpponentPlayerRole, aiHighlights, removeAiHighlight } = useGame();
   const [currentType, setCurrentType] = React.useState('przy_pilce');
 
   const onUpdateRole = isOpponent ? updateOpponentPlayerRole : updatePlayerRole;
@@ -160,12 +160,22 @@ export default function RoleModal({ player, position, onClose, isOpponent }) {
 
   const renderRoleCard = (role, type, current) => {
     const isActive = current === role;
-    const instructions = getInstructions(role);
+    const isAiHighlighted = aiHighlights.some(h => {
+      const hl = h?.toLowerCase?.()?.trim?.() || "";
+      const r = role?.toLowerCase?.()?.trim?.() || "";
+      if (!hl || !r) return false;
+      
+      // Dopasowanie: albo pełna nazwa, albo rola zawiera sugestię, albo pierwsze 4 litery
+      const match = hl.includes(r) || r.includes(hl) || (hl.length > 3 && r.startsWith(hl.substring(0, 4)));
+      
+      // Podświetl tylko jeśli rola jest sugerowana ALE NIE JEST obecnie wybrana
+      return match && !isActive;
+    });
 
     return (
       <div 
         key={role} 
-        className={`rm-role-card ${isActive ? 'rm-role-card--active' : ''}`}
+        className={`rm-role-card ${isActive ? 'rm-role-card--active' : ''} ${isAiHighlighted ? 'ai-highlight' : ''}`}
         onClick={() => onUpdateRole(player.id, type, role)}
       >
         <div className="rm-role-check" />
