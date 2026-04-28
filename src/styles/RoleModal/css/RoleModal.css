@@ -15,30 +15,39 @@
 }
 
 @keyframes overlayFade {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 .rm-window {
-  background: linear-gradient(135deg, rgba(15, 15, 20, 0.95) 0%, rgba(5, 5, 5, 0.98) 100%);
+  background: #0d0d0d;
   width: 740px;
   max-width: 95%;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 28px;
-  box-shadow: 
-    0 50px 100px rgba(0, 0, 0, 0.9),
-    inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+  height: 750px; /* Fixed height to ensure it fills well */
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   overflow: hidden;
   position: relative;
   display: flex;
   flex-direction: column;
-  font-family: "Inter", "Lato", sans-serif;
-  animation: modalScaleIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
+  animation: modalScaleIn 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 @keyframes modalScaleIn {
-  from { opacity: 0; transform: scale(0.96) translateY(20px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .rm-close {
@@ -59,6 +68,7 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   z-index: 10;
 }
+
 .rm-close:hover {
   background: rgba(255, 255, 255, 0.1);
   color: #fff;
@@ -66,162 +76,169 @@
 }
 
 .rm-header {
-  padding: 40px 45px 25px;
+  padding: 20px 30px;
+  background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
   display: flex;
-  flex-direction: row;
+  justify-content: flex-start;
   align-items: center;
   gap: 25px;
-  position: relative;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .rm-avatar-outer {
-    position: relative;
-    padding: 3px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+  position: relative;
 }
 
 .rm-avatar-wrap {
-    width: 110px;
-    height: 110px;
-    border-radius: 50%;
-    border: 3px solid rgba(255, 255, 255, 0.1);
-    background: #111;
-    overflow: hidden;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  width: 60px; /* Match OpponentModal */
+  height: 80px; 
+  background: #151515;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.15);
 }
 
 .rm-avatar {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: center 12%;
+  object-position: center 10%;
 }
 
 .rm-header-text {
-    flex: 1;
+  flex: 1;
 }
 
 .rm-pos-title {
   color: rgba(255, 255, 255, 0.3);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 3px;
+  letter-spacing: 2px;
   margin-bottom: 4px;
 }
 
 .rm-name {
-  font-size: 32px;
+  font-size: 24px;
   font-weight: 900;
   color: #fff;
   margin: 0;
   letter-spacing: -0.5px;
-  text-shadow: 0 0 30px rgba(255,255,255,0.1);
+  text-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
 }
 
 .rm-tabs-container {
-    padding: 0 45px;
-    margin-bottom: 25px;
+  padding: 10px 40px 5px; /* Reduced spacing */
+  margin-bottom: 0px;
 }
 
 .rm-tabs {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    border-radius: 14px;
-    display: flex;
-    padding: 4px;
-    width: fit-content;
-    gap: 4px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 14px;
+  display: flex;
+  padding: 4px;
+  width: fit-content;
+  gap: 4px;
 }
 
 .rm-tab {
-    padding: 10px 35px;
-    border-radius: 10px;
-    background: transparent;
-    border: none;
-    color: rgba(255, 255, 255, 0.4);
-    cursor: pointer;
-    font-weight: 700;
-    font-size: 14px;
-    text-transform: uppercase;
-    transition: all 0.3s;
+  padding: 10px 35px;
+  border-radius: 10px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+  text-transform: uppercase;
+  transition: all 0.3s;
 }
 
 .rm-tab--active {
-    background: rgba(255, 255, 255, 0.9);
-    color: #000;
-    box-shadow: 0 4px 15px rgba(255,255,255,0.2);
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .rm-content {
-  padding: 0 45px 30px;
-  height: 380px; /* Stała wysokość zapobiegająca skakaniu okna */
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255,255,255,0.2) transparent;
+  padding: 0 40px 10px;
+  flex: 1;
+}
+
+.rm-content::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
 }
 
 .rm-role-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 12px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  padding-top: 10px;
+  padding-bottom: 10px;
 }
 
 .rm-role-card {
-  background: rgba(255, 255, 255, 0.02);
-  border: 1px solid rgba(255, 255, 255, 0.04);
-  border-radius: 20px;
-  padding: 18px 22px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 14px;
+  padding: 20px 20px;
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 16px;
   cursor: pointer;
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: all 0.2s;
   position: relative;
 }
 
 .rm-role-card:hover {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(255, 255, 255, 0.06);
   border-color: rgba(255, 255, 255, 0.1);
-  transform: translateY(-2px);
 }
 
 .rm-role-card--active {
   background: rgba(255, 255, 255, 0.06) !important;
-  border-color: rgba(255, 255, 255, 0.25) !important;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.05);
 }
 
 .rm-role-check {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    border: 2px solid rgba(255,255,255,0.1);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
 }
 
 .rm-role-card--active .rm-role-check {
-    background: #fff;
-    border-color: #fff;
+  background: #fff;
+  border-color: #fff;
 }
 
 .rm-role-check::after {
-    content: "✓";
-    font-size: 12px;
-    color: #000;
-    font-weight: 900;
-    opacity: 0;
+  content: "✓";
+  font-size: 12px;
+  color: #000;
+  font-weight: 900;
+  opacity: 0;
 }
+
 .rm-role-card--active .rm-role-check::after {
-    opacity: 1;
+  opacity: 1;
 }
 
 .rm-role-main {
-    flex: 1;
+  flex: 1;
+}
+
+.rm-role-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 2px;
 }
 
 .rm-role-name {
@@ -229,65 +246,108 @@
   font-weight: 800;
   color: #ffffff;
   display: block;
-  margin-bottom: 4px;
+  flex: 1;
 }
 
-.rm-role-footer {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.rm-role-instruction {
-  font-size: 11px;
-  color: rgba(255, 255, 255, 0.3);
-  font-weight: 600;
+.rm-role-stars-container {
+  display: flex;
+  margin-top: 2px;
 }
 
 .rm-role-stars {
-  font-size: 13px;
+  font-size: 14px;
   letter-spacing: 1px;
+}
+
+.rm-description-panel {
+  margin: 0 40px 15px;
+  padding: 20px 25px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  animation: modalScaleIn 0.3s ease;
+}
+
+.rm-description-icon .material-symbols-outlined {
+  color: rgba(255, 255, 255, 0.4);
+  font-size: 26px;
+}
+
+.rm-description-text {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 500;
 }
 
 .rm-footer {
-  padding: 30px 45px 45px;
+  padding: 20px 45px 30px;
   display: flex;
   justify-content: center;
-  background: linear-gradient(to top, rgba(0,0,0,0.3), transparent);
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.3), transparent);
 }
 
 .rm-done-btn {
-  background: linear-gradient(135deg, #fff 0%, #eee 100%);
-  color: #000;
-  border: none;
-  border-radius: 16px;
-  padding: 18px 100px;
-  font-size: 16px;
-  font-weight: 900;
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 10px;
+  padding: 12px 60px;
+  font-size: 13px;
+  font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 1px;
+  letter-spacing: 1.2px;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 10px 30px rgba(255,255,255,0.1);
 }
 
 .rm-done-btn:hover {
-  transform: translateY(-4px) scale(1.02);
-  box-shadow: 0 15px 40px rgba(255,255,255,0.2);
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
 }
 
 /* Staggered entry for cards */
 .rm-role-card {
-    animation: cardIn 0.5s ease backwards;
+  animation: cardIn 0.5s ease backwards;
 }
-.rm-role-card:nth-child(1) { animation-delay: 0.1s; }
-.rm-role-card:nth-child(2) { animation-delay: 0.15s; }
-.rm-role-card:nth-child(3) { animation-delay: 0.2s; }
-.rm-role-card:nth-child(4) { animation-delay: 0.25s; }
-.rm-role-card:nth-child(5) { animation-delay: 0.3s; }
-.rm-role-card:nth-child(6) { animation-delay: 0.35s; }
+
+.rm-role-card:nth-child(1) {
+  animation-delay: 0.1s;
+}
+
+.rm-role-card:nth-child(2) {
+  animation-delay: 0.15s;
+}
+
+.rm-role-card:nth-child(3) {
+  animation-delay: 0.2s;
+}
+
+.rm-role-card:nth-child(4) {
+  animation-delay: 0.25s;
+}
+
+.rm-role-card:nth-child(5) {
+  animation-delay: 0.3s;
+}
+
+.rm-role-card:nth-child(6) {
+  animation-delay: 0.35s;
+}
 
 @keyframes cardIn {
-    from { opacity: 0; transform: translateY(10px); }
-    to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

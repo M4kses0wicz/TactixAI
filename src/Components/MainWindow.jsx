@@ -127,7 +127,7 @@ function MainWindow() {
           
           <div className="content-wrapper">
             <div className="main-panel">
-              {activeTab === "Zawodnicy" && <PlayerList team={activeTeam} />}
+              {activeTab === "Zawodnicy" && <PlayerList team={activeTeam} isOpponent={isOppView} />}
               {activeTab === "Taktyka" && <TacticsPanel isOpponent={isOppView} />}
               {activeTab === "Wytyczne" && <PlayerTacticsPanel isOpponent={isOppView} />}
               {activeTab === "Notatki" && <NoteEditor />}

@@ -179,7 +179,7 @@ const DEFAULT_ROLES = {
   },
   "ŚP": {
     przy: ["Rozgrywający pomocnik", "Wysunięty rozgrywający", "Boczny środkowy pomocnik", "Środkowy pomocnik", "Wychodzący pomocnik"],
-    bez: ["Rozgrywający pomocnik", "Wysunięty rozgrywający", "Boczny środkowy pomocnik", "Środkowy pomocnik", "Wychodzący pomocnik"]
+    bez: ["Środkowy pomocnik", "Śledzący środkowy pomocnik", "Podwieszony przyjmujący środkowy pomocnik"]
   },
   "OP": {
     przy: ["Wychodzący pomocnik", "Ofensywny pomocnik", "Wysunięty rozgrywający", "Wolna rola", "Fałszywy napastnik"],
@@ -225,6 +225,22 @@ export function GameProvider({ children }) {
 
   const updatePlayerRole = (playerId, type, roleName) => {
     setCurrentTeam(prev => {
+        if (!prev) return prev;
+        const newZawodnicy = prev.zawodnicy.map(p => {
+            if (p.id === playerId) {
+                const updatedRoles = { ...(p.wybrane_role || { przy_pilce: 'Brak', bez_pilki: 'Brak' }) };
+                if (type === 'przy_pilce') updatedRoles.przy_pilce = roleName;
+                if (type === 'bez_pilki') updatedRoles.bez_pilki = roleName;
+                return { ...p, wybrane_role: updatedRoles };
+            }
+            return p;
+        });
+        return { ...prev, zawodnicy: newZawodnicy };
+    });
+  };
+
+  const updateOpponentPlayerRole = (playerId, type, roleName) => {
+    setOpponentTeam(prev => {
         if (!prev) return prev;
         const newZawodnicy = prev.zawodnicy.map(p => {
             if (p.id === playerId) {
@@ -335,6 +351,22 @@ export function GameProvider({ children }) {
                 }
             }
 
+            // Default instrukcje_krycia
+            let defaultInstructions = {
+                scisle_krycie: "Standardowo",
+                nacisk: "Standardowo",
+                odbior: "Standardowo",
+                wymuszanie_nogi: "Brak"
+            };
+            if (p.instrukcje_krycia) {
+                try {
+                    const parsedInst = typeof p.instrukcje_krycia === 'string' ? JSON.parse(p.instrukcje_krycia) : p.instrukcje_krycia;
+                    defaultInstructions = { ...defaultInstructions, ...parsedInst };
+                } catch(e) {
+                    console.error("Error parsing default instructions for", p.imie_nazwisko);
+                }
+            }
+
             groupedPlayers[p.druzyna_id].push({
                 id: p.id,
                 imie_nazwisko: p.imie_nazwisko,
@@ -356,7 +388,8 @@ export function GameProvider({ children }) {
                 },
                 przydatnosc_przy_pilce: rolesPrzyPilce,
                 przydatnosc_bez_pilki: rolesBezPilki,
-                wybrane_role: defaultRoles
+                wybrane_role: defaultRoles,
+                instrukcje_krycia: defaultInstructions
             });
         });
 
@@ -616,6 +649,19 @@ export function GameProvider({ children }) {
     }) : null);
   };
   
+  const updateOpponentInstructions = (playerId, instrukcje) => {
+    setOpponentTeam(prev => {
+        if (!prev) return prev;
+        
+        const updatePlayer = p => p.id === playerId ? { ...p, instrukcje_krycia: instrukcje } : p;
+        
+        return {
+            ...prev,
+            zawodnicy: prev.zawodnicy?.map(updatePlayer),
+            assignedStarters: prev.assignedStarters?.map(updatePlayer)
+        };
+    });
+  };
 
   const getPlayerPhoto = (playerName) => {
     if (!playerName) return personIcon;
@@ -697,6 +743,8 @@ export function GameProvider({ children }) {
     setSubstitutionFocusPos,
     substitutePlayer,
     updatePlayerRole,
+    updateOpponentPlayerRole,
+    updateOpponentInstructions,
     swapPlayersPositions
   };
 

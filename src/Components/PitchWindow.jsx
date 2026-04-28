@@ -4,51 +4,32 @@ import personIcon from "../assets/user-icon.png";
 import { useGame, normalizePos } from "../context/GameContext";
 import RoleModal from "./RoleModal";
 import CustomDropdown from "./CustomDropdown";
+import PlayerModal from "./PlayerModal";
+import OpponentInstructionsModal from "./OpponentInstructionsModal";
 
 // Coordinates for your team (attacking upward → GK at bottom)
 const POS_COORDS = {
-  "BR": [{ top: "86%", left: "50%" }],
+  "BR": [{ top: "90%", left: "50%" }],
   "LO": [{ top: "72%", left: "15%" }],
   "PO": [{ top: "72%", left: "85%" }],
   "ŚO4": [{ top: "75%", left: "37%" }, { top: "75%", left: "63%" }],
-  "ŚO3": [{ top: "75%", left: "27%" }, { top: "75%", left: "50%" }, { top: "75%", left: "73%" }],
+  "ŚO3": [{ top: "75%", left: "27%" }, { top: "75%", left: "73%" }, { top: "75%", left: "50%" }],
   "CLL": [{ top: "62%", left: "12%" }],
   "CLP": [{ top: "62%", left: "88%" }],
-  "DP":  [{ top: "60%", left: "50%" }, { top: "60%", left: "37%" }, { top: "60%", left: "63%" }],
+  "DP":  [{ top: "60%", left: "37%" }, { top: "60%", left: "63%" }, { top: "60%", left: "50%" }],
   "ŚP":  [{ top: "50%", left: "37%" }, { top: "50%", left: "63%" }, { top: "50%", left: "50%" }],
-  "OP":  [{ top: "40%", left: "50%" }, { top: "40%", left: "37%" }, { top: "40%", left: "63%" }],
+  "OP":  [{ top: "40%", left: "37%" }, { top: "40%", left: "63%" }, { top: "40%", left: "50%" }],
   "LP":  [{ top: "48%", left: "14%" }],
   "PP":  [{ top: "48%", left: "86%" }],
   "LS":  [{ top: "32%", left: "22%" }],
   "PS":  [{ top: "32%", left: "78%" }],
-  "N":   [{ top: "22%", left: "50%" }, { top: "22%", left: "37%" }, { top: "22%", left: "63%" }],
-};
-
-// Mirror coords for opponent (attacking downward → GK at top)
-const OPP_COORDS = {
-  "BR": [{ top: "14%", left: "50%" }],
-  "LO": [{ top: "28%", left: "85%" }],
-  "PO": [{ top: "28%", left: "15%" }],
-  "ŚO4": [{ top: "25%", left: "63%" }, { top: "25%", left: "37%" }],
-  "ŚO3": [{ top: "25%", left: "73%" }, { top: "25%", left: "50%" }, { top: "25%", left: "27%" }],
-  "CLL": [{ top: "38%", left: "88%" }],
-  "CLP": [{ top: "38%", left: "12%" }],
-  "DP":  [{ top: "40%", left: "50%" }, { top: "40%", left: "63%" }, { top: "40%", left: "37%" }],
-  "ŚP":  [{ top: "50%", left: "63%" }, { top: "50%", left: "37%" }, { top: "50%", left: "50%" }],
-  "OP":  [{ top: "60%", left: "50%" }, { top: "60%", left: "63%" }, { top: "60%", left: "37%" }],
-  "LP":  [{ top: "52%", left: "86%" }],
-  "PP":  [{ top: "52%", left: "14%" }],
-  "LS":  [{ top: "68%", left: "78%" }],
-  "PS":  [{ top: "68%", left: "22%" }],
-  "N":   [{ top: "78%", left: "50%" }, { top: "78%", left: "63%" }, { top: "78%", left: "37%" }],
+  "N":   [{ top: "22%", left: "37%" }, { top: "22%", left: "63%" }, { top: "22%", left: "50%" }],
 };
 
 function PlayerDot({ 
-  player, coords, label, isOpponent, photo, onSubClick, onRoleClick, isSelected, pos,
-  index, onDragStart, onDragOver, onDrop 
+  player, coords, label, isOpponent, photo, onSubClick, onRoleClick, onPlayerClick, isSelected, pos,
+  index, onDragStart, onDragOver, onDragLeave, onDrop, isDragOver 
 }) {
-  const [isHovered, setIsHovered] = useState(false);
-  const [showArrow, setShowArrow] = useState(false);
   const [isJustSwapped, setIsJustSwapped] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const prevPlayerIdRef = useRef(player?.id);
@@ -61,13 +42,16 @@ function PlayerDot({
     prevPlayerIdRef.current = player?.id;
   }, [player?.id]);
 
-  const handleMouseEnter = () => { if (!isOpponent) { setIsHovered(true); setShowArrow(true); } };
-  const handleMouseLeave = () => { setIsHovered(false); setTimeout(() => setShowArrow(false), 300); };
+  // Hover handled via CSS for stability
 
   const handleDragStart = (e) => {
     if (isOpponent || !player) return;
     setIsDragging(true);
-    onDragStart(index);
+    onDragStart(index, player.id);
+    e.dataTransfer.setData("playerId", player.id);
+    e.dataTransfer.setData("isStarter", "true");
+    e.dataTransfer.setData("isReserve", "false");
+    
     const img = new Image();
     img.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
     e.dataTransfer.setDragImage(img, 0, 0);
@@ -77,21 +61,27 @@ function PlayerDot({
 
   return (
     <div 
-      className={`pitch-player ${isSelected ? 'pitch-player--selected' : ''} ${isJustSwapped ? 'pitch-player--just-swapped' : ''} ${isDragging ? 'pitch-player--dragging' : ''}`} 
+      className={`pitch-player ${isSelected ? 'pitch-player--selected' : ''} ${isJustSwapped ? 'pitch-player--just-swapped' : ''} ${isDragging ? 'pitch-player--dragging' : ''} ${isDragOver ? 'pitch-player--drag-over' : ''}`} 
       style={{ top: coords.top, left: coords.left }}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      onClick={() => !isOpponent && player && onRoleClick(player, pos)}
       draggable={!isOpponent && !!player}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
-      onDragOver={(e) => onDragOver(e, index)}
-      onDrop={(e) => onDrop(e, index)}
+      onDragOver={(e) => !isOpponent && onDragOver(e, index)}
+      onDragLeave={onDragLeave}
+      onDrop={(e) => !isOpponent && onDrop(e, index)}
     >
-      {!isOpponent && (isHovered || showArrow) && (
-        <div className="pitch-player__sub-arrow" onClick={(e) => { e.stopPropagation(); onSubClick(player.id); }}>▼</div>
+      {!isOpponent && (
+        <div 
+          className="pitch-player__sub-arrow" 
+          onClick={(e) => { e.stopPropagation(); onSubClick(player.id); }}
+        >
+          <span className="material-symbols-outlined">swap_vertical_circle</span>
+        </div>
       )}
-      <div className={`pitch-player__circle ${isOpponent ? "pitch-player__circle--opp" : ""}`}>
+      <div 
+        className={`pitch-player__circle ${isOpponent ? "pitch-player__circle--opp" : ""}`}
+        onClick={(e) => { e.stopPropagation(); !isOpponent && player && onRoleClick(player, pos); }}
+      >
         <img 
           src={photo} 
           alt="" 
@@ -105,7 +95,12 @@ function PlayerDot({
           }}
         />
       </div>
-      <span className="pitch-player__label">{label}</span>
+      <span 
+        className="pitch-player__label"
+        onClick={(e) => { e.stopPropagation(); player && onPlayerClick(player); }}
+      >
+        {label}
+      </span>
     </div>
   );
 }
@@ -119,23 +114,39 @@ export default function PitchWindow({ team, isOpponent }) {
     getPlayerPhoto, getClubLogo, updateFormation, updateOpponentFormation, 
     updateMentality, updateOpponentMentality, currentTeam, opponentTeam,
     substitutionFocusId, setSubstitutionFocusId, setSubstitutionFocusPos, setActiveTab,
-    swapPlayersPositions
+    substitutePlayer, swapPlayersPositions
   } = useGame();
 
   const [selectedRoleContext, setSelectedRoleContext] = useState(null);
+  const [selectedPlayerForModal, setSelectedPlayerForModal] = useState(null);
   const [draggedIndex, setDraggedIndex] = useState(null);
+  const [dragOverIndex, setDragOverIndex] = useState(null);
 
   const handleRoleClick = (player, position) => setSelectedRoleContext({ playerId: player.id, position });
 
-  const handleDragStart = (index) => setDraggedIndex(index);
+  const handleDragStart = (index, playerId) => setDraggedIndex(index);
   const handleDragOver = (e, index) => {
     e.preventDefault();
+    setDragOverIndex(index);
     if (index === draggedIndex) return;
+  };
+
+  const handleDragLeave = () => {
+    setDragOverIndex(null);
   };
 
   const handleDrop = (e, index) => {
     e.preventDefault();
-    if (draggedIndex !== null && draggedIndex !== index) {
+    setDragOverIndex(null);
+    const draggedPlayerIdStr = e.dataTransfer.getData("playerId");
+    const isReserve = e.dataTransfer.getData("isReserve") === "true";
+
+    if (isReserve && draggedPlayerIdStr) {
+        const targetPlayer = assignedPlayers[index];
+        if (targetPlayer) {
+            substitutePlayer(targetPlayer.id, parseInt(draggedPlayerIdStr));
+        }
+    } else if (draggedIndex !== null && draggedIndex !== index) {
         swapPlayersPositions(draggedIndex, index);
     }
     setDraggedIndex(null);
@@ -165,14 +176,19 @@ export default function PitchWindow({ team, isOpponent }) {
       });
   }
 
-  const coordsMap = isOpponent ? OPP_COORDS : POS_COORDS;
+  const coordsMap = POS_COORDS;
   const posCounts = {};
   const logoSrc = getClubLogo(activeTeam.logo, activeTeam.nazwa);
 
   const handleSubClick = (id, pos) => {
-    setSubstitutionFocusId(id);
-    setSubstitutionFocusPos(pos);
-    setActiveTab("Zawodnicy");
+    if (substitutionFocusId === id) {
+      setSubstitutionFocusId(null);
+      setSubstitutionFocusPos(null);
+    } else {
+      setSubstitutionFocusId(id);
+      setSubstitutionFocusPos(pos);
+      setActiveTab("Zawodnicy");
+    }
   };
 
   const currentMentality = activeTeam.mentalnosc || "Wyważona";
@@ -180,8 +196,16 @@ export default function PitchWindow({ team, isOpponent }) {
   const mentalityShift = MENTALITY_OFFSETS[currentMentality] || 0;
 
   return (
-    <div className="pitch-area" key={`${activeTeam.id}-${isOpponent ? 'opp' : 'team'}`}>
-      <div className="css-pitch" onClick={() => setSelectedRoleContext(null)}>
+    <div 
+      className="pitch-area" 
+      key={`${activeTeam.id}-${isOpponent ? 'opp' : 'team'}`}
+      onDragOver={(e) => e.preventDefault()}
+    >
+      <div className="css-pitch" onClick={() => {
+        setSelectedRoleContext(null);
+        setSubstitutionFocusId(null);
+        setSubstitutionFocusPos(null);
+      }}>
         <div className="css-pitch__outline" />
         <div className="css-pitch__center-line" />
         <div className="css-pitch__center-circle" />
@@ -204,15 +228,33 @@ export default function PitchWindow({ team, isOpponent }) {
       {logoSrc && <div className="pitch-watermark-layer"><img src={logoSrc} alt="" className="pitch-watermark-img" /></div>}
 
       {positions.map((pos, index) => {
+        // Smart coordinate selection based on total count of this position
+        const totalInGroup = positions.filter(p => p === pos).length;
         const count = posCounts[pos] || 0;
         posCounts[pos] = count + 1;
+        
         const coordsArray = coordsMap[pos];
-        const baseCoords = coordsArray && coordsArray[count] ? coordsArray[count] : { top: "50%", left: "50%" };
+        let baseCoords = { top: "50%", left: "50%" };
+
+        if (coordsArray) {
+          if (totalInGroup === 1) {
+            // If only 1, try to find a central coord (usually index 0 or 1 in my new arrays)
+            baseCoords = coordsArray.find(c => c.left === "50%") || coordsArray[0];
+          } else if (totalInGroup === 2) {
+            // If 2, pick the ones that are NOT central (if possible)
+            const nonCentral = coordsArray.filter(c => c.left !== "50%");
+            baseCoords = nonCentral[count] || coordsArray[count];
+          } else {
+            // Fallback for 3+ or other
+            baseCoords = coordsArray[count] || coordsArray[0];
+          }
+        }
         let adjustedTop = parseFloat(baseCoords.top);
         if (pos !== "BR") {
-          const actualShift = isOpponent ? -mentalityShift : mentalityShift;
-          adjustedTop += actualShift;
-          adjustedTop = Math.max(10, Math.min(90, adjustedTop));
+          adjustedTop += mentalityShift;
+          // Clamp defenders to not overlap with GK (at 90%)
+          const maxTop = (pos.includes("ŚO") || pos.includes("O")) ? 82 : 90;
+          adjustedTop = Math.max(10, Math.min(maxTop, adjustedTop));
         }
         const coords = { ...baseCoords, top: `${adjustedTop}%` };
         const player = assignedPlayers[index];
@@ -228,12 +270,15 @@ export default function PitchWindow({ team, isOpponent }) {
             photo={getPlayerPhoto(player?.imie_nazwisko)}
             onSubClick={(id) => handleSubClick(id, pos)}
             onRoleClick={handleRoleClick}
+            onPlayerClick={setSelectedPlayerForModal}
             isSelected={player?.id === substitutionFocusId}
             pos={pos}
             index={index}
             onDragStart={handleDragStart}
             onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
             onDrop={handleDrop}
+            isDragOver={dragOverIndex === index && !isOpponent}
           />
         );
       })}
@@ -242,7 +287,23 @@ export default function PitchWindow({ team, isOpponent }) {
         <RoleModal 
           player={activeTeam.zawodnicy?.find(p => p.id === selectedRoleContext.playerId)} 
           position={selectedRoleContext.position}
+          isOpponent={isOpponent}
           onClose={() => setSelectedRoleContext(null)} 
+        />
+      )}
+
+      {selectedPlayerForModal && !isOpponent && (
+        <PlayerModal 
+          player={selectedPlayerForModal} 
+          team={activeTeam}
+          onClose={() => setSelectedPlayerForModal(null)} 
+        />
+      )}
+
+      {selectedPlayerForModal && isOpponent && (
+        <OpponentInstructionsModal
+          player={selectedPlayerForModal}
+          onClose={() => setSelectedPlayerForModal(null)}
         />
       )}
     </div>

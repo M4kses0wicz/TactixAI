@@ -542,6 +542,36 @@ const DISPLAY_NAMES = {
   "Zachowanie linii defensywnej": "Zachowanie linii defensywnej",
 };
 
+const TACTIC_DESCRIPTIONS = {
+  "Bezposredniosc podan": "Określa długość podań. Krótkie podania zwiększają posiadanie piłki, natomiast długie pozwalają na szybszy transport piłki w pole karne przeciwnika.",
+  "Tempo": "Definiuje szybkość rozgrywania akcji. Wysokie tempo zmusza rywala do błędów, ale zwiększa ryzyko niecelnych podań.",
+  "Gra na czas": "Częstotliwość spowalniania gry przez zawodników, szczególnie przy stałych fragmentach i wyprowadzaniu piłki w końcówkach meczu.",
+  "Faza przejscia w ofensywie": "Sposób zachowania zespołu natychmiast po odzyskaniu piłki – od utrzymania pozycji po błyskawiczny kontratak.",
+  "Rozpietosc ataku": "Szerokość pola gry podczas ataku. Szerokie ustawienie rozciąga obronę rywala, wąskie zagęszcza środek pola.",
+  "Szukaj stalych fragmentow": "Instrukcja wymuszania fauli i szukania rzutów rożnych oraz wolnych w okolicach pola karnego przeciwnika.",
+  "Swoboda taktyczna": "Określa, jak ściśle zawodnicy mają trzymać się wyznaczonych ról. Większa swoboda pozwala na kreatywność, mniejsza na lepszą organizację.",
+  "Strategia rozgrywania": "Sposób radzenia sobie z pressingiem rywala – od cierpliwego budowania akcji po próby omijania linii pressingu długimi podaniami.",
+  "Rzuty od bramki": "Sposób wznawiania gry przez bramkarza z piątego metra.",
+  "Wyprowadzanie pilki przez bramkarza": "Wskazuje formację lub strefę, do której bramkarz powinien kierować pierwsze podanie przy otwartej grze.",
+  "Wejscia za pilka": "Częstotliwość i strona, z której boczni obrońcy lub pomocnicy mają obiegać zawodników z piłką (tzw. overlap).",
+  "Drybling": "Określa, jak często zawodnicy powinni podejmować próby indywidualnych rajdów z piłką.",
+  "Wejscia": "Wskazuje kierunki i intensywność wchodzenia zawodników z drugiej linii w pole karne przeciwnika.",
+  "Odbior podan": "Decyduje, czy zawodnicy mają szukać podań bezpośrednio do nogi partnera, czy na wolne pole do biegu.",
+  "Cierpliwosc": "Określa, czy zespół ma szybko dośrodkowywać w pole karne, czy cierpliwie budować akcję aż do czystej pozycji.",
+  "Strzaly z dystansu": "Częstotliwość podejmowania prób uderzeń z większej odległości od bramki.",
+  "Styl dosrodkowan": "Technika wykonywania dośrodkowań – od mocnych, bitych piłek po miękkie wrzutki na głowę.",
+  "Wyprowadzanie pilki przez bramkarza_tempo": "Szybkość, z jaką bramkarz ma wznawiać grę po przechwyceniu piłki.",
+  "Linia nacisku": "Wysokość na boisku, od której zespół zaczyna aktywnie naciskać na rywala próbującego wyprowadzić akcję.",
+  "Linia defensywna": "Bazowa wysokość ustawienia linii obrony podczas bronienia się w fazie niskiej i średniej.",
+  "Aktywacja pressingu": "Intensywność i częstotliwość doskakiwania do rywala posiadającego piłkę.",
+  "Przejscie defensywne": "Zachowanie zespołu zaraz po stracie piłki – od natychmiastowego doskoku (kontrpressing) po powrót na pozycje (przegrupowanie).",
+  "Atak na pilke": "Styl odbierania piłki – od ostrożnego wyczekiwania po agresywne wślizgi.",
+  "Reakcja na dosrodkowania": "Instrukcja dla bocznych obrońców – czy mają blokować centry, czy zagęszczać środek pola.",
+  "Kierunek pressingu": "Określa, czy zespół ma spychać rywala do boku boiska, czy wymuszać grę przez środek.",
+  "Krotkie wyprowadzanie rywala": "Instrukcja dla napastników, aby uniemożliwiali krótkie wznowienie gry od bramki przeciwnika.",
+  "Zachowanie linii defensywnej": "Decyduje, czy linia obrony ma stosować pułapki ofsajdowe, czy cofać się za plecy napastników.",
+};
+
 // ─── Single tile ──────────────────────────────────────────────────────────────
 function TacTile({ settingKey, options, initialValue, onChange }) {
   // Szukamy indeksu ignorując wielkość liter i białe znaki dla większej odporności
@@ -569,9 +599,17 @@ function TacTile({ settingKey, options, initialValue, onChange }) {
 
   return (
     <div className="tac-tile">
-      <h3 className="tac-tile__title">
-        {DISPLAY_NAMES[settingKey] ?? settingKey}
-      </h3>
+      <div className="tac-tile__header">
+        <h3 className="tac-tile__title">
+          {DISPLAY_NAMES[settingKey] ?? settingKey}
+        </h3>
+        <div className="tac-tile__info-icon">
+          <span className="material-symbols-outlined">info</span>
+          <div className="tac-tile__tooltip">
+            {TACTIC_DESCRIPTIONS[settingKey] || "Brak opisu dla tej taktyki."}
+          </div>
+        </div>
+      </div>
       <div className="tac-tile__icon-wrap">{getIcon(settingKey, idx, options.length)}</div>
       <div className="tac-tile__control">
         <button className="tac-tile__arrow" onClick={prev}>

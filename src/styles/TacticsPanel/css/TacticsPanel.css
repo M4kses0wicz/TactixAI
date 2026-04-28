@@ -73,6 +73,14 @@
   border-color: rgba(255, 255, 255, 0.4);
   background: #181818;
 }
+.tac-tile__header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  position: relative;
+}
 .tac-tile__title {
   font-family: "Lato", sans-serif;
   font-size: 13px;
@@ -80,6 +88,51 @@
   color: #ffffff;
   line-height: 1.35;
   min-height: 34px;
+  flex: 1;
+}
+.tac-tile__info-icon {
+  position: relative;
+  cursor: help;
+  color: rgba(255, 255, 255, 0.3);
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tac-tile__info-icon span {
+  font-size: 18px;
+}
+.tac-tile__info-icon:hover {
+  color: #ffffff;
+}
+
+.tac-tile__tooltip {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  width: 240px;
+  background: #1a1a1a;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 12px;
+  font-family: "Lato", sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.5;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 100;
+  pointer-events: none;
+}
+
+.tac-tile__info-icon:hover .tac-tile__tooltip {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(5px);
 }
 .tac-tile__icon-wrap {
   flex: 1;

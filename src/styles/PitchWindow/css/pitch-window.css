@@ -201,7 +201,7 @@
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  z-index: 10; /* Far above the watermark */
+  z-index: 10;
   transition: transform 0.2s ease;
 }
 
@@ -280,20 +280,50 @@
 
 .pitch-player__sub-arrow {
   position: absolute;
-  top: -30px;
+  top: -28px;
   left: 50%;
-  transform: translateX(-50%);
-  color: #ff0000;
-  font-size: 24px;
+  transform: translateX(-50%) translateY(10px);
+  color: #ff3e3e;
+  opacity: 0;
+  pointer-events: none;
   cursor: pointer;
-  animation: bounceRed 1s infinite;
-  text-shadow: 0 0 10px rgba(0,0,0,0.8);
   z-index: 50;
+  transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
-@keyframes bounceRed {
-  0%, 100% { transform: translateX(-50%) translateY(0); }
-  50% { transform: translateX(-50%) translateY(-5px); }
+/* Invisible bridge to prevent disappearing on move-up */
+.pitch-player::before {
+  content: '';
+  position: absolute;
+  top: -35px;
+  left: -10px;
+  right: -10px;
+  bottom: 0;
+  background: transparent;
+  z-index: -1;
+}
+
+.pitch-player:hover .pitch-player__sub-arrow {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
+}
+
+.pitch-player__sub-arrow span {
+  font-size: 24px; /* Increased from 20px */
+  filter: drop-shadow(0 0 10px rgba(255, 62, 62, 0.4));
+}
+
+.pitch-player__sub-arrow:hover {
+  color: #ff6e6e;
+  transform: translateX(-50%) translateY(-2px) scale(1.1);
+}
+
+.pitch-player__sub-arrow:active {
+  transform: translateX(-50%) translateY(0) scale(0.9);
 }
 
 .pitch-role-overlay {
@@ -364,6 +394,12 @@
 
 .pitch-player--just-swapped .pitch-player__circle {
   animation: entranceFade 1s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.pitch-player--drag-over .pitch-player__circle {
+  border-color: #00FF00 !important;
+  box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+  transform: scale(1.1);
 }
 
 @keyframes entranceFade {
