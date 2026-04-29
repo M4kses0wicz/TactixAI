@@ -6,11 +6,28 @@
   width: 100vw;
   height: 100vh;
   background-color: #070707;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 32px 32px;
   color: #ffffff;
   display: flex;
   flex-direction: column;
   position: relative;
   overflow: hidden;
+}
+
+/* ── Minimal Ambient Light ────────────────────────────────── */
+.main-container::after {
+  content: "";
+  position: absolute;
+  width: 80vw;
+  height: 40vh;
+  top: -20vh;
+  left: 10vw;
+  background: rgba(255, 255, 255, 0.015);
+  filter: blur(100px);
+  border-radius: 50%;
+  z-index: 0;
+  pointer-events: none;
 }
 
 
@@ -25,8 +42,21 @@
   align-items: center;
   background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(15px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   z-index: 10;
+  position: relative;
+}
+
+.main-header::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 10%;
+  width: 80%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.2), transparent);
+  box-shadow: 0 3px 15px rgba(255, 255, 255, 0.15), 0 0 10px rgba(255, 255, 255, 0.08);
+  opacity: 1;
 }
 
 .team-info {
@@ -83,7 +113,8 @@
   gap: 15px;
 }
 
-.menu-trigger-btn, .simulate-btn {
+.menu-trigger-btn,
+.simulate-btn {
   background: rgba(255, 255, 255, 0.03);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -116,7 +147,9 @@
   border-color: rgba(255, 255, 255, 0.2);
 }
 
-.menu-trigger-btn:hover, .simulate-btn:hover, .menu-trigger-btn.active {
+.menu-trigger-btn:hover,
+.simulate-btn:hover,
+.menu-trigger-btn.active {
   background: rgba(255, 255, 255, 0.12);
   color: #fff;
   border-color: rgba(255, 255, 255, 0.4);
@@ -153,6 +186,7 @@
     opacity: 0;
     transform: scale(0.95) translateY(-10px);
   }
+
   to {
     opacity: 1;
     transform: scale(1) translateY(0);
@@ -210,13 +244,15 @@
   display: grid;
   grid-template-columns: 650px 1fr 400px;
   width: 100%;
-  padding: 10px 25px;
+  padding: 35px 25px 20px;
   gap: 15px;
   z-index: 1;
   min-height: 0;
 }
 
-.left-sec, .mid-sec, .right-sec {
+.left-sec,
+.mid-sec,
+.right-sec {
   height: 100%;
   min-height: 0;
   display: flex;
@@ -260,7 +296,8 @@
 }
 
 /* ── Content Wrapper ─────────────────────────────────────────── */
-.content-wrapper, .pitch-content-wrapper {
+.content-wrapper,
+.pitch-content-wrapper {
   flex: 1;
   display: flex;
   background: rgba(255, 255, 255, 0.03);
@@ -289,9 +326,9 @@
 .ai-panel-container {
   display: flex;
   flex-direction: column;
-  height: calc(100% - 41px);
-  max-height: calc(100% - 41px);
-  margin-top: 41px;
+  height: 100%;
+  max-height: 100%;
+  margin-top: 0;
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 20px;
