@@ -39,49 +39,60 @@ function parseSuggestions(text) {
 }
 
 // --- KOMPONENT SUGGESTION BOX ---
-function SuggestionBox({ suggestions, stageLabel, onApply }) {
+function SuggestionBox({ suggestions, stageLabel, onApply, appliedSet }) {
   if (!suggestions || suggestions.length === 0) return null;
 
   const isSubstitution = (s) => s.type === "Zmiana" || s.type === "Zmiana w składzie";
+  const totalCount = suggestions.length;
+  const appliedCount = suggestions.filter((_, i) => appliedSet?.has(i)).length;
+  const allApplied = appliedCount === totalCount;
 
   return (
-    <div className="suggestion-container">
+    <div className={`suggestion-container ${allApplied ? 'suggestion-container--done' : ''}`}>
       <div className="suggestion-header">
-        <span className="suggestion-fire">🔥</span>
-        <span className="suggestion-title">Sugerowane Akcje</span>
+        <span className="suggestion-title">{allApplied ? 'Wdrożono' : 'Propozycje'}</span>
         {stageLabel && <span className="suggestion-stage">{stageLabel}</span>}
+        {totalCount > 1 && (
+          <span className={`suggestion-counter ${allApplied ? 'suggestion-counter--done' : ''}`}>{appliedCount}/{totalCount}</span>
+        )}
       </div>
-      {suggestions.map((s, i) => (
-        isSubstitution(s) ? (
-          <div key={i} className="suggestion-box suggestion-box--sub">
-            <div className="suggestion-sub-badge">⇄ Zmiana w składzie</div>
+      {suggestions.map((s, i) => {
+        const isApplied = appliedSet?.has(i);
+        return isSubstitution(s) ? (
+          <div key={i} className={`suggestion-box suggestion-box--sub ${isApplied ? 'suggestion-box--applied' : ''}`}>
             <div className="suggestion-sub-players">
               <div className="suggestion-sub-in">
-                <span className="sub-label sub-label--in">▲ Wchodzi</span>
+                <span className="sub-label sub-label--in">Wchodzi</span>
                 <span className="sub-name">{s.player}</span>
               </div>
-              <div className="suggestion-sub-arrow">⇄</div>
+              <div className="suggestion-sub-arrow">
+                <span className="material-symbols-outlined">swap_horiz</span>
+              </div>
               <div className="suggestion-sub-out">
-                <span className="sub-label sub-label--out">▼ Schodzi</span>
-                <span className="sub-name">{s.value?.replace('Za: ', '') || s.value}</span>
+                <span className="sub-label sub-label--out">Schodzi</span>
+                <span className="sub-name">{s.value?.replace(/^(Za|Schodzi|Za:|Schodzi:)\s*/i, '') || s.value}</span>
               </div>
             </div>
             {s.reason && <div className="suggestion-reason">{s.reason}</div>}
-            <div className="suggestion-right" style={{justifyContent: 'flex-end', marginTop: '6px'}}>
+            <div className="suggestion-actions">
               {onApply && (
-                <button
-                  className="suggestion-apply-btn"
-                  onClick={() => onApply(s)}
-                  title="Zatwierdź zmianę i przejdź dalej"
-                >
-                  ✓ Zatwierdź zmianę
-                </button>
+                isApplied ? (
+                  <span className="suggestion-applied-badge">
+                    <span className="material-symbols-outlined">check_circle</span>
+                    Wdrożono
+                  </span>
+                ) : (
+                  <button className="suggestion-apply-btn" onClick={() => onApply(s, i)}>
+                    Zatwierdź
+                  </button>
+                )
               )}
             </div>
           </div>
         ) : (
-          <div key={i} className="suggestion-box">
+          <div key={i} className={`suggestion-box ${isApplied ? 'suggestion-box--applied' : ''}`}>
             <div className="suggestion-main">
+              {s.setting && <span className="suggestion-setting">{s.setting}</span>}
               <span className="suggestion-type">{s.type}</span>
               {s.value && (
                 <>
@@ -91,28 +102,28 @@ function SuggestionBox({ suggestions, stageLabel, onApply }) {
               )}
             </div>
             <div className="suggestion-right">
-              {s.player && (
+              {s.player && s.player !== 'Cały zespół' && (
                 <span className="suggestion-player">{s.player}</span>
               )}
               {onApply && (
-                <button
-                  className="suggestion-apply-btn"
-                  onClick={() => onApply(s)}
-                  title="Zastosuj i przejdź do kolejnego etapu"
-                >
-                  ✓ Zastosuj
-                </button>
+                isApplied ? (
+                  <span className="suggestion-applied-badge">
+                    <span className="material-symbols-outlined">check_circle</span>
+                    Wdrożono
+                  </span>
+                ) : (
+                  <button className="suggestion-apply-btn" onClick={() => onApply(s, i)}>
+                    Zastosuj
+                  </button>
+                )
               )}
             </div>
             {s.reason && (
               <div className="suggestion-reason">{s.reason}</div>
             )}
           </div>
-        )
-      ))}
-      <div className="suggestion-disclaimer">
-        Kliknij „Zastosuj”, aby wdrożyć zmianę i przejść do kolejnego etapu.
-      </div>
+        );
+      })}
     </div>
   );
 }
@@ -123,6 +134,8 @@ function AIWindow() {
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState([]);
   const [appliedToast, setAppliedToast] = useState(null); // { text, type }
+  // Track applied suggestion indices per message: { [msgIdx]: Set<suggestionIdx> }
+  const [appliedMap, setAppliedMap] = useState({});
   const greetedRef = useRef(false);
 
   // Powitanie na starcie - używamy ref, aby na pewno stało się tylko raz
@@ -174,7 +187,7 @@ function AIWindow() {
 
         setMessages([{
           role: "assistant",
-          content: `Szefie, raport o zespole **${opp.nazwa}** jest gotowy. Mają wyraźne problemy z ${weaknessText}.\n\nZaczynamy odprawę? Na początek proponuję ustalić **Formację i Mentalność** — masz już swoj pomysł, czy mam zaproponować?`
+          content: `Szefie, raport o zespole **${opp.nazwa}** jest gotowy. Mają wyraźne problemy z ${weaknessText}.\n\nZaczynamy odprawę? Na początek proponuję ustalić naszą **Taktykę Zespołową** — mam coś zaproponować?`
         }]);
         greetedRef.current = true;
       } else if (currentTeam) {
@@ -213,16 +226,163 @@ function AIWindow() {
     setTimeout(() => setAppliedToast(null), 2800);
   };
 
+  // --- REVERSE LOOKUP: wartość opcji taktycznej → klucz taktyki + sekcja ---
+  // Buduje mapę np. "Szybciej" → { section: "przy_pilce", key: "Tempo" }
+  const TACTIC_OPTIONS = {
+    "przy_pilce": {
+      "Bezposredniosc podan": ["Znacznie krócej","Krócej","Standardowo","Bardziej bezpośrednio","Znacznie bardziej bezpośrednio"],
+      "Tempo": ["Znacznie wolniej","Wolniej","Standardowo","Szybciej","Znacznie szybciej"],
+      "Gra na czas": ["Rzadziej","Standardowo","Częściej"],
+      "Faza przejscia w ofensywie": ["Utrzymanie pozycji","Standardowo","Kontratak"],
+      "Rozpietosc ataku": ["Znacznie węziej","Węziej","Standardowo","Szerzej","Znacznie szerzej"],
+      "Szukaj stalych fragmentow": ["Utrzymuj piłkę","Szukaj stałych fragmentów gry"],
+      "Swoboda taktyczna": ["Więcej dyscypliny","Zrównoważone","Mniej dyscypliny"],
+      "Strategia rozgrywania": ["Gra pod pressingiem","Zrównoważone","Omijaj pressing"],
+      "Rzuty od bramki": ["Krótko","Mieszane","Długo"],
+      "Wyprowadzanie pilki przez bramkarza": ["Zrównoważone","Środkowi obrońcy","Boczni obrońcy","Flanki","rozgrywający","odgrywający"],
+      "Wejscia za pilka": ["Zrównoważone","Lewy","Prawy","Oba skrzydła"],
+      "Drybling": ["Odradź","Zrównoważone","Zachęcaj"],
+      "Wejscia": ["Zrównoważone","Środek","Lewy","Prawy","Oba skrzydła"],
+      "Odbior podan": ["Podania do nogi","Podania na wolne pole"],
+      "Cierpliwosc": ["Szybkie centry","Standardowo","Podania w pole karne"],
+      "Strzaly z dystansu": ["Odradź","Zrównoważone","Zachęć"],
+      "Styl dosrodkowan": ["Zrównoważone","Miękkie dośrodkowania","Kąśliwe dośrodkowania","Niskie dośrodkowania"],
+      "Wyprowadzanie pilki przez bramkarza_tempo": ["Zwolnij tempo","Zrównoważone","Szybkie wyprowadzanie"],
+    },
+    "bez_pilki": {
+      "Linia nacisku": ["Niski pressing","Średni pressing","Wysoki pressing"],
+      "Linia defensywna": ["Znacznie niżej","Niżej","Standardowo","Wyżej","Znacznie wyżej"],
+      "Aktywacja pressingu": ["Znacznie rzadziej","Rzadziej","Standardowo","Częściej","Znacznie częściej"],
+      "Przejscie defensywne": ["Przegrupowanie","Standardowo","Kontrpressing"],
+      "Atak na pilke": ["Gra bez wślizgów","Standardowo","Agresywny odbiór"],
+      "Reakcja na dosrodkowania": ["Powstrzymuj dośrodkowania","Zrównoważone","Zachęcaj do dośrodkowań"],
+      "Kierunek pressingu": ["Szeroki pressing","Zrównoważony pressing","Wąski pressing"],
+      "Krotkie wyprowadzanie rywala": ["Nie","Tak"],
+      "Zachowanie linii defensywnej": ["Graj wyżej","Zrównoważone","Graj głębiej"],
+    }
+  };
+
+  // Display name → internal key lookup
+  const DISPLAY_TO_KEY = {
+    "bezpośredniość podań": "Bezposredniosc podan",
+    "tempo": "Tempo",
+    "gra na czas": "Gra na czas",
+    "faza przejścia w ofensywie": "Faza przejscia w ofensywie",
+    "rozpiętość ataku": "Rozpietosc ataku",
+    "szukaj stałych fragmentów": "Szukaj stalych fragmentow",
+    "swoboda taktyczna": "Swoboda taktyczna",
+    "strategia rozgrywania": "Strategia rozgrywania",
+    "rzuty od bramki": "Rzuty od bramki",
+    "wyprowadzanie piłki przez bramkarza": "Wyprowadzanie pilki przez bramkarza",
+    "wejścia za piłką": "Wejscia za pilka",
+    "drybling": "Drybling",
+    "wejścia": "Wejscia",
+    "odbiór podań": "Odbior podan",
+    "cierpliwość": "Cierpliwosc",
+    "strzały z dystansu": "Strzaly z dystansu",
+    "styl dośrodkowań": "Styl dosrodkowan",
+    "tempo wyprowadzania przez bramkarza": "Wyprowadzanie pilki przez bramkarza_tempo",
+    "linia nacisku": "Linia nacisku",
+    "linia defensywna": "Linia defensywna",
+    "aktywacja pressingu": "Aktywacja pressingu",
+    "przejście defensywne": "Przejscie defensywne",
+    "atak na piłkę": "Atak na pilke",
+    "reakcja na dośrodkowania": "Reakcja na dosrodkowania",
+    "kierunek pressingu": "Kierunek pressingu",
+    "krótkie wyprowadzanie rywala": "Krotkie wyprowadzanie rywala",
+    "zachowanie linii defensywnej": "Zachowanie linii defensywnej",
+  };
+
+  const normalize = (str) => {
+    if (!str) return "";
+    return str.toLowerCase()
+      .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "") // remove punctuation
+      .replace(/\s+/g, " ") // normalize spaces
+      .trim();
+  };
+
+  const findTacticByValue = (val) => {
+    if (!val) return null;
+    const normVal = normalize(val);
+    for (const [section, keys] of Object.entries(TACTIC_OPTIONS)) {
+      for (const [key, options] of Object.entries(keys)) {
+        // Try exact normalized match first
+        let match = options.find(o => normalize(o) === normVal);
+        // Then try partial match
+        if (!match) {
+          match = options.find(o => normalize(o).includes(normVal) || normVal.includes(normalize(o)));
+        }
+        
+        if (match) {
+          return { section, key, exactValue: match };
+        }
+      }
+    }
+    return null;
+  };
+
+  const findTacticBySetting = (settingName) => {
+    if (!settingName) return null;
+    const normSetting = normalize(settingName);
+    
+    // Try DISPLAY_TO_KEY first
+    for (const [disp, key] of Object.entries(DISPLAY_TO_KEY)) {
+      if (normalize(disp) === normSetting || normSetting.includes(normalize(disp))) {
+        for (const [section, keys] of Object.entries(TACTIC_OPTIONS)) {
+          if (keys[key]) return { section, key };
+        }
+      }
+    }
+
+    // Try direct key match
+    for (const [section, keys] of Object.entries(TACTIC_OPTIONS)) {
+      for (const key of Object.keys(keys)) {
+        if (normalize(key) === normSetting) return { section, key };
+      }
+    }
+    return null;
+  };
+
+  const findPlayerFuzzy = (name, playerList) => {
+    if (!name || !playerList) return null;
+    const normName = normalize(name);
+    
+    // Exact match
+    let found = playerList.find(p => normalize(p.imie_nazwisko) === normName);
+    if (found) return found;
+
+    // Last name match
+    const parts = normName.split(" ");
+    const lastName = parts[parts.length - 1];
+    if (lastName && lastName.length > 2) {
+      found = playerList.find(p => normalize(p.imie_nazwisko).split(" ").pop() === lastName);
+      if (found) return found;
+      
+      found = playerList.find(p => normalize(p.imie_nazwisko).includes(lastName));
+    }
+    return found || null;
+  };
+
   // Rzeczywiste zastosowanie sugestii AI w stanie gry
   const applyAISuggestion = (suggestion) => {
-    const { type, value, player } = suggestion;
+    const { type, value, player, setting } = suggestion;
 
     try {
       switch (type) {
         case "Mentalność": {
           if (value) {
-            updateMentality(value);
-            showToast(`Mentalność → ${value}`);
+            // Find best mentality match
+            const mentalities = ["Bardzo defensywna", "Defensywna", "Ostrożna", "Wyważona", "Pozytywna", "Ofensywna", "Bardzo ofensywna"];
+            const normVal = normalize(value);
+            const match = mentalities.find(m => normalize(m) === normVal || normalize(m).includes(normVal));
+            
+            if (match) {
+              updateMentality(match);
+              showToast(`Mentalność → ${match}`);
+            } else {
+              updateMentality(value);
+              showToast(`Mentalność → ${value}`);
+            }
           }
           break;
         }
@@ -233,25 +393,26 @@ function AIWindow() {
           }
           break;
         }
-        case "Zmiana": {
-          // value = "Za: Imię Startowego"
-          const outName = value?.replace("Za: ", "").trim();
+        case "Zmiana":
+        case "Zmiana w składzie": {
+          const outName = value?.replace(/^(Za|Schodzi|Za:|Schodzi:)\s*/i, "").trim();
           const starters = currentTeam?.zawodnicy?.filter(p => p.isStarting) || [];
           const reserves = currentTeam?.zawodnicy?.filter(p => !p.isStarting) || [];
-          const outPlayer = starters.find(p => p.imie_nazwisko === outName || p.imie_nazwisko?.includes(outName?.split(" ").pop() || ""));
-          const inPlayer = reserves.find(p => p.imie_nazwisko === player || p.imie_nazwisko?.includes((player || "").split(" ").pop() || ""));
+          const outPlayer = findPlayerFuzzy(outName, starters);
+          const inPlayer = findPlayerFuzzy(player, reserves);
+          
           if (outPlayer && inPlayer) {
             substitutePlayer(outPlayer.id, inPlayer.id);
             showToast(`${inPlayer.imie_nazwisko} ↔ ${outPlayer.imie_nazwisko}`, "sub");
           } else {
+            console.warn("Substitution failed — out:", outName, "| in:", player);
             showToast("Nie znaleziono zawodnika — zmień ręcznie", "warning");
           }
           break;
         }
         case "Rola": {
-          // player = imię, value = "Rola przy piłce / bez piłki" lub samo role
           const allPlayers = currentTeam?.zawodnicy || [];
-          const target = allPlayers.find(p => p.imie_nazwisko === player || p.imie_nazwisko?.includes((player || "").split(" ").pop() || ""));
+          const target = findPlayerFuzzy(player, allPlayers);
           if (target && value) {
             updatePlayerRole(target.id, "przy_pilce", value);
             showToast(`${target.imie_nazwisko} → rola: ${value}`);
@@ -262,32 +423,34 @@ function AIWindow() {
         }
         case "Taktyka":
         case "Instrukcja": {
-          // type=Taktyka, player="Cały zespół", value="Opcja taktyczna"
-          // Próbujemy dopasować do taktyki przy_pilce lub bez_pilki
           if (currentTeam?.taktyka_druzyny && value) {
-            const tacticsPrzy = currentTeam.taktyka_druzyny.przy_pilce || {};
-            const tacticsBez = currentTeam.taktyka_druzyny.bez_pilki || {};
             let applied = false;
-            // Szukamy klucza, którego wartość ma być zmieniona
-            for (const key of Object.keys(tacticsPrzy)) {
-              if (key.toLowerCase().includes(value.toLowerCase()) || value.toLowerCase().includes(key.toLowerCase())) {
-                updateTactics("przy_pilce", key, value);
+
+            // Strategy 1: Use 'setting' and 'value'
+            if (setting) {
+              const match = findTacticBySetting(setting);
+              if (match) {
+                // Find exact value from options to be safe
+                const options = TACTIC_OPTIONS[match.section][match.key];
+                const exactVal = options.find(o => normalize(o) === normalize(value)) || value;
+                updateTactics(match.section, match.key, exactVal);
                 applied = true;
-                break;
               }
             }
+
+            // Strategy 2: Global value search
             if (!applied) {
-              for (const key of Object.keys(tacticsBez)) {
-                if (key.toLowerCase().includes(value.toLowerCase()) || value.toLowerCase().includes(key.toLowerCase())) {
-                  updateTactics("bez_pilki", key, value);
-                  applied = true;
-                  break;
-                }
+              const match = findTacticByValue(value);
+              if (match) {
+                updateTactics(match.section, match.key, match.exactValue);
+                applied = true;
               }
             }
+
             if (applied) {
               showToast(`Taktyka → ${value}`);
             } else {
+              console.warn("Tactic apply failed:", suggestion);
               showToast(`Zastosuj ręcznie: ${value}`, "warning");
             }
           }
@@ -302,23 +465,12 @@ function AIWindow() {
     }
   };
 
-  const handleApplySuggestion = (suggestion) => {
-    // Budujemy czytelny opis zastosowanej zmiany
-    const parts = [];
-    if (suggestion.player && suggestion.player !== 'Cały zespół') parts.push(suggestion.player);
-    if (suggestion.type) parts.push(suggestion.type);
-    if (suggestion.value) parts.push(`\u2192 ${suggestion.value}`);
-    const changeDesc = parts.join(" \u00b7 ") || suggestion.value || "sugestia";
+  // Proceed to next AI stage after all suggestions are applied
+  const proceedToNextStage = (allSuggestions) => {
+    const autoMessage = "Zrobione. Co dalej?";
 
-    // Rzeczywiście zastosuj zmianę w stanie gry PRZED wysłaniem wiadomości do AI
-    applyAISuggestion(suggestion);
-
-    const autoMessage = `Gotowe, zastosowa\u0142em: ${changeDesc}. Przejd\u017amy do kolejnego etapu.`;
-
-    // Dodajemy wiadomo\u015b\u0107 od u\u017cytkownika (widoczna w czacie)
     const userMsg = { role: "user", content: autoMessage };
 
-    // Pobieramy aktualn\u0105 histori\u0119 synchronicznie przez setMessages callback
     let historySnapshot = [];
     setMessages(prev => {
       historySnapshot = prev;
@@ -328,14 +480,13 @@ function AIWindow() {
     setIsLoading(true);
     setAiHighlights([]);
 
-    // Dajemy Reactowi tik\u0119 na update stanu, potem wysy\u0142amy fetch
     setTimeout(() => {
       fetch("http://127.0.0.1:8000/api/ai/analyze", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           query: autoMessage,
-          history: historySnapshot, // historia PRZED dodaniem userMsg
+          history: historySnapshot,
           currentTeam,
           opponentTeam,
           matchData,
@@ -360,6 +511,30 @@ function AIWindow() {
         })
         .finally(() => setIsLoading(false));
     }, 0);
+  };
+
+  const handleApplySuggestion = (suggestion, suggestionIdx, msgIdx, allSuggestions) => {
+    // Apply the actual change in game state
+    applyAISuggestion(suggestion);
+
+    // Mark this suggestion as applied
+    setAppliedMap(prev => {
+      const newMap = { ...prev };
+      const newSet = new Set(prev[msgIdx] || []);
+      newSet.add(suggestionIdx);
+      newMap[msgIdx] = newSet;
+
+      // Check if ALL suggestions in this message are now applied
+      const total = allSuggestions.length;
+      if (newSet.size >= total) {
+        // All applied! Proceed after a short delay to show the final green state
+        setTimeout(() => {
+          proceedToNextStage(allSuggestions);
+        }, 800);
+      }
+
+      return newMap;
+    });
   };
 
 
@@ -461,7 +636,12 @@ function AIWindow() {
               ⚠️ Błąd komunikacji z Asystentem (Uszkodzony format danych). Spróbuj zapytać inaczej.
             </div>
           )}
-          <SuggestionBox suggestions={allSuggestions} stageLabel={msg.currentStage} onApply={handleApplySuggestion} />
+          <SuggestionBox 
+            suggestions={allSuggestions} 
+            stageLabel={msg.currentStage} 
+            onApply={(s, sIdx) => handleApplySuggestion(s, sIdx, idx, allSuggestions)}
+            appliedSet={appliedMap[idx] || new Set()}
+          />
         </div>
       );
     }
