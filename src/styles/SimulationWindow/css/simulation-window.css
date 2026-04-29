@@ -1,130 +1,691 @@
+/* ═══════════════════════════════════════════════
+   MATCH CENTRE — Simulation Window CSS
+   Dark Mode · Minimalist · No Glassmorphism
+   ═══════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@700;800;900&display=swap');
+
+/* ─── Base ─────────────────────────────────────── */
 .simulation-overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background: #050505;
+  inset: 0;
+  background: #080808;
   z-index: 9999;
   display: flex;
   flex-direction: column;
-  padding: 10px 25px;
   color: #fff;
   font-family: "Inter", sans-serif;
   overflow: hidden;
 }
 
-/* Hide Scrollbars Globally but keep scrolling */
-* {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE/Edge */
-}
-*::-webkit-scrollbar {
-  display: none; /* Chrome/Safari/Webkit */
-}
+* { scrollbar-width: none; -ms-overflow-style: none; }
+*::-webkit-scrollbar { display: none; }
 
-/* Scoreboard Ultra-Minimalist */
-.sim-scoreboard {
-  display: flex;
-  justify-content: center;
+/* ─── HEADER / SCOREBOARD ──────────────────────── */
+.mc-header {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  gap: 50px;
-  padding: 15px 0;
-  height: 70px;
+  padding: 0 32px;
+  height: 64px;
   flex-shrink: 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: #0a0a0a;
 }
 
-.sim-sb-team {
+.mc-team {
   display: flex;
   align-items: center;
-  gap: 15px;
-  width: 350px;
+  gap: 12px;
 }
-.sim-sb-team.home { justify-content: flex-end; text-align: right; }
-.sim-sb-team.away { justify-content: flex-start; text-align: left; }
+.mc-team--home { justify-content: flex-end; }
+.mc-team--away { justify-content: flex-start; }
 
-.sim-sb-logo { 
-  width: 32px; 
-  height: 32px; 
-  object-fit: contain; 
-  opacity: 0.95; 
-  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.15)); /* High-end glow to pop logos from dark background */
-  transition: transform 0.3s ease;
+.mc-team-name {
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+}
+.mc-team--home .mc-team-name { text-align: right; }
+
+.mc-team-logo {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  opacity: 0.9;
+  filter: drop-shadow(0 0 6px rgba(255,255,255,0.1));
+  flex-shrink: 0;
 }
 
-.sim-sb-logo:hover {
-  transform: scale(1.15); /* Slightly bigger pop */
-  filter: brightness(1.4) drop-shadow(0 0 16px rgba(255, 255, 255, 0.5)); /* Significant brightness and glow boost */
-}
-.sim-sb-name { font-size: 13px; font-weight: 800; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1px; }
-
-.sim-sb-center {
+.mc-scorebox {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 3px;
+  padding: 0 40px;
 }
-.sim-sb-score { font-size: 32px; font-weight: 900; font-family: "Outfit", sans-serif; letter-spacing: 4px; }
-.sim-sb-time { font-size: 10px; font-weight: 900; color: #4CAF50; background: rgba(76,175,80,0.1); padding: 2px 10px; border-radius: 4px; }
 
-/* Layout Grid */
-.sim-layout-grid {
+.mc-score {
+  font-family: "Outfit", sans-serif;
+  font-size: 30px;
+  font-weight: 900;
+  letter-spacing: 6px;
+  color: #ffffff;
+  line-height: 1;
+}
+
+.mc-time-pill {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: #4ade80;
+  background: rgba(74,222,128,0.1);
+  border: 1px solid rgba(74,222,128,0.2);
+  padding: 2px 10px;
+  border-radius: 20px;
+}
+.mc-time-pill--finished {
+  color: rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.04);
+  border-color: rgba(255,255,255,0.08);
+}
+
+.mc-header-wrapper {
+  position: relative;
+}
+
+.mc-quit-btn {
+  display: none; /* replaced by mc-back-btn */
+}
+
+/* Wróć button — prawy górny róg, premium minimal */
+.mc-back-btn {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.55);
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 7px 18px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.mc-back-btn:hover {
+  color: #fff;
+  border-color: rgba(255,255,255,0.55);
+  background: rgba(255,255,255,0.05);
+}
+
+/* Zakończ — pojawia się po meczu, prawy górny róg (replaces Wróć) */
+.mc-finish-btn {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #ffffff;
+  color: #000;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 7px 18px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  animation: fadeIn 0.3s ease;
+}
+.mc-finish-btn:hover {
+  background: #e5e5e5;
+  transform: translateY(-50%) scale(1.04);
+}
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(-50%) translateX(4px); } to { opacity: 1; transform: translateY(-50%) translateX(0); } }
+
+/* ─── MAIN GRID ────────────────────────────────── */
+.mc-body {
   display: grid;
-  grid-template-columns: 440px 1fr 440px;
-  gap: 25px;
+  grid-template-columns: 560px 1fr 560px;
   flex: 1;
   min-height: 0;
-  padding: 15px 0;
+  gap: 0;
 }
 
-.sim-side-panel { display: flex; flex-direction: column; gap: 15px; min-height: 0; }
-
-.sim-panel-box {
-  background: #111;
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 16px;
+/* ─── SIDE PANELS ──────────────────────────────── */
+.mc-side {
   display: flex;
   flex-direction: column;
+  border-right: 1px solid rgba(255,255,255,0.05);
+  min-height: 0;
+  background: #090909;
+}
+.mc-side--right {
+  border-right: none;
+  border-left: 1px solid rgba(255,255,255,0.05);
+}
+
+/* Mini Pitch Box */
+.mc-pitch-box {
+  flex-shrink: 0;
+  padding: 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.mc-pitch-label {
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.2);
+  margin-bottom: 10px;
+}
+
+.mc-mini-pitch {
+  position: relative;
+  width: 100%;
+  height: 270px;
+  background: rgba(17, 17, 17, 0.85);
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.25);
+}
+
+/* Pitch lines — match tactical screen style */
+.mc-mini-pitch::before {
+  content: '';
+  position: absolute;
+  inset: 8%;
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 8px;
+  pointer-events: none;
+}
+.mc-pitch-center-line {
+  position: absolute;
+  top: 50%;
+  left: 8%;
+  right: 8%;
+  height: 1px;
+  background: rgba(255,255,255,0.25);
+}
+.mc-pitch-center-circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 22%;
+  aspect-ratio: 1;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 50%;
+}
+.mc-pitch-pen-top {
+  position: absolute;
+  top: 8%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 44%;
+  height: 16%;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-top: none;
+}
+.mc-pitch-pen-bot {
+  position: absolute;
+  bottom: 8%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 44%;
+  height: 16%;
+  border: 1px solid rgba(255,255,255,0.2);
+  border-bottom: none;
+}
+
+/* Player dots on mini pitch */
+.mc-dot {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+.mc-dot__circle {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #1e293b;
+  border: 1.5px solid rgba(255,255,255,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 7px;
+  font-weight: 800;
+  color: rgba(255,255,255,0.8);
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+}
+.mc-dot__circle--opp {
+  background: #1a1010;
+  border-color: rgba(248,113,113,0.4);
+  color: rgba(248,113,113,0.9);
+}
+
+.mc-dot__photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.mc-dot__name {
+  font-size: 6px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.45);
+  background: rgba(0,0,0,0.7);
+  padding: 1px 4px;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+
+.mc-dot__rating {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  font-size: 6px;
+  font-weight: 900;
+  color: #4ade80;
+  background: rgba(0,0,0,0.9);
+  border-radius: 2px;
+  padding: 1px 3px;
+  line-height: 1;
+}
+
+/* ─── LINEUP LIST ──────────────────────────────── */
+.mc-lineup-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 0 8px;
+}
+
+.mc-pos-group {
+  margin-bottom: 2px;
+}
+
+.mc-pos-header {
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.18);
+  padding: 8px 16px 4px;
+}
+
+.mc-lineup-row {
+  display: grid;
+  grid-template-columns: 24px 30px 1fr auto;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.025);
+  transition: background 0.15s;
+}
+.mc-lineup-row:hover { background: rgba(255,255,255,0.03); }
+
+.mc-row-num {
+  font-size: 8px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.18);
+  text-align: center;
+}
+
+.mc-row-circle {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #1a1a1a;
+  border: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 7px;
+  font-weight: 800;
+  color: rgba(255,255,255,0.55);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.mc-row-circle--opp {
+  border-color: rgba(248,113,113,0.25);
+  color: rgba(248,113,113,0.7);
+}
+
+.mc-row-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.mc-row-name {
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.7);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mc-row-rating {
+  font-size: 10px;
+  font-weight: 800;
+  color: #4ade80;
+  font-family: "Outfit", sans-serif;
+  min-width: 28px;
+  text-align: right;
+}
+.mc-row-rating--low { color: #f87171; }
+.mc-row-rating--mid { color: #facc15; }
+
+/* ─── CENTER COLUMN ────────────────────────────── */
+.mc-center {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
   overflow: hidden;
 }
 
-.sim-panel-header {
-  padding: 12px 20px;
-  font-size: 10px;
+/* ─── STATS ZONE ───────────────────────────────── */
+.mc-stats-zone {
+  flex-shrink: 0;
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.mc-zone-label {
+  font-size: 7px;
   font-weight: 800;
-  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 2.5px;
   text-transform: uppercase;
+  color: rgba(255,255,255,0.18);
+  margin-bottom: 12px;
+}
+
+.mc-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 6px 14px;
+}
+
+.mc-stat-row {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.mc-stat-labels {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mc-stat-name {
+  font-size: 8px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.3);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+}
+
+.mc-stat-vals {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.mc-stat-val {
+  font-size: 9px;
+  font-weight: 800;
+  color: rgba(255,255,255,0.75);
+  font-family: "Outfit", sans-serif;
+}
+
+.mc-stat-bar-track {
+  height: 3px;
+  background: rgba(255,255,255,0.06);
+  border-radius: 2px;
+  overflow: hidden;
+  position: relative;
+}
+
+.mc-stat-bar-home {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: rgba(255,255,255,0.45);
+  border-radius: 2px;
+  transition: width 0.8s ease;
+}
+
+.mc-stat-bar-away {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  background: rgba(248,113,113,0.6);
+  border-radius: 2px;
+  transition: width 0.8s ease;
+}
+
+/* Cards inline */
+.mc-cards {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+.mc-card {
+  width: 7px;
+  height: 10px;
+  border-radius: 1px;
+}
+.mc-card--yellow { background: #facc15; }
+.mc-card--red { background: #ef4444; }
+
+/* ─── COMMENTARY FEED ──────────────────────────── */
+.mc-feed-zone {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 10px 20px 12px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
   background: rgba(255,255,255,0.015);
 }
-
-/* Pitch & Lineup */
-.mini-pitch-box { height: 360px; padding: 20px; flex-shrink: 0; }
-.mini-pitch-container { height: 100%; position: relative; background: rgba(0,0,0,0.4); border-radius: 12px; overflow: hidden; }
-
-.mini-player-dot {
-  position: absolute; width: 8px; height: 8px; background: #fff; border-radius: 50%; transform: translate(-50%, -50%);
+.mc-feed-zone--compact {
+  /* Removed max-height to fill space */
 }
-.mini-player-dot::after {
-  content: attr(data-label); position: absolute; top: -16px; left: 50%; transform: translateX(-50%);
-  font-size: 8px; font-weight: 900; color: #fff; background: rgba(0,0,0,0.85); padding: 2px 5px; border-radius: 4px; white-space: nowrap;
+
+.mc-feed-label {
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.18);
+  margin-bottom: 12px;
+  position: sticky;
+  top: -10px;
+  margin-top: -10px;
+  padding-top: 10px;
+  background: #0b0b0b;
+  padding-bottom: 8px;
+  z-index: 10;
 }
-.mini-player-dot.opp { background: #f44336; }
 
-.lineup-list { flex: 1; padding: 10px 20px; overflow-y: auto; }
-.lineup-item { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.02); font-size: 12px; }
-.lineup-rating { color: #4CAF50; font-weight: 900; }
+.mc-feed-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
 
-/* Center Analysis */
-.sim-center-col { display: flex; flex-direction: column; gap: 15px; min-height: 0; }
-.sim-ai-center-box { flex: 1.5; min-height: 0; }
-.sim-commentary-box { flex: 1; min-height: 0; }
+.mc-feed-item {
+  display: grid;
+  grid-template-columns: 42px 1fr;
+  align-items: baseline;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.03);
+}
+.mc-feed-item:last-child { border-bottom: none; }
 
-.sim-events-list { padding: 15px 25px; overflow-y: auto; display: flex; flex-direction: column-reverse; gap: 12px; }
-.sim-event { font-size: 12px; color: rgba(255,255,255,0.65); line-height: 1.5; }
-.sim-event .time { font-weight: 900; color: #4CAF50; margin-right: 12px; }
+.mc-feed-min {
+  font-size: 12px;
+  font-weight: 900;
+  color: rgba(255,255,255,0.25);
+  font-family: "Outfit", sans-serif;
+  text-align: right;
+}
+.mc-feed-min--goal { color: #4ade80; }
+.mc-feed-min--card { color: #facc15; }
+.mc-feed-min--red { color: #f87171; }
 
-/* Footer */
-.sim-footer { padding: 15px 0; display: flex; justify-content: center; flex-shrink: 0; }
-.finish-btn { background: #fff; color: #000; padding: 10px 40px; border-radius: 8px; font-weight: 800; font-size: 11px; letter-spacing: 1px; transition: 0.3s; }
-.finish-btn:hover { transform: scale(1.05); }
+.mc-feed-text {
+  font-size: 13px;
+  font-weight: 400;
+  color: rgba(255,255,255,0.65);
+  line-height: 1.5;
+}
+.mc-feed-text--goal {
+  color: rgba(255,255,255,0.9);
+  font-weight: 600;
+  font-size: 14px;
+}
+.mc-feed-text--card { color: rgba(250,204,21,0.85); }
+
+/* ─── MOMENTUM CHART ───────────────────────────── */
+.mc-momentum-zone {
+  flex-shrink: 0;
+  padding: 10px 20px 14px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.mc-momentum-canvas {
+  width: 100%;
+  height: 40px;
+  position: relative;
+  overflow: hidden;
+}
+
+.mc-momentum-svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* ─── AI INPUT BAR ─────────────────────────────── */
+.mc-ai-bar {
+  flex-shrink: 0;
+  padding: 10px 20px 12px;
+  background: #0a0a0a;
+}
+
+.mc-ai-bar-label {
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.15);
+  margin-bottom: 6px;
+}
+
+.mc-ai-container {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 6px;
+  background: #111;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+.mc-ai-container:focus-within { border-color: rgba(255,255,255,0.25); }
+
+.mc-ai-input-row {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.mc-ai-prefix {
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: rgba(255,255,255,0.2);
+  padding: 0 12px;
+  text-transform: uppercase;
+  white-space: nowrap;
+  border-right: 1px solid rgba(255,255,255,0.07);
+}
+
+.mc-ai-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: rgba(255,255,255,0.75);
+  font-size: 11px;
+  font-family: "Inter", sans-serif;
+  padding: 9px 12px;
+  outline: none;
+}
+.mc-ai-input::placeholder { color: rgba(255,255,255,0.2); }
+
+.mc-ai-send {
+  padding: 0 14px;
+  height: 100%;
+  background: none;
+  border: none;
+  color: rgba(255,255,255,0.25);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+}
+.mc-ai-send:hover { color: rgba(255,255,255,0.7); }
+
+.mc-ai-response {
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.7);
+  background: transparent;
+  padding: 10px 14px 12px;
+  min-height: 44px;
+}
+
+/* ─── FOOTER ───────────────────────────────────── */
+.mc-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 6px 20px;
+  flex-shrink: 0;
+  border-top: 1px solid rgba(255,255,255,0.05);
+  background: #090909;
+  min-height: 36px;
+}
+
+.mc-footer-info {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.15);
+}
