@@ -240,6 +240,7 @@ const SimulationWindow = ({ onFinish }) => {
   const [awayPlayers, setAwayPlayers] = useState([]);
   const [momentum, setMomentum] = useState([]);
   const [aiInput, setAiInput] = useState("");
+  const [aiResponse, setAiResponse] = useState("");
 
   /* Live stats */
   const [stats, setStats] = useState({
@@ -426,17 +427,22 @@ const SimulationWindow = ({ onFinish }) => {
 
           {/* AI Input Bar — TOP */}
           <div className="mc-ai-bar mc-ai-bar--top">
-            <div className="mc-ai-input-row">
-              <span className="mc-ai-prefix">TactixAI</span>
-              <input
-                className="mc-ai-input"
-                type="text"
-                value={aiInput}
-                onChange={e => setAiInput(e.target.value)}
-                placeholder="Zadaj pytanie o sytuację na boisku..."
-                onKeyDown={e => e.key === "Enter" && setAiInput("")}
-              />
-              <button className="mc-ai-send" onClick={() => setAiInput("")} title="Wyślij">↑</button>
+            <div className="mc-ai-container">
+              <div className="mc-ai-input-row">
+                <span className="mc-ai-prefix">TactixAI</span>
+                <input
+                  className="mc-ai-input"
+                  type="text"
+                  value={aiInput}
+                  onChange={e => setAiInput(e.target.value)}
+                  placeholder="Zadaj pytanie o sytuację na boisku..."
+                  onKeyDown={e => e.key === "Enter" && setAiInput("")}
+                />
+                <button className="mc-ai-send" onClick={() => setAiInput("")} title="Wyślij">↑</button>
+              </div>
+              <div className="mc-ai-response">
+                {aiResponse}
+              </div>
             </div>
           </div>
 
