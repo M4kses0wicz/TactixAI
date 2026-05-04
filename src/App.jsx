@@ -11,10 +11,10 @@ function App() {
   const [screen, setScreen] = useState(0); // 0: Start, 1: ClubSelection, 2: CustomOwn, 3: CustomOpp, 4: Main
   
   useEffect(() => {
-    if (!currentTeam && screen !== 2 && screen !== 3) {
+    if (!currentTeam) {
       setScreen(0);
     }
-  }, [currentTeam, screen]);
+  }, [currentTeam]);
 
   if (isLoadingDb) {
     return (
