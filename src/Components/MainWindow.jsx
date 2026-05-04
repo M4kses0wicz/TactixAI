@@ -11,13 +11,137 @@ import { useGame } from "../context/GameContext";
 
 
 import SimulationWindow from "./SimulationWindow";
+import personIcon from "../assets/user-icon.png";
+
+const SAMPLE_EVENTS = [
+  { min: 3,  text: "Genialna interwencja Bramkarza zatrzymuje uderzenie Larghalline!", type: "normal" },
+  { min: 19, text: "Cucurella zapisany w notesie arbitra. Musi teraz uważać.", type: "card" },
+  { min: 23, text: "Akcja przerwana. Sędzia boczny podnosi chorągiewkę — James nie spełniony.", type: "normal" },
+  { min: 26, text: "Brzydki faul Chalobah. Sędzia udziela mu ustnego upomnienia.", type: "card" },
+  { min: 30, text: "Niecelne uderzenie Colwill. To była dobra okazja do objęcia prowadzenia.", type: "normal" },
+  { min: 32, text: "Zła decyzja Wellenreuther. Strzelał w trybuny.", type: "normal" },
+];
 
 function MainWindow() {
   const { currentTeam, opponentTeam, setCurrentTeam, setOpponentTeam, getClubLogo, activeTab, setActiveTab } = useGame();
   const [pitchView, setPitchView] = useState("team");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSimulating, setIsSimulating] = useState(false);
+  
+  /* ─── Match State (Lifted) ─── */
+  const [matchTime, setMatchTime] = useState(0);
+  const [matchScore, setMatchScore] = useState({ home: 0, away: 0 });
+  const [matchEvents, setMatchEvents] = useState([]);
+  const [isMatchFinished, setIsMatchFinished] = useState(false);
+  const [matchMomentum, setMatchMomentum] = useState([]);
+  const [matchStats, setMatchStats] = useState({
+    homePoss: 50, awayPoss: 50,
+    homeShots: 0, awayShots: 0,
+    homeShotsOn: 0, awayShotsOn: 0,
+    homePass: 84, awayPass: 79,
+    homeFouls: 0, awayFouls: 0,
+    homeCorners: 0, awayCorners: 0,
+    homeYellow: 0, awayYellow: 0,
+    homeRed: 0, awayRed: 0,
+    homeOffsides: 0, awayOffsides: 0,
+    homeSaves: 0, awaySaves: 0,
+    homeBlocks: 0, awayBlocks: 0,
+    homeCrosses: 0, awayCrosses: 0,
+    homeTackles: 0, awayTackles: 0,
+    homeAerial: 0, awayAerial: 0,
+  });
+  
+  const [homePlayers, setHomePlayers] = useState([]);
+  const [awayPlayers, setAwayPlayers] = useState([]);
+  
+  const ratingsRef = useRef({});
+  const timerRef = useRef(null);
   const menuRef = useRef(null);
+
+  /* Init/Update players when match starts or teams change */
+  useEffect(() => {
+    const getPlayers = (team) => {
+      if (!team) return [];
+      let starters = team.zawodnicy?.filter(p => p.isStarting) || [];
+      if (starters.length === 0) starters = team.zawodnicy?.slice(0, 11) || [];
+      
+      return starters.map((p, i) => {
+        const id = p.id ?? i;
+        if (!ratingsRef.current[id]) {
+          ratingsRef.current[id] = 6.6 + Math.random() * 0.8;
+        }
+        return {
+          id,
+          name: p.imie_nazwisko || "?",
+          shortName: p.imie_nazwisko?.split(" ").pop() || "?",
+          pos: p.pozycja_glowna || "?",
+          num: p.numer ?? p.numer_koszulki ?? (i + 1),
+          rating: ratingsRef.current[id],
+        };
+      });
+    };
+    setHomePlayers(getPlayers(currentTeam));
+    setAwayPlayers(getPlayers(opponentTeam));
+  }, [currentTeam, opponentTeam]);
+
+  const handleMinuteTick = (t) => {
+    const r = Math.random();
+    const sample = SAMPLE_EVENTS.find(e => e.min === t);
+    if (sample) {
+      setMatchEvents(prev => [sample, ...prev]);
+      if (sample.type === "card") setMatchStats(s => ({ ...s, homeYellow: s.homeYellow + 1 }));
+    }
+
+    if (r < 0.04) {
+      const isHome = Math.random() > 0.5;
+      if (isHome) {
+        setMatchScore(s => ({ ...s, home: s.home + 1 }));
+        setMatchEvents(prev => [{ min: t, text: `GOL! ${currentTeam?.nazwa || "Gospodarz"} obejmuje prowadzenie!`, type: "goal" }, ...prev]);
+      } else {
+        setMatchScore(s => ({ ...s, away: s.away + 1 }));
+        setMatchEvents(prev => [{ min: t, text: `GOL! ${opponentTeam?.nazwa || "Gość"} wyrównuje!`, type: "goal" }, ...prev]);
+      }
+      setMatchStats(s => isHome
+        ? { ...s, homeShots: s.homeShots + 1, homeShotsOn: s.homeShotsOn + 1 }
+        : { ...s, awayShots: s.awayShots + 1, awayShotsOn: s.awayShotsOn + 1 });
+    } else if (r < 0.10) {
+      const isHome = Math.random() > 0.5;
+      setMatchStats(s => isHome ? { ...s, homeShots: s.homeShots + 1 } : { ...s, awayShots: s.awayShots + 1 });
+    }
+    
+    if (t % 3 === 0) {
+      setMatchMomentum(prev => [...prev, { home: Math.random() * 6 + 2, away: Math.random() * 6 + 2 }]);
+    }
+  };
+
+  /* ─── Live Coaching Clock ─── */
+  useEffect(() => {
+    if (isMatchFinished) return;
+    
+    const interval = isSimulating ? 1000 : 10000; // Normal match (1s) vs Slow coaching (10s)
+    
+    if (matchTime > 0 || isSimulating) {
+      timerRef.current = setInterval(() => {
+        setMatchTime(prev => {
+          if (prev >= 90) {
+            clearInterval(timerRef.current);
+            setIsMatchFinished(true);
+            return 90;
+          }
+          return prev + 1;
+        });
+      }, interval);
+    }
+
+    return () => clearInterval(timerRef.current);
+  }, [isSimulating, isMatchFinished, matchTime]);
+
+  /* ─── Side effects of time passing ─── */
+  useEffect(() => {
+    if (matchTime > 0 && !isMatchFinished) {
+      handleMinuteTick(matchTime);
+    }
+  }, [matchTime]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -41,13 +165,23 @@ function MainWindow() {
   };
 
   if (isSimulating) {
-    return <SimulationWindow onFinish={() => setIsSimulating(false)} />;
+    return (
+      <SimulationWindow 
+        onFinish={() => setIsSimulating(false)} 
+        time={matchTime}
+        score={matchScore}
+        events={matchEvents}
+        isFinished={isMatchFinished}
+        momentum={matchMomentum}
+        stats={matchStats}
+        homePlayers={homePlayers}
+        awayPlayers={awayPlayers}
+      />
+    );
   }
 
   return (
     <div className="main-container">
-
-
       <header className="main-header">
         <div className="header-left">
           <div className="team-info">
@@ -61,12 +195,45 @@ function MainWindow() {
             </div>
           </div>
         </div>
+
+        {/* ── CENTRAL MATCH HUB ── */}
+        {matchTime > 0 && (
+          <div className="header-center">
+            <div className="header-match-status">
+              <div className="h-match-logos-row">
+                {getClubLogo(currentTeam?.logo, currentTeam?.nazwa) && (
+                  <img src={getClubLogo(currentTeam?.logo, currentTeam?.nazwa)} alt="" className="h-small-logo" />
+                )}
+                <div className="h-score">{matchScore.home} : {matchScore.away}</div>
+                {getClubLogo(opponentTeam?.logo, opponentTeam?.nazwa) && (
+                  <img src={getClubLogo(opponentTeam?.logo, opponentTeam?.nazwa)} alt="" className="h-small-logo" />
+                )}
+              </div>
+              <div className={`h-time-pill ${isMatchFinished ? "finished" : ""}`}>
+                {isMatchFinished ? "KONIEC" : `${matchTime}'`}
+              </div>
+            </div>
+          </div>
+        )}
         
         <div className="header-right">
-          <button className="simulate-btn" onClick={() => setIsSimulating(true)}>
-            <span className="material-symbols-outlined" style={{ color: '#4CAF50', fontSize: '20px' }}>play_arrow</span>
-            Rozpocznij symulację
-          </button>
+          {matchTime > 0 && isMatchFinished && (
+            <button className="simulate-btn" onClick={() => setIsSimulating(true)}>
+              <span className="material-symbols-outlined">sports_soccer</span>
+              Zakończ symulację
+            </button>
+          )}
+          {matchTime === 0 ? (
+            <button className="simulate-btn" onClick={() => setIsSimulating(true)}>
+              <span className="material-symbols-outlined" style={{ color: '#4CAF50', fontSize: '20px' }}>play_arrow</span>
+              Rozpocznij symulację
+            </button>
+          ) : (
+            <button className="simulate-btn" onClick={() => setIsSimulating(true)}>
+              <span className="material-symbols-outlined" style={{ color: '#4CAF50', fontSize: '20px' }}>sports_soccer</span>
+              {isMatchFinished ? "Zakończ symulację" : "Wróć do meczu"}
+            </button>
+          )}
           <div className="header-menu-container" ref={menuRef}>
             <button 
               className={`menu-trigger-btn ${isMenuOpen ? 'active' : ''}`}

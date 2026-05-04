@@ -131,8 +131,8 @@ function MiniPitch({ team, players, isOpp, getPlayerPhoto }) {
               ) : (
                 pl.name?.slice(0, 2).toUpperCase() || "??"
               )}
-              <span className="mc-dot__rating">{pl.rating.toFixed(1)}</span>
             </div>
+            <span className={`mc-dot__rating ${ratingColor(pl.rating)}`}>{pl.rating.toFixed(1)}</span>
             <span className="mc-dot__name">{pl.shortName || pl.name}</span>
           </div>
         );
@@ -229,147 +229,25 @@ function MomentumChart({ snapshots }) {
 /* ════════════════════════════════════════════════════════
    MAIN SimulationWindow
    ════════════════════════════════════════════════════════ */
-const SimulationWindow = ({ onFinish }) => {
+const SimulationWindow = ({ 
+  onFinish, 
+  time, 
+  score, 
+  events, 
+  isFinished, 
+  homePlayers, 
+  awayPlayers, 
+  momentum, 
+  stats 
+}) => {
   const { currentTeam, opponentTeam, setMatchData, getClubLogo, getPlayerPhoto } = useGame();
 
-  const [time, setTime] = useState(0);
-  const [score, setScore] = useState({ home: 0, away: 0 });
-  const [events, setEvents] = useState([]);
-  const [isFinished, setIsFinished] = useState(false);
-  const [homePlayers, setHomePlayers] = useState([]);
-  const [awayPlayers, setAwayPlayers] = useState([]);
-  const [momentum, setMomentum] = useState([]);
   const [aiInput, setAiInput] = useState("");
   const [aiResponse, setAiResponse] = useState("");
 
-  /* Live stats */
-  const [stats, setStats] = useState({
-    homePoss: 50, awayPoss: 50,
-    homeShots: 0, awayShots: 0,
-    homeShotsOn: 0, awayShotsOn: 0,
-    homePass: 84, awayPass: 79,
-    homeFouls: 0, awayFouls: 0,
-    homeCorners: 0, awayCorners: 0,
-    homeYellow: 0, awayYellow: 0,
-    homeRed: 0, awayRed: 0,
-    homeOffsides: 0, awayOffsides: 0,
-    homeSaves: 0, awaySaves: 0,
-    homeBlocks: 0, awayBlocks: 0,
-    homeCrosses: 0, awayCrosses: 0,
-    homeTackles: 0, awayTackles: 0,
-    homeAerial: 0, awayAerial: 0,
-  });
-
-  const timerRef = useRef(null);
-  const sampleInjected = useRef(false);
-
-  /* Init players */
   useEffect(() => {
-    const initLineup = (team) => {
-      if (!team) return [];
-      let starters = team.zawodnicy?.filter(p => p.isStarting) || [];
-      if (starters.length === 0) starters = team.zawodnicy?.slice(0, 11) || [];
-      return starters.map((p, i) => ({
-        id: p.id ?? i,
-        name: p.imie_nazwisko || "?",
-        shortName: p.imie_nazwisko?.split(" ").pop() || "?",
-        pos: p.pozycja_glowna || "?",
-        num: p.numer ?? p.numer_koszulki ?? (i + 1),
-        rating: 6.6 + Math.random() * 0.8,
-      }));
-    };
-    setHomePlayers(initLineup(currentTeam));
-    setAwayPlayers(initLineup(opponentTeam));
-  }, [currentTeam, opponentTeam]);
-
-  /* Inject sample events at correct minutes */
-  useEffect(() => {
-    if (sampleInjected.current) return;
-    const toInject = SAMPLE_EVENTS.filter(e => e.min <= time);
-    if (toInject.length > 0) {
-      setEvents(prev => {
-        const existing = new Set(prev.map(e => e.min));
-        const newOnes = toInject.filter(e => !existing.has(e.min));
-        return newOnes.length > 0 ? [...newOnes, ...prev] : prev;
-      });
-    }
-  }, [time]);
-
-  /* Timer */
-  useEffect(() => {
-    timerRef.current = setInterval(() => {
-      setTime(prev => {
-        if (prev >= 90) {
-          clearInterval(timerRef.current);
-          setIsFinished(true);
-          return 90;
-        }
-        const t = prev + 1;
-        handleMinuteTick(t);
-        return t;
-      });
-    }, 200);
-    return () => {
-      clearInterval(timerRef.current);
-      setMatchData?.(null);
-    };
-  }, [homePlayers, awayPlayers]);
-
-  const handleMinuteTick = (t) => {
-    const r = Math.random();
-
-    /* Inject sample events */
-    const sample = SAMPLE_EVENTS.find(e => e.min === t);
-    if (sample) {
-      setEvents(prev => [sample, ...prev]);
-      if (sample.type === "card") setStats(s => ({ ...s, homeYellow: s.homeYellow + 1 }));
-    }
-
-    /* Random events */
-    if (r < 0.04) {
-      const isHome = Math.random() > 0.5;
-      if (isHome) {
-        setScore(s => ({ ...s, home: s.home + 1 }));
-        setEvents(prev => [{ min: t, text: `GOL! ${currentTeam?.nazwa || "Gospodarz"} obejmuje prowadzenie!`, type: "goal" }, ...prev]);
-      } else {
-        setScore(s => ({ ...s, away: s.away + 1 }));
-        setEvents(prev => [{ min: t, text: `GOL! ${opponentTeam?.nazwa || "Gość"} wyrównuje!`, type: "goal" }, ...prev]);
-      }
-      setStats(s => isHome
-        ? { ...s, homeShots: s.homeShots + 1, homeShotsOn: s.homeShotsOn + 1 }
-        : { ...s, awayShots: s.awayShots + 1, awayShotsOn: s.awayShotsOn + 1 });
-    } else if (r < 0.10) {
-      const isHome = Math.random() > 0.5;
-      setStats(s => isHome
-        ? { ...s, homeShots: s.homeShots + 1 }
-        : { ...s, awayShots: s.awayShots + 1 });
-    }
-    if (r > 0.90) {
-      setStats(s => ({
-        ...s,
-        homePoss: Math.max(30, Math.min(70, s.homePoss + (Math.random() > 0.5 ? 1 : -1))),
-        awayPoss: Math.max(30, Math.min(70, s.awayPoss + (Math.random() > 0.5 ? 1 : -1))),
-      }));
-    }
-    if (r > 0.95) setStats(s => ({ ...s, homeCorners: s.homeCorners + 1 }));
-    if (r > 0.94) setStats(s => ({ ...s, homeFouls: s.homeFouls + (Math.random()>0.5?1:0), awayFouls: s.awayFouls + (Math.random()>0.5?1:0) }));
-    if (r > 0.96) setStats(s => ({ ...s, homeSaves: s.homeSaves + (Math.random()>0.5?1:0), awaySaves: s.awaySaves + (Math.random()>0.5?1:0) }));
-    if (r > 0.96) setStats(s => ({ ...s, homeBlocks: s.homeBlocks + (Math.random()>0.5?1:0) }));
-    if (r > 0.97) setStats(s => ({ ...s, homeCrosses: s.homeCrosses + (Math.random()>0.5?1:0), awayCrosses: s.awayCrosses + (Math.random()>0.5?1:0) }));
-    if (r > 0.95) setStats(s => ({ ...s, homeTackles: s.homeTackles + (Math.random()>0.5?1:0), awayTackles: s.awayTackles + (Math.random()>0.5?1:0) }));
-    if (r > 0.98) setStats(s => ({ ...s, homeOffsides: s.homeOffsides + (Math.random()>0.5?1:0), awayOffsides: s.awayOffsides + (Math.random()>0.5?1:0) }));
-    if (r > 0.97) setStats(s => ({ ...s, homeAerial: s.homeAerial + (Math.random()>0.5?1:0), awayAerial: s.awayAerial + (Math.random()>0.5?1:0) }));
-
-    /* Momentum snapshot every 3 min */
-    if (t % 3 === 0) {
-      setMomentum(prev => [
-        ...prev,
-        { home: Math.random() * 6 + 2, away: Math.random() * 6 + 2 }
-      ]);
-    }
-
-    setMatchData?.({ time: t, scoreHome: score.home, scoreAway: score.away });
-  };
+    setMatchData?.({ time, scoreHome: score.home, scoreAway: score.away });
+  }, [time, score, setMatchData]);
 
   const homeName = currentTeam?.nazwa || "GOSPODARZ";
   const awayName = opponentTeam?.nazwa || "GOŚĆ";
