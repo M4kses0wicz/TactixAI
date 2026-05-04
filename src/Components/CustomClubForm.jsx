@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { useGame } from "../context/GameContext";
 import "../styles/MainWindow/css/main-window.css";
 import "../styles/TacticsPanel/css/TacticsPanel.css";
 import "../styles/AIWindow/css/ai-window.css";
 import "../styles/ClubSelection.css";
 
 import PlayerCreatorModal from "./PlayerCreatorModal";
+import initialData from "../data/initialData.json";
+import { useGame, assignStartingEleven } from "../context/GameContext";
 
 // ─── DANE TAKTYCZNE (1:1 z TacticsPanel.jsx) ─────────────────────────────────
 
@@ -546,8 +547,8 @@ function CustomDropdown({ label, options, value, onChange }) {
   );
 }
 
-export default function CustomClubForm({ onBack, onComplete }) {
-  const { setCurrentTeam } = useGame();
+export default function CustomClubForm({ onBack, onComplete, isOpponentMode = false }) {
+  const { setCurrentTeam, setOpponentTeam } = useGame();
 
   const [step, setStep] = useState("setup"); // 'setup' lub 'tactics'
   const [activeTacTab, setActiveTacTab] = useState("przy_pilce"); // przy_pilce or bez_pilki
@@ -592,6 +593,9 @@ export default function CustomClubForm({ onBack, onComplete }) {
       alert("Musisz dodać przynajmniej 11 zawodników do kadry!");
       return;
     }
+
+    const template = initialData.druzyny[0];
+    
     const taktykaFin = {
       przy_pilce: {
         ...Object.fromEntries(Object.entries(taktyka.przy_pilce).map(([k, v]) => [k.toLowerCase().replace(/ /g, "_"), v])),
@@ -600,20 +604,45 @@ export default function CustomClubForm({ onBack, onComplete }) {
         ...Object.fromEntries(Object.entries(taktyka.bez_pilki).map(([k, v]) => [k.toLowerCase().replace(/ /g, "_"), v])),
       },
     };
-    setCurrentTeam({
-      id: Date.now(),
-      nazwa: nazwa.trim() || INITIAL_CLUB_NAME,
-      logo: logoUrl || INITIAL_LOGO,
-      liga: liga.trim() || "Niższa liga",
-      domyslna_formacja: formation,
-      mentalnosc: "Wyważona",
-      taktyka_druzyny: taktykaFin,
-      zawodnicy: players,
-      formacje: [],
-      opcje_taktyczne: {},
-      role_zawodnikow: [],
-      assignedStarters: players.filter(z => z.isStarting),
-    });
+
+    const allFormations = JSON.parse(JSON.stringify(template.formacje));
+    const selectedFormation = allFormations.find(f => f.nazwa === formation) || allFormations[0];
+    
+    // Używamy assignStartingEleven by gracze byli posortowani pod pozycje
+    const assignedPlayers = assignStartingEleven(players, selectedFormation.pozycje);
+    const startersOnly = assignedPlayers.filter(p => p.isStarting);
+
+    if (isOpponentMode) {
+      setOpponentTeam({
+        id: Date.now(),
+        nazwa: nazwa.trim() || INITIAL_CLUB_NAME,
+        logo: logoUrl || INITIAL_LOGO,
+        liga: liga.trim() || "Niższa liga",
+        domyslna_formacja: formation,
+        mentalnosc: "Wyważona",
+        taktyka_druzyny: taktykaFin,
+        zawodnicy: assignedPlayers,
+        formacje: allFormations,
+        opcje_taktyczne: JSON.parse(JSON.stringify(template.opcje_taktyczne)),
+        role_zawodnikow: JSON.parse(JSON.stringify(template.role_zawodnikow)),
+        assignedStarters: startersOnly,
+      });
+    } else {
+      setCurrentTeam({
+        id: Date.now(),
+        nazwa: nazwa.trim() || INITIAL_CLUB_NAME,
+        logo: logoUrl || INITIAL_LOGO,
+        liga: liga.trim() || "Niższa liga",
+        domyslna_formacja: formation,
+        mentalnosc: "Wyważona",
+        taktyka_druzyny: taktykaFin,
+        zawodnicy: assignedPlayers,
+        formacje: allFormations,
+        opcje_taktyczne: JSON.parse(JSON.stringify(template.opcje_taktyczne)),
+        role_zawodnikow: JSON.parse(JSON.stringify(template.role_zawodnikow)),
+        assignedStarters: startersOnly,
+      });
+    }
     onComplete();
   };
 
@@ -671,6 +700,7 @@ export default function CustomClubForm({ onBack, onComplete }) {
         </button>
         
         <div style={{ width: '100%', maxWidth: '500px', background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '24px', padding: '40px', display: 'flex', flexDirection: 'column', alignItems: 'center', boxShadow: '0 30px 60px rgba(0,0,0,0.5)', backdropFilter: 'blur(20px)' }}>
+          {isOpponentMode && <div style={{ background: '#FF4400', color: 'white', padding: '4px 12px', borderRadius: '20px', fontSize: '10px', fontWeight: 900, marginBottom: '15px', textTransform: 'uppercase', letterSpacing: '1px' }}>PRZECIWNIK</div>}
           <img src={logoUrl || INITIAL_LOGO} alt="Preview" style={{ width: '120px', height: '120px', objectFit: 'contain', marginBottom: '30px', filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.5))' }} />
           
           <h2 style={{ margin: '0 0 30px', fontSize: '24px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '2px', textAlign: 'center' }}>{nazwa.trim() || "Nowy Klub"}</h2>
@@ -728,7 +758,8 @@ export default function CustomClubForm({ onBack, onComplete }) {
             <div className="team-text">
               <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                 <h1 style={{ display: 'flex', alignItems: 'center' }}>
-                  {nazwa || INITIAL_CLUB_NAME}
+                  {nazwa || (isOpponentMode ? "NOWY PRZECIWNIK" : INITIAL_CLUB_NAME)}
+                  {isOpponentMode && <span className="opponent-badge" style={{ marginLeft: '10px', fontSize: '10px' }}>PRZECIWNIK</span>}
                 </h1>
               </div>
               <span className="league-info">{liga || "Kreator Klubu"}</span>
@@ -742,7 +773,7 @@ export default function CustomClubForm({ onBack, onComplete }) {
           </button>
           <button className="simulate-btn" onClick={handleSave}>
             <span className="material-symbols-outlined">check_circle</span>
-            ZAPISZ KLUB
+            {isOpponentMode ? "ZAPISZ PRZECIWNIKA" : "ZAPISZ KLUB"}
           </button>
         </div>
       </header>

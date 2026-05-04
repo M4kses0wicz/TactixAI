@@ -8,13 +8,13 @@ import { useGame } from "./context/GameContext";
 
 function App() {
   const { currentTeam, isLoadingDb } = useGame();
-  const [screen, setScreen] = useState(0); // 0: Start, 1: ClubSelection, 2: CustomClubForm
+  const [screen, setScreen] = useState(0); // 0: Start, 1: ClubSelection, 2: CustomOwn, 3: CustomOpp, 4: Main
   
   useEffect(() => {
-    if (!currentTeam) {
+    if (!currentTeam && screen !== 2 && screen !== 3) {
       setScreen(0);
     }
-  }, [currentTeam]);
+  }, [currentTeam, screen]);
 
   if (isLoadingDb) {
     return (
@@ -26,7 +26,8 @@ function App() {
     );
   }
 
-  if (currentTeam) {
+  // If we have a team and we are NOT in the middle of custom creation, show MainWindow
+  if (currentTeam && screen !== 3 && screen !== 2) {
     return <MainWindow />;
   }
 
@@ -35,7 +36,11 @@ function App() {
   }
 
   if (screen === 2) {
-    return <CustomClubForm onBack={() => setScreen(0)} onComplete={() => setScreen(1)} />;
+    return <CustomClubForm key="own-club" isOpponentMode={false} onBack={() => setScreen(0)} onComplete={() => setScreen(3)} />;
+  }
+
+  if (screen === 3) {
+    return <CustomClubForm key="opp-club" isOpponentMode={true} onBack={() => setScreen(2)} onComplete={() => setScreen(4)} />;
   }
 
   return <ClubSelection onBack={() => setScreen(0)} />;

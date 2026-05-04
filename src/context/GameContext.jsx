@@ -24,7 +24,7 @@ const allLogos = { ...assetImages, ...pngImages };
 
 const GameContext = createContext();
 
-const assignStartingEleven = (players, formationPositions) => {
+export const assignStartingEleven = (players, formationPositions) => {
     const teamPlayers = players.map(p => ({ ...p, isStarting: false }));
     
     const assignedIds = new Set();
