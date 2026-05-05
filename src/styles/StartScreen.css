@@ -167,3 +167,38 @@
   from { opacity: 0; }
   to   { opacity: 1; }
 }
+
+@keyframes ssPulseRotate {
+  0% { transform: rotate(0deg) scale(0.9); opacity: 0.5; }
+  50% { transform: rotate(180deg) scale(1.2); opacity: 1; }
+  100% { transform: rotate(360deg) scale(0.9); opacity: 0.5; }
+}
+
+.ss-loading-container {
+  position: absolute;
+  bottom: 2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  animation: ssFadeIn 0.5s ease-out;
+  z-index: 100;
+}
+
+.ss-loading-ball {
+  width: 45px;
+  height: 45px;
+  animation: ssPulseRotate 2.5s ease-in-out infinite;
+  filter: drop-shadow(0 0 15px rgba(255,255,255,0.2));
+}
+
+.ss-loading-text {
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: rgba(255, 255, 255, 0.3);
+  font-weight: 500;
+  text-transform: uppercase;
+  margin-top: 5px;
+}

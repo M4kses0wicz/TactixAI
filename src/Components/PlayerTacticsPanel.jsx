@@ -579,7 +579,7 @@ const TACTIC_DESCRIPTIONS = {
 };
 
 // ─── Single tile ──────────────────────────────────────────────────────────────
-function RoleTile({ tabKey, player, options, isOpponent }) {
+function RoleTile({ tabKey, player, options, isOpponent, disabled }) {
   const { updatePlayerRole, updateOpponentPlayerRole, aiHighlights, removeAiHighlight } = useGame();
   
   const type = tabKey === "Przy pilce" ? "przy_pilce" : "bez_pilki";
@@ -589,12 +589,12 @@ function RoleTile({ tabKey, player, options, isOpponent }) {
   const isAiHighlighted = aiHighlights.some(h => h.toLowerCase() === currentRole?.toLowerCase());
 
   const prev = () => {
-    if (options.length === 0) return;
+    if (disabled || options.length === 0) return;
     const newIdx = (idx - 1 + options.length) % options.length;
     updatePlayerRole(player.id, type, options[newIdx]);
   };
   const next = () => {
-    if (options.length === 0) return;
+    if (disabled || options.length === 0) return;
     const newIdx = (idx + 1) % options.length;
     if (isOpponent) {
       updateOpponentPlayerRole(player.id, type, options[newIdx]);
@@ -605,7 +605,7 @@ function RoleTile({ tabKey, player, options, isOpponent }) {
   };
 
   return (
-    <div className={`ptac-tile ${isAiHighlighted ? "ai-highlight" : ""}`}>
+    <div className={`ptac-tile ${isAiHighlighted ? "ai-highlight" : ""} ${disabled ? "ptac-tile--disabled" : ""}`}>
       <h3 className="ptac-tile__title">Rola: {tabKey === "Przy pilce" ? "Przy piłce" : "Bez piłki"}</h3>
       <div className="ptac-tile__icon-wrap">
         <svg viewBox="0 0 64 64" fill="none" className="ptac-icon">
@@ -614,15 +614,15 @@ function RoleTile({ tabKey, player, options, isOpponent }) {
         </svg>
       </div>
       <div className="ptac-tile__control">
-        <button className="ptac-tile__arrow" onClick={prev}>‹</button>
+        {!disabled && <button className="ptac-tile__arrow" onClick={prev}>‹</button>}
         <span className="ptac-tile__value" style={{fontSize: "12px"}}>{currentRole || "Brak ról"}</span>
-        <button className="ptac-tile__arrow" onClick={next}>›</button>
+        {!disabled && <button className="ptac-tile__arrow" onClick={next}>›</button>}
       </div>
     </div>
   );
 }
 
-function TacTile({ settingKey, options }) {
+function TacTile({ settingKey, options, disabled }) {
   const { aiHighlights, removeAiHighlight } = useGame();
   const midIndex = Math.floor(options.length / 2);
   const [idx, setIdx] = useState(midIndex);
@@ -642,12 +642,14 @@ function TacTile({ settingKey, options }) {
   });
 
   const prev = () => {
+    if (disabled) return;
     const nextIdx = (idx - 1 + options.length) % options.length;
     setIdx(nextIdx);
     removeAiHighlight(DISPLAY_NAMES[settingKey] ?? settingKey);
     removeAiHighlight(options[nextIdx]);
   };
   const next = () => {
+    if (disabled) return;
     const nextIdx = (idx + 1) % options.length;
     setIdx(nextIdx);
     removeAiHighlight(DISPLAY_NAMES[settingKey] ?? settingKey);
@@ -655,7 +657,7 @@ function TacTile({ settingKey, options }) {
   };
 
   return (
-    <div className={`ptac-tile ${isAiHighlighted ? "ai-highlight" : ""}`}>
+    <div className={`ptac-tile ${isAiHighlighted ? "ai-highlight" : ""} ${disabled ? "ptac-tile--disabled" : ""}`}>
       <div className="ptac-tile__header">
         <h3 className="ptac-tile__title">
           {DISPLAY_NAMES[settingKey] ?? settingKey}
@@ -669,13 +671,9 @@ function TacTile({ settingKey, options }) {
       </div>
       <div className="ptac-tile__icon-wrap">{getIcon(settingKey, idx, options.length)}</div>
       <div className="ptac-tile__control">
-        <button className="ptac-tile__arrow" onClick={prev}>
-          ‹
-        </button>
+        {!disabled && <button className="ptac-tile__arrow" onClick={prev}>‹</button>}
         <span className="ptac-tile__value">{options[idx]}</span>
-        <button className="ptac-tile__arrow" onClick={next}>
-          ›
-        </button>
+        {!disabled && <button className="ptac-tile__arrow" onClick={next}>›</button>}
       </div>
     </div>
   );
@@ -755,9 +753,9 @@ function PlayerTacticsPanel({ player, isOpponent }) {
       {/* ── Grid Layout ── */}
       <div className="ptac-scroll-wrap">
         <div className="ptac-scroll-track">
-          <RoleTile tabKey={activeTab} player={player} options={roleOptions} isOpponent={isOpponent} />
+          <RoleTile tabKey={activeTab} player={player} options={roleOptions} isOpponent={isOpponent} disabled={isOpponent && !activeTeam.isCustom} />
           {Object.entries(OPTIONS[activeTab]).map(([key, opts]) => (
-            <TacTile key={key} settingKey={key} options={opts} />
+            <TacTile key={key} settingKey={key} options={opts} disabled={isOpponent && !activeTeam.isCustom} />
           ))}
         </div>
       </div>
@@ -775,8 +773,16 @@ export default function PlayerTacticsList({ isOpponent }) {
 
     const starters = activeTeam.zawodnicy.filter(p => p.isStarting);
 
+  const isLocked = isOpponent && !activeTeam.isCustom;
+
   return (
     <div className="ptac-list">
+      {isLocked && (
+        <div className="tac-locked-msg" style={{ margin: '20px 24px 0' }}>
+          <span className="material-symbols-outlined">lock</span>
+          Wytyczne przeciwnika są zablokowane w trybie istniejących klubów.
+        </div>
+      )}
       {starters.map((player) => (
         <div
           key={player.id}

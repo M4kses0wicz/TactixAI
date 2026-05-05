@@ -177,4 +177,43 @@
   text-align: center;
   flex: 1;
   line-height: 1.3;
-}/*# sourceMappingURL=TacticsPanel.css.map */
+}
+
+/* Locked States */
+.tac-locked-msg {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: rgba(255, 75, 75, 0.1);
+  border: 1px solid rgba(255, 75, 75, 0.2);
+  color: #ff4b4b;
+  padding: 16px 20px;
+  border-radius: 12px;
+  margin-bottom: 24px;
+  font-family: "Lato", sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+}
+.tac-locked-msg span {
+  font-size: 20px;
+}
+
+.tac-tile--disabled {
+  opacity: 0.6;
+  filter: grayscale(0.4);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.tac-tile--disabled:hover {
+  border-color: rgba(255, 255, 255, 0.15);
+  background: #111111;
+}
+
+.tac-tile--disabled .tac-tile__arrow {
+  display: none;
+}
+
+.tac-grid--locked {
+  user-select: none;
+}
+/*# sourceMappingURL=TacticsPanel.css.map */

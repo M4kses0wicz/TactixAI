@@ -226,20 +226,18 @@
 .pm-content {
   flex: 1;
   padding: 30px;
-  display: grid;
-  grid-template-columns: 1fr 300px;
-  gap: 30px;
   overflow-y: auto;
 }
 
 .pm-section--attrs {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 20px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 25px;
   background: #151515;
-  padding: 20px;
-  border-radius: 10px;
+  padding: 25px;
+  border-radius: 12px;
   border: 1px solid rgba(255, 255, 255, 0.05);
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
 }
 
 .pm-attr-title {

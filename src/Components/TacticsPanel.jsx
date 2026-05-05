@@ -573,7 +573,7 @@ const TACTIC_DESCRIPTIONS = {
 };
 
 // ─── Single tile ──────────────────────────────────────────────────────────────
-function TacTile({ settingKey, options, initialValue, onChange }) {
+function TacTile({ settingKey, options, initialValue, onChange, disabled }) {
   const { aiHighlights, removeAiHighlight } = useGame();
   
   const displayName = DISPLAY_NAMES[settingKey] ?? settingKey;
@@ -624,6 +624,7 @@ function TacTile({ settingKey, options, initialValue, onChange }) {
   }, [initialValue]);
 
   const updateIdx = (newIdx) => {
+    if (disabled) return;
     setIdx(newIdx);
     if (onChange) onChange(options[newIdx]);
   };
@@ -632,7 +633,7 @@ function TacTile({ settingKey, options, initialValue, onChange }) {
   const next = () => updateIdx((idx + 1) % options.length);
 
   return (
-    <div className={`tac-tile ${isHighlighted ? "ai-highlight" : ""}`}>
+    <div className={`tac-tile ${isHighlighted ? "ai-highlight" : ""} ${disabled ? "tac-tile--disabled" : ""}`}>
       <div className="tac-tile__header">
         <h3 className="tac-tile__title">
           {DISPLAY_NAMES[settingKey] ?? settingKey}
@@ -646,11 +647,11 @@ function TacTile({ settingKey, options, initialValue, onChange }) {
       </div>
       <div className="tac-tile__icon-wrap">{getIcon(settingKey, idx, options.length)}</div>
       <div className="tac-tile__control">
-        <button className="tac-tile__arrow" onClick={prev}>
+        <button className="tac-tile__arrow" onClick={prev} disabled={disabled}>
           ‹
         </button>
         <span className="tac-tile__value">{options[idx]}</span>
-        <button className="tac-tile__arrow" onClick={next}>
+        <button className="tac-tile__arrow" onClick={next} disabled={disabled}>
           ›
         </button>
       </div>
@@ -693,8 +694,17 @@ export default function TacticsPanel({ isOpponent }) {
     ? activeTeam.taktyka_druzyny.przy_pilce 
     : activeTeam.taktyka_druzyny.bez_pilki;
 
+  const isLocked = isOpponent && !activeTeam.isCustom;
+
   return (
     <div className="tac-wrap">
+      {isLocked && (
+        <div className="tac-locked-msg">
+          <span className="material-symbols-outlined">lock</span>
+          Taktyka przeciwnika jest zablokowana w trybie istniejących klubów.
+        </div>
+      )}
+      
       <div className="tac-tabs">
         {tabs.map((tab) => (
           <button
@@ -707,7 +717,7 @@ export default function TacticsPanel({ isOpponent }) {
         ))}
       </div>
 
-      <div className="tac-grid">
+      <div className={`tac-grid ${isLocked ? "tac-grid--locked" : ""}`}>
         {Object.entries(OPTIONS[activeTab]).map(([key, opts]) => (
           <TacTile 
             key={`${activeTeam.id}-${key}`} 
@@ -715,6 +725,7 @@ export default function TacticsPanel({ isOpponent }) {
             options={opts} 
             initialValue={currentTactics[key]}
             onChange={(val) => handleTacticChange(activeTab, key, val)}
+            disabled={isLocked}
           />
         ))}
       </div>

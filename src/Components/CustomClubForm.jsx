@@ -548,7 +548,7 @@ function CustomDropdown({ label, options, value, onChange }) {
 }
 
 export default function CustomClubForm({ onBack, onComplete, isOpponentMode = false }) {
-  const { setCurrentTeam, setOpponentTeam } = useGame();
+  const { setCurrentTeam, setOpponentTeam, getFlagUrl } = useGame();
 
   const [step, setStep] = useState("setup"); // 'setup' lub 'tactics'
   const [activeTacTab, setActiveTacTab] = useState("przy_pilce"); // przy_pilce or bez_pilki
@@ -619,6 +619,7 @@ export default function CustomClubForm({ onBack, onComplete, isOpponentMode = fa
         logo: logoUrl || INITIAL_LOGO,
         liga: liga.trim() || "Niższa liga",
         domyslna_formacja: formation,
+        isCustom: true,
         mentalnosc: "Wyważona",
         taktyka_druzyny: taktykaFin,
         zawodnicy: assignedPlayers,
@@ -634,6 +635,7 @@ export default function CustomClubForm({ onBack, onComplete, isOpponentMode = fa
         logo: logoUrl || INITIAL_LOGO,
         liga: liga.trim() || "Niższa liga",
         domyslna_formacja: formation,
+        isCustom: true,
         mentalnosc: "Wyważona",
         taktyka_druzyny: taktykaFin,
         zawodnicy: assignedPlayers,
@@ -673,6 +675,11 @@ export default function CustomClubForm({ onBack, onComplete, isOpponentMode = fa
       imie_nazwisko: playerData.imie_nazwisko,
       pozycja_glowna: playerData.pozycja_glowna,
       lepsza_noga: playerData.lepsza_noga,
+      narodowosc: playerData.narodowosc || "Polska",
+      wiek: playerData.wiek,
+      wzrost: playerData.wzrost,
+      waga: playerData.waga,
+      numer_na_koszulce: playerData.numer_na_koszulce,
       isStarting: prev.length < 11,
       stan_aktualny: { kontuzja: "brak", forma_ostatnie_5_meczow: 6.5, kondycja: 100, morale: "Dobry" },
       atrybuty: playerData.atrybuty || {},
@@ -680,7 +687,6 @@ export default function CustomClubForm({ onBack, onComplete, isOpponentMode = fa
       instrukcje_krycia: { scisle_krycie: "Standardowo", nacisk: "Standardowo", odbior: "Standardowo", wymuszanie_nogi: "Brak" },
       _ovr: ovr,
     }]);
-    setIsPlayerModalOpen(false);
   };
 
   const handleNextStep = () => {
@@ -731,8 +737,9 @@ export default function CustomClubForm({ onBack, onComplete, isOpponentMode = fa
             </div>
           </div>
 
-          <button className="select-btn" onClick={handleNextStep} style={{ marginTop: '40px', width: '100%', padding: '16px', borderRadius: '16px' }}>
-            DALEJ →
+          <button className="form-next-btn" onClick={handleNextStep} style={{ marginTop: '40px' }}>
+            DALEJ
+            <span className="material-symbols-outlined">arrow_forward</span>
           </button>
         </div>
       </div>
@@ -817,8 +824,12 @@ export default function CustomClubForm({ onBack, onComplete, isOpponentMode = fa
                         <span style={{ fontSize: '9px', color: 'rgba(255,255,255,0.4)', marginTop: '-2px' }}>{getFullPosition(p.pozycja_glowna)}</span>
                       </div>
 
-                      <span style={{ fontSize: '18px', marginLeft: '5px' }} title={p.narodowosc || "Polska"}>{getFlag(p.narodowosc || "Polska")}</span>
-                      <span className="material-symbols-outlined" style={{ fontSize: '12px', color: '#00E676' }}>favorite</span>
+                      <img 
+                        src={getFlagUrl(p.narodowosc || "Polska")} 
+                        alt="flag" 
+                        style={{ width: '22px', height: 'auto', borderRadius: '2px', marginLeft: '5px' }} 
+                      />
+                      <span className="material-symbols-outlined" style={{ fontSize: '12px', color: '#00E676', marginLeft: '2px' }}>favorite</span>
                       
                       <div style={{ width: '32px', height: '32px', background: 'rgba(255,255,255,0.05)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', marginLeft: '5px' }}>
                         <span className="material-symbols-outlined" style={{ fontSize: '20px', color: 'rgba(255,255,255,0.6)' }}>person</span>
@@ -830,7 +841,7 @@ export default function CustomClubForm({ onBack, onComplete, isOpponentMode = fa
                     <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
                       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                         <span style={{ fontSize: '9px', fontWeight: 800, color: 'rgba(255,255,255,0.3)', letterSpacing: '1px' }}>OCENA</span>
-                        <span style={{ fontSize: '16px', fontWeight: 900, color: '#FFEA00', marginTop: '-2px' }}>-</span>
+                        <span style={{ fontSize: '16px', fontWeight: 900, color: '#FFEA00', marginTop: '-2px' }}>{p._ovr || "-"}</span>
                       </div>
                       
                       <button onClick={() => setPlayers(prev => prev.filter((_, i) => i !== idx))} style={{ background: 'transparent', border: 'none', color: 'rgba(255,255,255,0.15)', cursor: 'pointer', fontSize: '24px', padding: '0 0 4px 0', transition: 'color 0.2s' }} onMouseEnter={(e) => e.target.style.color='#ff4b4b'} onMouseLeave={(e) => e.target.style.color='rgba(255,255,255,0.15)'}>&times;</button>

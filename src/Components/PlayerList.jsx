@@ -4,6 +4,7 @@ import "../styles/PlayerList/css/PlayerList.css";
 import { useGame } from "../context/GameContext";
 import PlayerModal from "./PlayerModal";
 import OpponentInstructionsModal from "./OpponentInstructionsModal";
+import PlayerCreatorModal from "./PlayerCreatorModal";
 
 const STATUS_COLOR = {
   healthy: "#00FF00",
@@ -57,7 +58,7 @@ const STATUS_MAP = {
   "zawieszony": "suspended"
 };
 
-function PlayerRow({ 
+function PlayerRow({
   id, player, getPlayerPhoto, onClick, showSubIcon, onSubClick, isHighlighted, isExactMatch,
   onDragStart, onDragOver, onDragLeave, onDrop, isStarter, isOpponent
 }) {
@@ -69,9 +70,9 @@ function PlayerRow({
   const isAiHighlighted = aiHighlights.some(h => h.toLowerCase() === player.name?.toLowerCase());
 
   return (
-    <div 
+    <div
       id={id}
-      className={`pl-row ${isHighlighted ? 'pl-row--highlighted' : ''} ${isAiHighlighted ? 'ai-highlight' : ''}`} 
+      className={`pl-row ${isHighlighted ? 'pl-row--highlighted' : ''} ${isAiHighlighted ? 'ai-highlight' : ''}`}
       onClick={() => {
         onClick(player.id);
         removeAiHighlight(player.name);
@@ -94,15 +95,15 @@ function PlayerRow({
       {/* nationality */}
       <span className="pl-row__nat" title={player.natCode}>
         {player.nat ? (
-          <img 
-            src={player.nat} 
-            alt="flag" 
-            style={{ 
-              width: "24px", 
-              height: "auto", 
+          <img
+            src={player.nat}
+            alt="flag"
+            style={{
+              width: "24px",
+              height: "auto",
               borderRadius: "2px",
               boxShadow: "0 0 2px rgba(0,0,0,0.5)"
-            }} 
+            }}
           />
         ) : (
           "🌍"
@@ -120,9 +121,9 @@ function PlayerRow({
 
       {/* avatar */}
       <div className="pl-row__avatar">
-        <img 
-          src={getPlayerPhoto(player.name)} 
-          alt="gracz" 
+        <img
+          src={getPlayerPhoto(player.name)}
+          alt="gracz"
           style={{
             filter: "none",
             objectFit: getPlayerPhoto(player.name).includes('user-icon') ? 'contain' : 'cover',
@@ -141,8 +142,8 @@ function PlayerRow({
           </span>
         )}
         {showSubIcon && !isOpponent && (
-          <span 
-            className="pl-row__sub-icon" 
+          <span
+            className="pl-row__sub-icon"
             onClick={(e) => {
               e.stopPropagation();
               onSubClick(player.id);
@@ -171,9 +172,45 @@ function PlayerRow({
 
 // ─── Main component ───────────────────────────────────────────────────────────
 export default function PlayerList({ team, isOpponent }) {
-  const { currentTeam, getPlayerPhoto, substitutionFocusId, substitutionFocusPos, setSubstitutionFocusId, setSubstitutionFocusPos, substitutePlayer } = useGame();
+  const { currentTeam, opponentTeam, setCurrentTeam, setOpponentTeam, getPlayerPhoto, getFlagUrl, substitutionFocusId, substitutionFocusPos, setSubstitutionFocusId, setSubstitutionFocusPos, substitutePlayer } = useGame();
   const [selectedPlayerId, setSelectedPlayerId] = useState(null);
+  const [isCreatorOpen, setIsCreatorOpen] = useState(false);
   const reserveRef = useRef(null);
+
+  const handleAddPlayer = (playerData) => {
+    const vals = playerData.atrybuty ? Object.values(playerData.atrybuty) : [];
+    const ovr = vals.length ? Math.round(vals.reduce((s, v) => s + v, 0) / vals.length) : 50;
+
+    const newPlayer = {
+      id: Date.now(),
+      imie_nazwisko: playerData.imie_nazwisko,
+      pozycja_glowna: playerData.pozycja_glowna,
+      lepsza_noga: playerData.lepsza_noga,
+      narodowosc: playerData.narodowosc || "Polska",
+      wiek: playerData.wiek,
+      wzrost: playerData.wzrost,
+      waga: playerData.waga,
+      numer_na_koszulce: playerData.numer_na_koszulce,
+      isStarting: false,
+      stan_aktualny: { kontuzja: "brak", forma_ostatnie_5_meczow: 6.5, kondycja: 100, morale: "Dobry" },
+      atrybuty: playerData.atrybuty || {},
+      wybrane_role: { przy_pilce: "", bez_pilki: "" },
+      instrukcje_krycia: { scisle_krycie: "Standardowo", nacisk: "Standardowo", odbior: "Standardowo", wymuszanie_nogi: "Brak" },
+      _ovr: ovr,
+    };
+
+    if (isOpponent) {
+      setOpponentTeam(prev => ({
+        ...prev,
+        zawodnicy: [...(prev.zawodnicy || []), newPlayer]
+      }));
+    } else {
+      setCurrentTeam(prev => ({
+        ...prev,
+        zawodnicy: [...(prev.zawodnicy || []), newPlayer]
+      }));
+    }
+  };
 
   const handleSubAction = (reserveId) => {
     if (substitutionFocusId) {
@@ -195,7 +232,7 @@ export default function PlayerList({ team, isOpponent }) {
       }
     }
   }, [substitutionFocusId, substitutionFocusPos]);
-  
+
   if (!team && !currentTeam) return null;
 
   const activeTeam = team || currentTeam;
@@ -204,14 +241,15 @@ export default function PlayerList({ team, isOpponent }) {
 
   const mapPlayer = (p) => {
     const inst = p.instrukcje_krycia || {};
-    const hasInstructions = inst.scisle_krycie !== "Standardowo" || 
-                            inst.nacisk !== "Standardowo" || 
-                            inst.odbior !== "Standardowo" || 
-                            inst.wymuszanie_nogi !== "Brak";
+    const hasInstructions = inst.scisle_krycie !== "Standardowo" ||
+      inst.nacisk !== "Standardowo" ||
+      inst.odbior !== "Standardowo" ||
+      inst.wymuszanie_nogi !== "Brak";
     return {
       id: p.id,
       name: p.imie_nazwisko,
-      nat: p.narodowosc,
+      nat: getFlagUrl(p.narodowosc),
+      natCode: p.narodowosc,
       pos: normalizePos(p.pozycja_glowna),
       posLabel: POS_LABEL_MAP[normalizePos(p.pozycja_glowna)] || "Zawodnik",
       status: STATUS_MAP[p.stan_aktualny?.kontuzja] || "healthy",
@@ -268,10 +306,10 @@ export default function PlayerList({ team, isOpponent }) {
   const handleDrop = (e, targetPlayerId, isTargetStarter) => {
     e.preventDefault();
     setDragOverId(null);
-    
+
     const draggedPlayerIdStr = e.dataTransfer.getData("playerId");
     if (!draggedPlayerIdStr) return;
-    
+
     const draggedPlayerId = parseInt(draggedPlayerIdStr);
     const isDraggedStarter = e.dataTransfer.getData("isStarter") === "true";
 
@@ -280,11 +318,11 @@ export default function PlayerList({ team, isOpponent }) {
     // Cases:
     // 1. Reserve dragged onto Starter -> Substitute
     if (!isDraggedStarter && isTargetStarter) {
-        substitutePlayer(targetPlayerId, draggedPlayerId);
+      substitutePlayer(targetPlayerId, draggedPlayerId);
     }
     // 2. Starter dragged onto Reserve -> Substitute
     else if (isDraggedStarter && !isTargetStarter) {
-        substitutePlayer(draggedPlayerId, targetPlayerId);
+      substitutePlayer(draggedPlayerId, targetPlayerId);
     }
   };
 
@@ -300,14 +338,35 @@ export default function PlayerList({ team, isOpponent }) {
           }}>Anuluj</button>
         </div>
       )}
-      <h2 className="pl-heading">Wyjściowy skład:</h2>
+
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+        <h2 className="pl-heading" style={{ margin: 0 }}>Wyjściowy skład:</h2>
+        {activeTeam.isCustom && (
+          <button
+            className="simulate-btn"
+            onClick={() => setIsCreatorOpen(true)}
+            style={{
+              background: "transparent",
+              border: "1px solid rgba(255,255,255,0.2)",
+              padding: "6px 12px",
+              fontSize: "10px",
+              color: "rgba(255, 255, 255, 0.8)",
+              cursor: "pointer",
+              borderRadius: "6px"
+            }}
+          >
+            + DODAJ ZAWODNIKA
+          </button>
+        )}
+      </div>
+
       <div className="pl-list">
         {startingXi.map((p) => (
-          <PlayerRow 
-            key={p.id} 
-            player={p} 
-            getPlayerPhoto={getPlayerPhoto} 
-            onClick={setSelectedPlayerId} 
+          <PlayerRow
+            key={p.id}
+            player={p}
+            getPlayerPhoto={getPlayerPhoto}
+            onClick={setSelectedPlayerId}
             onDragStart={handleDragStart}
             onDragOver={(e) => handleDragOver(e, p.id)}
             onDragLeave={handleDragLeave}
@@ -325,14 +384,14 @@ export default function PlayerList({ team, isOpponent }) {
           // Check compatibility based on the POSITION ON PITCH (substitutionFocusPos)
           const isCompatible = !isOpponent && (substitutionFocusPos && isPosCompatible(p.pos, substitutionFocusPos));
           const isExact = !isOpponent && substitutionFocusPos && normalizePos(p.pos) === normalizePos(substitutionFocusPos);
-          
+
           return (
-            <PlayerRow 
-              key={p.id} 
+            <PlayerRow
+              key={p.id}
               id={`player-row-${p.id}`}
-              player={p} 
-              getPlayerPhoto={getPlayerPhoto} 
-              onClick={setSelectedPlayerId} 
+              player={p}
+              getPlayerPhoto={getPlayerPhoto}
+              onClick={setSelectedPlayerId}
               showSubIcon={!!substitutionFocusId && !isOpponent}
               onSubClick={handleSubAction}
               isHighlighted={isCompatible || (dragOverId === p.id && !isOpponent)}
@@ -349,10 +408,10 @@ export default function PlayerList({ team, isOpponent }) {
       </div>
 
       {selectedPlayer && !isOpponent && (
-        <PlayerModal 
-          player={selectedPlayer} 
+        <PlayerModal
+          player={selectedPlayer}
           team={activeTeam}
-          onClose={() => setSelectedPlayerId(null)} 
+          onClose={() => setSelectedPlayerId(null)}
         />
       )}
 
@@ -360,6 +419,14 @@ export default function PlayerList({ team, isOpponent }) {
         <OpponentInstructionsModal
           player={selectedPlayer}
           onClose={() => setSelectedPlayerId(null)}
+        />
+      )}
+
+      {isCreatorOpen && (
+        <PlayerCreatorModal
+          teamId={activeTeam.id}
+          onSave={handleAddPlayer}
+          onClose={() => setIsCreatorOpen(false)}
         />
       )}
     </div>

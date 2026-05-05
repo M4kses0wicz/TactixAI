@@ -16,15 +16,8 @@ function App() {
     }
   }, [currentTeam]);
 
-  if (isLoadingDb) {
-    return (
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', flexDirection: 'column', color: 'white', backgroundColor: '#1a1a2e' }}>
-        <div style={{ fontSize: '2rem', marginBottom: '1rem' }}>⚽</div>
-        <h2>Pobieranie danych z bazy...</h2>
-        <p style={{ opacity: 0.7 }}>Trwa ładowanie drużyn i zawodników</p>
-      </div>
-    );
-  }
+
+
 
   // If we have a team and we are NOT in the middle of custom creation, show MainWindow
   if (currentTeam && screen !== 3 && screen !== 2) {
@@ -32,7 +25,7 @@ function App() {
   }
 
   if (screen === 0) {
-    return <StartScreen onNext={() => setScreen(1)} onCreate={() => setScreen(2)} />;
+    return <StartScreen onNext={() => setScreen(1)} onCreate={() => setScreen(2)} isLoading={isLoadingDb} />;
   }
 
   if (screen === 2) {

@@ -32,9 +32,11 @@ export default function ClubSelection({ onBack }) {
   const itemWidth = 170 + 40; // width (170) + gap (40px = 2.5rem)
 
   useEffect(() => {
-    const middle = Math.floor(virtualClubs.length / 2);
-    setSelectedIndex(middle);
-  }, [phase]);
+    if (virtualClubs.length > 0) {
+      const middle = Math.floor(virtualClubs.length / 2);
+      setSelectedIndex(middle);
+    }
+  }, [phase, virtualClubs.length]);
 
   // Infinite Jump logic
   useEffect(() => {

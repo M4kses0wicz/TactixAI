@@ -1,6 +1,6 @@
 import React from "react";
 import "../styles/PlayerModal/css/PlayerModal.css";
-import { useGame } from "../context/GameContext";
+import { useGame, FULL_POSITIONS } from "../context/GameContext";
 import personIcon from "../assets/user-icon.png";
 
 export default function PlayerModal({ player, team, onClose }) {
@@ -46,7 +46,7 @@ export default function PlayerModal({ player, team, onClose }) {
     } catch (e) { return "??"; }
   };
 
-  const age = calculateAge(player.data_urodzenia);
+  const age = player.data_urodzenia ? calculateAge(player.data_urodzenia) : (player.wiek || "??");
 
   // Funkcja mapująca atrybuty z bazy danych w dokładnej kolejności
   const getAttributes = (playerAttrs, pos) => {
@@ -142,14 +142,14 @@ export default function PlayerModal({ player, team, onClose }) {
             <div className="pm-main-info">
               <div className="pm-name-row">
                 <h2 className="pm-name">{player.imie_nazwisko}</h2>
-                <span className="pm-number">{player.numer || '??'}</span>
+                <span className="pm-number">{player.numer_na_koszulce || player.numer || '??'}</span>
               </div>
               <p className="pm-sub-info">
-                {player.pozycja_glowna} {player.funkcja ? `- ${player.funkcja}` : ''}
+                {FULL_POSITIONS[player.pozycja_glowna] || player.pozycja_glowna} {player.funkcja ? `- ${player.funkcja}` : ''}
               </p>
               <div className="pm-meta-row">
-                <img src={player.narodowosc} alt="" className="pm-flag" />
-                <span>{age} lat ({player.data_urodzenia || '??'})</span>
+                <img src={getFlagUrl(player.narodowosc)} alt="" className="pm-flag" />
+                <span>{age} lat {player.data_urodzenia ? `(${player.data_urodzenia})` : ''}</span>
               </div>
             </div>
           </div>
@@ -164,54 +164,26 @@ export default function PlayerModal({ player, team, onClose }) {
         </div>
 
         {/* TABS / NAV */}
-        <div className="pm-nav">
-          <button className="pm-nav-btn pm-nav-btn--active">Przegląd</button>
-          <button className="pm-nav-btn">Kontrakt</button>
-          <button className="pm-nav-btn">Transfer</button>
-          <button className="pm-nav-btn">Historia</button>
+        <div className="pm-nav" style={{ display: 'none' }}>
         </div>
 
         {/* MAIN CONTENT GRID */}
         <div className="pm-content">
           
-          {/* LEFT: Attributes */}
           <div className="pm-section pm-section--attrs">
             {renderAttrColumn("Techniczne", attributes.technical)}
             {renderAttrColumn("Psychiczne", attributes.mental)}
             {renderAttrColumn("Fizyczne", attributes.physical)}
-          </div>
-
-          {/* RIGHT: Extra Info */}
-          <div className="pm-sidebar">
-            <div className="pm-section pm-info-box">
-              <h4 className="pm-section-title">Informacje</h4>
-              <div className="pm-info-grid">
-                <div className="pm-info-item"><span className="pm-info-label">Wzrost</span><span className="pm-info-val">{player.wzrost || 180} cm</span></div>
-                <div className="pm-info-item"><span className="pm-info-label">Waga</span><span className="pm-info-val">{player.waga || 75} kg</span></div>
-                <div className="pm-info-item"><span className="pm-info-label">Lepsza noga</span><span className="pm-info-val">{player.lepsza_noga || "Prawa"}</span></div>
-                <div className="pm-info-item"><span className="pm-info-label">Słabsza noga</span><span className="pm-info-val">{player.slabsza_noga || "Słaba"}</span></div>
-                <div className="pm-info-item"><span className="pm-info-label">Osobowość</span><span className="pm-info-val">Profesjonalny</span></div>
+            
+            <div className="pm-attr-col">
+              <h4 className="pm-attr-title">Informacje</h4>
+              <div className="pm-attr-list">
+                <div className="pm-attr-item"><span className="pm-attr-name">Wzrost</span><span className="pm-attr-val">{player.wzrost || 180} cm</span></div>
+                <div className="pm-attr-item"><span className="pm-attr-name">Waga</span><span className="pm-attr-val">{player.waga || 75} kg</span></div>
+                <div className="pm-attr-item"><span className="pm-attr-name">Lepsza noga</span><span className="pm-attr-val" style={{color: '#fff'}}>{player.lepsza_noga || "Prawa"}</span></div>
+                <div className="pm-attr-item"><span className="pm-attr-name">Słabsza noga</span><span className="pm-attr-val" style={{color: '#fff'}}>{player.slabsza_noga || "Słaba"}</span></div>
+                <div className="pm-attr-item"><span className="pm-attr-name">Osobowość</span><span className="pm-attr-val" style={{color: '#fff'}}>Profesjonalny</span></div>
               </div>
-            </div>
-
-            <div className="pm-section pm-position-box">
-                <h4 className="pm-section-title">Rola i Pozycja</h4>
-                <div className="pm-roles-list">
-                    <div className={`pm-role-item pm-role-item--active ${aiHighlights.some(h => h.toLowerCase() === player.wybrane_role?.przy_pilce?.toLowerCase()) ? 'ai-highlight' : ''}`}>
-                        <span className="pm-role-name">Przy piłce: {player.wybrane_role?.przy_pilce || 'Brak'}</span>
-                        <div className="pm-role-stars">★★★★★</div>
-                    </div>
-                    <div className={`pm-role-item ${aiHighlights.some(h => h.toLowerCase() === player.wybrane_role?.bez_pilki?.toLowerCase()) ? 'ai-highlight' : ''}`}>
-                        <span className="pm-role-name">Bez piłki: {player.wybrane_role?.bez_pilki || 'Brak'}</span>
-                        <div className="pm-role-stars">★★★★☆</div>
-                    </div>
-                </div>
-                <div className="pm-pitch-mini" style={{marginTop: '15px'}}>
-                    <div className="pm-pitch-field">
-                        {/* Simple CSS representation of the pitch */}
-                        <div className="pm-pitch-dot pm-pitch-dot--active" style={{top: '20%', left: '50%'}}></div>
-                    </div>
-                </div>
             </div>
           </div>
 

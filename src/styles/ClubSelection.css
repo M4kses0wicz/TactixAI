@@ -1,16 +1,15 @@
 .club-selection-screen {
+  position: fixed;
+  inset: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  height: 100vh;
-  width: 100vw;
+  justify-content: flex-start;
   background-color: #0a0a0a;
   color: white;
   overflow: hidden;
-  position: relative;
   font-family: 'Inter', sans-serif;
-  user-select: none; /* Prevent text selection during drag */
+  user-select: none;
 }
 
 .selection-back-btn {
@@ -51,23 +50,30 @@
 }
 
 .selection-title {
+  position: absolute;
+  top: 8rem;
+  left: 0;
+  right: 0;
   font-size: 2.2rem;
   font-weight: 600;
-  margin-bottom: 6rem;
   letter-spacing: 6px;
   text-transform: uppercase;
   opacity: 0.9;
-  animation: fadeIn 1s ease-out;
   text-align: center;
+  z-index: 10;
+  line-height: 1;
 }
 
 .carousel-container {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  transform: translateY(-50%);
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 100%;
   height: 350px;
-  position: relative;
   cursor: grab;
 }
 
@@ -142,7 +148,10 @@
 }
 
 .select-btn {
-  margin-top: 6rem;
+  position: absolute;
+  bottom: 6rem;
+  left: 50%;
+  transform: translateX(-50%);
   background: white;
   color: black;
   border: none;
@@ -155,16 +164,17 @@
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1);
+  z-index: 10;
 }
 
 .select-btn:hover {
-  transform: translateY(-3px) scale(1.05);
+  transform: translateX(-50%) translateY(-3px) scale(1.05);
   box-shadow: 0 15px 40px rgba(255, 255, 255, 0.2);
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(-20px); }
-  to { opacity: 0.9; transform: translateY(0); }
+  from { opacity: 0; }
+  to { opacity: 0.9; }
 }
 
 .club-placeholder-logo {
@@ -183,4 +193,34 @@
 .club-item.active .club-placeholder-logo {
   border-color: rgba(255, 255, 255, 0.5);
   box-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+}
+
+.form-next-btn {
+  background: white;
+  color: black;
+  border: none;
+  padding: 1rem;
+  border-radius: 16px;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 10px 30px rgba(255, 255, 255, 0.05);
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.form-next-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 15px 40px rgba(255, 255, 255, 0.15);
+  background: #f0f0f0;
+}
+
+.form-next-btn:active {
+  transform: translateY(0);
 }

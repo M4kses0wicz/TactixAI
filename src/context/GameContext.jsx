@@ -22,6 +22,25 @@ const assetImages = import.meta.glob('../assets/**/*.svg', { eager: true });
 const pngImages = import.meta.glob('../assets/**/*.png', { eager: true });
 const allLogos = { ...assetImages, ...pngImages };
 
+export const FULL_POSITIONS = {
+  "BR": "Bramkarz",
+  "ŚO": "Środkowy obrońca",
+  "ŚO4": "Środkowy obrońca",
+  "ŚO3": "Środkowy obrońca",
+  "PO": "Prawy obrońca",
+  "LO": "Lewy obrońca",
+  "CLL": "Lewy wahadłowy",
+  "CLP": "Prawy wahadłowy",
+  "DP": "Defensywny pomocnik",
+  "ŚP": "Środkowy pomocnik",
+  "OP": "Ofensywny pomocnik",
+  "PP": "Prawy pomocnik",
+  "LP": "Lewy pomocnik",
+  "PS": "Prawy skrzydłowy",
+  "LS": "Lewy skrzydłowy",
+  "N": "Napastnik"
+};
+
 const GameContext = createContext();
 
 export const assignStartingEleven = (players, formationPositions) => {
@@ -121,25 +140,36 @@ const fixPolishChars = (str) => {
               .replace(/śś/g, "ś");
 };
 
-const COUNTRY_CODES = {
-  "Polska": "pl", "Niemcy": "de", "Hiszpania": "es", "Francja": "fr", "Włochy": "it",
-  "Anglia": "gb-eng", "Holandia": "nl", "Portugalia": "pt", "Brazylia": "br", "Argentyna": "ar",
-  "Belgia": "be", "Chorwacja": "hr", "Dania": "dk", "Szwajcaria": "ch", "Urugwaj": "uy",
-  "Meksyk": "mx", "Stany Zjednoczone": "us", "Japonia": "jp", "Korea Południowa": "kr",
-  "Nigeria": "ng", "Senegal": "sn", "Maroko": "ma", "Egipt": "eg", "Ghana": "gh",
-  "Wybrzeże Kości Słoniowej": "ci", "Kamerun": "cm", "Algieria": "dz", "Mali": "ml", "Gwinea": "gn",
-  "Turcja": "tr", "Ukraina": "ua", "Rosja": "ru", "Czechy": "cz", "Słowacja": "sk",
-  "Węgry": "hu", "Serbia": "rs", "Grecja": "gr", "Norwegia": "no", "Szwecja": "se",
-  "Austria": "at", "Słowenia": "si", "Gruzja": "ge", "Armenia": "am", "Izrael": "il",
-  "Irlandia": "ie", "Szkocja": "gb-sct", "Walia": "gb-wls", "Irlandia Północna": "gb-nir",
-  "Australia": "au", "Kanada": "ca", "Ekwador": "ec", "Kolumbia": "co", "Paragwaj": "py",
-  "Chile": "cl", "Peru": "pe", "Wenezuela": "ve", "Arabia Saudyjska": "sa", "Irak": "iq",
-  "Uzbekistan": "uz", "Indonezja": "id", "Macedonia Północna": "mk", "Czarnogóra": "me", "Kosowo": "xk",
-  "Bośnia i Hercegowina": "ba", "Demokratyczna Republika Konga": "cd", "Dominikana": "do"
+export const COUNTRY_CODES = {
+  "Afganistan": "af", "Albania": "al", "Algieria": "dz", "Andora": "ad", "Angola": "ao", "Antigua i Barbuda": "ag", "Arabia Saudyjska": "sa", "Argentyna": "ar", "Armenia": "am", "Australia": "au", "Austria": "at", "Azerbejdżan": "az",
+  "Bahamy": "bs", "Bahrajn": "bh", "Bangladesz": "bd", "Barbados": "bb", "Belgia": "be", "Belize": "bz", "Benin": "bj", "Bhutan": "bt", "Białoruś": "by", "Boliwia": "bo", "Bośnia i Hercegowina": "ba", "Botswana": "bw", "Brazylia": "br", "Brunei": "bn", "Bułgaria": "bg", "Burkina Faso": "bf", "Burundi": "bi",
+  "Chile": "cl", "Chiny": "cn", "Chorwacja": "hr", "Cypr": "cy", "Czad": "td", "Czarnogóra": "me", "Czechy": "cz",
+  "Dania": "dk", "Demokratyczna Republika Konga": "cd", "Dominika": "dm", "Dominikana": "do", "Dżibuti": "dj",
+  "Egipt": "eg", "Ekwador": "ec", "Erytrea": "er", "Estonia": "ee", "Eswatini": "sz", "Etiopia": "et",
+  "Fidżi": "fj", "Filipiny": "ph", "Finlandia": "fi", "Francja": "fr",
+  "Gabon": "ga", "Gambia": "gm", "Ghana": "gh", "Grecja": "gr", "Grenada": "gd", "Gruzja": "ge", "Gujana": "gy", "Gwatemala": "gt", "Gwinea": "gn", "Gwinea Bissau": "gw", "Gwinea Równikowa": "gq",
+  "Haiti": "ht", "Hiszpania": "es", "Holandia": "nl", "Honduras": "hn",
+  "Indie": "in", "Indonezja": "id", "Irak": "iq", "Iran": "ir", "Irlandia": "ie", "Islandia": "is", "Izrael": "il",
+  "Jamajka": "jm", "Japonia": "jp", "Jemen": "ye", "Jordania": "jo",
+  "Kambodża": "kh", "Kamerun": "cm", "Kanada": "ca", "Katar": "qa", "Kazachstan": "kz", "Kenia": "ke", "Kirgistan": "kg", "Kiribati": "ki", "Kolumbia": "co", "Komory": "km", "Kongo": "cg", "Korea Południowa": "kr", "Korea Północna": "kp", "Kostaryka": "cr", "Kuba": "cu", "Kuwejt": "kw",
+  "Laos": "la", "Lesotho": "ls", "Liban": "lb", "Liberia": "lr", "Libia": "ly", "Liechtenstein": "li", "Litwa": "lt", "Luksemburg": "lu",
+  "Łotwa": "lv",
+  "Macedonia Północna": "mk", "Madagaskar": "mg", "Malawi": "mw", "Malediwy": "mv", "Malezja": "my", "Mali": "ml", "Malta": "mt", "Maroko": "ma", "Mauretania": "mr", "Mauritius": "mu", "Meksyk": "mx", "Mikronezja": "fm", "Mjanma": "mm", "Mołdawia": "md", "Monako": "mc", "Mongolia": "mn", "Mozambik": "mz",
+  "Namibia": "na", "Nauru": "nr", "Nepal": "np", "Niemcy": "de", "Niger": "ne", "Nigeria": "ng", "Nikaragua": "ni", "Norwegia": "no", "Nowa Zelandia": "nz",
+  "Oman": "om",
+  "Pakistan": "pk", "Palau": "pw", "Panama": "pa", "Papua-Nowa Gwinea": "pg", "Paragwaj": "py", "Peru": "pe", "Polska": "pl", "Portugalia": "pt",
+  "Republika Środkowoafrykańska": "cf", "Republika Zielonego Przylądka": "cv", "Rosja": "ru", "Rumunia": "ro", "Rwanda": "rw",
+  "Saint Kitts i Nevis": "kn", "Saint Lucia": "lc", "Saint Vincent i Grenadyny": "vc", "Salwador": "sv", "Samoa": "ws", "San Marino": "sm", "Senegal": "sn", "Serbia": "rs", "Seszele": "sc", "Sierra Leone": "sl", "Singapur": "sg", "Słowacja": "sk", "Słowenia": "si", "Somalia": "so", "Sri Lanka": "lk", "Stany Zjednoczone": "us", "Sudan": "sd", "Sudan Południowy": "ss", "Surinam": "sr", "Syria": "sy", "Szwajcaria": "ch", "Szwecja": "se",
+  "Tadżykistan": "tj", "Tajlandia": "th", "Tanzania": "tz", "Togo": "tg", "Tonga": "to", "Trynidad i Tobago": "tt", "Tunezja": "tn", "Turcja": "tr", "Turkmenistan": "tm", "Tuvalu": "tv",
+  "Uganda": "ug", "Ukraina": "ua", "Urugwaj": "uy", "Uzbekistan": "uz",
+  "Vanuatu": "vu", "Wenezuela": "ve", "Węgry": "hu", "Wietnam": "vn", "Włochy": "it", "Wybrzeże Kości Słoniowej": "ci", "Wyspy Marshalla": "mh", "Wyspy Salomona": "sb", "Wyspy Świętego Tomasza i Książęca": "st",
+  "Zambia": "zm", "Zimbabwe": "zw", "Zjednoczone Emiraty Arabskie": "ae",
+  "Anglia": "gb-eng", "Szkocja": "gb-sct", "Walia": "gb-wls", "Irlandia Północna": "gb-nir", "Wielka Brytania": "gb"
 };
 
 const getFlagUrl = (country) => {
   if (!country) return null;
+  if (typeof country === "string" && country.startsWith("http")) return country;
   let code = "";
   
   if (country.length === 2 && /^[A-Z]{2}$/i.test(country)) {
@@ -816,6 +846,7 @@ export function GameProvider({ children }) {
     setCurrentTeam,
     setOpponentTeam,
     getPlayerPhoto,
+    getFlagUrl,
     getClubLogo,
     substitutionFocusId,
     setSubstitutionFocusId,

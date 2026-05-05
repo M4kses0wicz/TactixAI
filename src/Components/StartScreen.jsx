@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import logo from "../assets/tactix_logo_main.png";
+import ballLogo from "../assets/TactixAI_logo_bez_napisu.png";
 import bg1 from "../assets/lewandowski_bg.jpg";
 import bg2 from "../assets/yildiz_bg.jpg";
 import bg3 from "../assets/bruno_bg.jpg";
@@ -9,8 +10,10 @@ import "../styles/StartScreen.css";
 
 const backgrounds = [bg4, bg5, bg1, bg2, bg3];
 
-export default function StartScreen({ onNext, onCreate }) {
+export default function StartScreen({ onNext, onCreate, isLoading }) {
   const [currentBg, setCurrentBg] = useState(0);
+  const [isWaiting, setIsWaiting] = useState(false);
+  const [pendingAction, setPendingAction] = useState(null); // 'next' or 'create'
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -18,6 +21,25 @@ export default function StartScreen({ onNext, onCreate }) {
     }, 4000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    if (!isLoading && isWaiting && pendingAction) {
+      if (pendingAction === 'next') onNext();
+      if (pendingAction === 'create') onCreate();
+      setIsWaiting(false);
+      setPendingAction(null);
+    }
+  }, [isLoading, isWaiting, pendingAction, onNext, onCreate]);
+
+  const handleAction = (action) => {
+    if (isLoading) {
+      setIsWaiting(true);
+      setPendingAction(action);
+    } else {
+      if (action === 'next') onNext();
+      if (action === 'create') onCreate();
+    }
+  };
 
   return (
     <div className="start-screen">
@@ -27,17 +49,18 @@ export default function StartScreen({ onNext, onCreate }) {
         </div>
         
         <div className="menu-options">
-          <button className="menu-btn" onClick={onCreate}>
+          <button className="menu-btn" onClick={() => handleAction('create')}>
             Stwórz własny klub
           </button>
           
-          <button className="menu-btn" onClick={onNext}>
+          <button className="menu-btn" onClick={() => handleAction('next')}>
             Wybierz Istniejące kluby
           </button>
-
         </div>
 
-        <div className="screen-footer">
+
+
+        <div className="screen-footer" style={{ opacity: isWaiting ? 0 : 0.15 }}>
           <div className="footer-line"></div>
           <div className="footer-text">
             Tactix AI &copy; 2026 | Early Access v0.4.2
@@ -55,6 +78,12 @@ export default function StartScreen({ onNext, onCreate }) {
         ))}
         <div className="right-panel-overlay"></div>
       </div>
+
+      {isWaiting && (
+        <div className="ss-loading-container">
+          <img src={ballLogo} alt="loading" className="ss-loading-ball" />
+        </div>
+      )}
     </div>
   );
 }

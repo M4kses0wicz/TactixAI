@@ -259,4 +259,20 @@
   text-align: center;
   flex: 1;
   line-height: 1.3;
-}/*# sourceMappingURL=PlayerTacticsPanel.css.map */
+}
+
+/* Locked State */
+.ptac-tile--disabled {
+  opacity: 0.6;
+  filter: grayscale(0.5);
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.ptac-tile--disabled:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+  background: #111111;
+}
+.ptac-tile--disabled .ptac-tile__arrow {
+  display: none;
+}
+/*# sourceMappingURL=PlayerTacticsPanel.css.map */
