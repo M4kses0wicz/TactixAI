@@ -54,3 +54,25 @@ body {
   pointer-events: none;
   opacity: 0.6;
 }
+
+/* Global Locked Banner Style */
+.tac-locked-msg {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: rgba(255, 75, 75, 0.1);
+  border: 1px solid rgba(255, 75, 75, 0.2);
+  color: #ff4b4b;
+  padding: 14px 20px;
+  border-radius: 12px;
+  margin: 0 0 24px 0;
+  font-family: 'Lato', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  width: 100%;
+}
+
+.tac-locked-msg span {
+  font-size: 13px;
+  font-weight: 600;
+}

@@ -7,6 +7,8 @@ import bg3 from "../assets/bruno_bg.jpg";
 import bg4 from "../assets/Ronaldo.jpg";
 import bg5 from "../assets/Antony.jpg";
 import "../styles/StartScreen.css";
+import "../styles/StartScreenSaves.css";
+import { useGame } from "../context/GameContext";
 
 const backgrounds = [bg4, bg5, bg1, bg2, bg3];
 

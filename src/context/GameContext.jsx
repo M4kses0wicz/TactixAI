@@ -151,7 +151,7 @@ export const COUNTRY_CODES = {
   "Haiti": "ht", "Hiszpania": "es", "Holandia": "nl", "Honduras": "hn",
   "Indie": "in", "Indonezja": "id", "Irak": "iq", "Iran": "ir", "Irlandia": "ie", "Islandia": "is", "Izrael": "il",
   "Jamajka": "jm", "Japonia": "jp", "Jemen": "ye", "Jordania": "jo",
-  "Kambodża": "kh", "Kamerun": "cm", "Kanada": "ca", "Katar": "qa", "Kazachstan": "kz", "Kenia": "ke", "Kirgistan": "kg", "Kiribati": "ki", "Kolumbia": "co", "Komory": "km", "Kongo": "cg", "Korea Południowa": "kr", "Korea Północna": "kp", "Kostaryka": "cr", "Kuba": "cu", "Kuwejt": "kw",
+  "Kambodża": "kh", "Kamerun": "cm", "Kanada": "ca", "Katar": "qa", "Kazachstan": "kz", "Kenia": "ke", "Kirgistan": "kg", "Kiribati": "ki", "Kolumbia": "co", "Komory": "km", "Kongo": "cg", "Korea Południowa": "kr", "Korea Północna": "kp", "Kosowo": "xk", "Kostaryka": "cr", "Kuba": "cu", "Kuwejt": "kw",
   "Laos": "la", "Lesotho": "ls", "Liban": "lb", "Liberia": "lr", "Libia": "ly", "Liechtenstein": "li", "Litwa": "lt", "Luksemburg": "lu",
   "Łotwa": "lv",
   "Macedonia Północna": "mk", "Madagaskar": "mg", "Malawi": "mw", "Malediwy": "mv", "Malezja": "my", "Mali": "ml", "Malta": "mt", "Maroko": "ma", "Mauretania": "mr", "Mauritius": "mu", "Meksyk": "mx", "Mikronezja": "fm", "Mjanma": "mm", "Mołdawia": "md", "Monako": "mc", "Mongolia": "mn", "Mozambik": "mz",
@@ -302,6 +302,66 @@ export function GameProvider({ children }) {
   const [substitutionFocusPos, setSubstitutionFocusPos] = useState(null);
   const [aiHighlights, setAiHighlights] = useState([]);
   const [matchData, setMatchData] = useState(null);
+  const [savedGames, setSavedGames] = useState([]);
+  const [activeSaveId, setActiveSaveId] = useState(null);
+
+  // Load saved games from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem("tactixai_savedGames");
+    if (saved) {
+      try {
+        setSavedGames(JSON.parse(saved));
+      } catch (e) {
+        console.error("Failed to parse saved games", e);
+      }
+    }
+  }, []);
+
+  // Persist saved games whenever they change
+  useEffect(() => {
+    localStorage.setItem("tactixai_savedGames", JSON.stringify(savedGames));
+  }, [savedGames]);
+
+  const saveCurrentGame = (type = "existing") => {
+    if (!currentTeam) return;
+
+    setSavedGames(prev => {
+      const existingSaveIdx = prev.findIndex(s => s.id === activeSaveId);
+      
+      const saveData = {
+        id: activeSaveId || Date.now(),
+        type,
+        currentTeam: JSON.parse(JSON.stringify(currentTeam)),
+        opponentTeam: opponentTeam ? JSON.parse(JSON.stringify(opponentTeam)) : null,
+        timestamp: new Date().toISOString()
+      };
+
+      if (existingSaveIdx > -1) {
+        // Update existing
+        const newSaves = [...prev];
+        newSaves[existingSaveIdx] = saveData;
+        return newSaves;
+      } else {
+        // Create new
+        setActiveSaveId(saveData.id);
+        return [saveData, ...prev];
+      }
+    });
+  };
+
+  const loadSavedGame = (save) => {
+    setActiveSaveId(save.id);
+    setCurrentTeam(JSON.parse(JSON.stringify(save.currentTeam)));
+    if (save.opponentTeam) {
+      setOpponentTeam(JSON.parse(JSON.stringify(save.opponentTeam)));
+    } else {
+      setOpponentTeam(null);
+    }
+  };
+
+  const deleteSave = (id) => {
+    setSavedGames(prev => prev.filter(s => s.id !== id));
+  };
 
   const removeAiHighlight = (name) => {
     setAiHighlights(prev => prev.filter(h => h.toLowerCase() !== name.toLowerCase()));
@@ -664,7 +724,10 @@ export function GameProvider({ children }) {
 
   const selectTeam = (teamId) => {
     const team = db.find(t => t.id === teamId);
-    if (team) setCurrentTeam(JSON.parse(JSON.stringify(team)));
+    if (team) {
+      setActiveSaveId(null);
+      setCurrentTeam(JSON.parse(JSON.stringify(team)));
+    }
   };
 
   const selectOpponentTeam = (teamId) => {
@@ -759,6 +822,18 @@ export function GameProvider({ children }) {
     }) : null);
   };
   
+  const updatePlayerNote = (playerId, notes) => {
+    setCurrentTeam(prev => {
+      if (!prev) return prev;
+      const update = p => p.id === playerId ? { ...p, notes } : p;
+      return {
+        ...prev,
+        zawodnicy: prev.zawodnicy?.map(update),
+        assignedStarters: prev.assignedStarters?.map(update)
+      };
+    });
+  };
+
   const updateOpponentInstructions = (playerId, instrukcje) => {
     setOpponentTeam(prev => {
         if (!prev) return prev;
@@ -775,6 +850,17 @@ export function GameProvider({ children }) {
 
   const getPlayerPhoto = (playerName) => {
     if (!playerName) return personIcon;
+
+    // Fix for Pedro Neto / Pero Neto
+    const lowerName = playerName.toLowerCase();
+    if (lowerName.includes("neto")) {
+      const local = playerPhotos["Pedro Neto"] || playerPhotos["Pedro_Neto"] || playerPhotos["Neto"];
+      if (local) return local;
+      
+      // Official Premier League CDN for Pedro Neto (Highly Reliable)
+      return "https://resources.premierleague.com/premierleague/photos/players/250x250/p441221.png";
+    }
+
     // Try to find exact match or match with spaces replaced by underscores
     const photoUrl = playerPhotos[playerName] || playerPhotos[playerName.replace(/ /g, '_')];
     return photoUrl || personIcon;
@@ -861,7 +947,13 @@ export function GameProvider({ children }) {
     setAiHighlights,
     removeAiHighlight,
     matchData,
-    setMatchData
+    setMatchData,
+    savedGames,
+    saveCurrentGame,
+    loadSavedGame,
+    deleteSave,
+    setActiveSaveId,
+    updatePlayerNote
   };
 
   return <GameContext.Provider value={value}>{children}</GameContext.Provider>;

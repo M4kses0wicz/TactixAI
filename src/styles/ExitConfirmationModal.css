@@ -1,0 +1,164 @@
+.exit-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(20px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: modalFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+.exit-modal-content {
+  background: rgba(15, 15, 15, 0.7);
+  backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 50px;
+  max-width: 540px;
+  width: 90%;
+  box-shadow: 
+    0 40px 100px rgba(0, 0, 0, 0.8),
+    0 0 0 1px rgba(255, 255, 255, 0.05);
+  animation: modalSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: center;
+  position: relative;
+  font-family: "Lato", sans-serif;
+}
+
+.exit-modal-content::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 10%;
+  width: 80%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0.1), transparent);
+}
+
+.exit-modal-header {
+  margin-bottom: 35px;
+}
+
+.exit-icon-container {
+  width: 90px;
+  height: 90px;
+  background: rgba(255, 75, 75, 0.05);
+  border: 1px solid rgba(255, 75, 75, 0.2);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 25px;
+  backdrop-filter: blur(10px);
+}
+
+.exit-icon {
+  font-size: 44px !important;
+  color: #ff4b4b;
+}
+
+.exit-modal-header h2 {
+  font-family: "Lato", sans-serif;
+  font-size: 34px;
+  font-weight: 900;
+  color: #fff;
+  margin: 0;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.exit-modal-desc {
+  color: rgba(255, 255, 255, 0.5);
+  line-height: 1.8;
+  margin-bottom: 50px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.exit-modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.exit-main-actions {
+  display: flex;
+  gap: 15px;
+}
+
+.exit-btn {
+  padding: 14px 24px;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-family: inherit;
+}
+
+.exit-btn.primary {
+  background: rgba(76, 175, 80, 0.15);
+  color: #4CAF50;
+  border-color: rgba(76, 175, 80, 0.4);
+  flex: 1.2;
+}
+
+.exit-btn.primary:hover {
+  background: rgba(76, 175, 80, 0.25);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 25px rgba(76, 175, 80, 0.15);
+  border-color: #4CAF50;
+}
+
+.exit-btn.secondary {
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.6);
+  flex: 1;
+}
+
+.exit-btn.secondary:hover {
+  background: rgba(255, 75, 75, 0.1);
+  border-color: rgba(255, 75, 75, 0.4);
+  color: #ff4b4b;
+  transform: translateY(-3px);
+}
+
+.exit-btn.cancel {
+  background: transparent;
+  color: rgba(255, 255, 255, 0.3);
+  border: none;
+  font-size: 10px;
+}
+
+.exit-btn.cancel:hover {
+  color: #fff;
+  letter-spacing: 3px;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalSlideUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}

@@ -1,0 +1,148 @@
+.saves-section {
+  margin-top: 2rem;
+  margin-left: 25px;
+  animation: ssSlideUp 0.75s ease-out 0.2s both;
+}
+
+.saves-title {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.3);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.saves-title::after {
+  content: '';
+  height: 1px;
+  flex: 1;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.1), transparent);
+}
+
+.saves-carousel {
+  display: flex;
+  gap: 15px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.saves-carousel::-webkit-scrollbar {
+  display: none;
+}
+
+.save-card {
+  min-width: 160px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.save-card:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.save-card.plus-card {
+  justify-content: center;
+  border-style: dashed;
+  opacity: 0.6;
+}
+
+.save-card.plus-card:hover {
+  opacity: 1;
+  border-style: solid;
+}
+
+.save-card .club-logo {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
+}
+
+.save-card .club-name {
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-align: center;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 100%;
+}
+
+.save-card .save-date {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.3);
+  font-weight: 500;
+}
+
+.save-card .continue-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  background: #4CAF50;
+  color: white;
+  font-size: 8px;
+  font-weight: 900;
+  padding: 4px 8px;
+  border-bottom-left-radius: 10px;
+  text-transform: uppercase;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.save-card:hover .continue-badge {
+  opacity: 1;
+}
+
+.delete-save-btn {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: rgba(255, 75, 75, 0.1);
+  border: none;
+  color: #ff4b4b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.2s ease;
+  z-index: 5;
+}
+
+.save-card:hover .delete-save-btn {
+  opacity: 0.6;
+}
+
+.delete-save-btn:hover {
+  background: #ff4b4b;
+  color: white;
+  opacity: 1 !important;
+}
+
+.plus-icon {
+  font-size: 32px !important;
+  color: rgba(255, 255, 255, 0.4);
+}

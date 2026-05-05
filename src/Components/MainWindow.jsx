@@ -11,6 +11,7 @@ import { useGame } from "../context/GameContext";
 
 
 import SimulationWindow from "./SimulationWindow";
+import ExitConfirmationModal from "./ExitConfirmationModal";
 import personIcon from "../assets/user-icon.png";
 
 const SAMPLE_EVENTS = [
@@ -23,9 +24,20 @@ const SAMPLE_EVENTS = [
 ];
 
 function MainWindow() {
-  const { currentTeam, opponentTeam, setCurrentTeam, setOpponentTeam, getClubLogo, activeTab, setActiveTab } = useGame();
   const [pitchView, setPitchView] = useState("team");
   const [isSimulating, setIsSimulating] = useState(false);
+  const [showExitModal, setShowExitModal] = useState(false);
+  
+  const { 
+    currentTeam, 
+    opponentTeam, 
+    setCurrentTeam, 
+    setOpponentTeam, 
+    getClubLogo, 
+    activeTab, 
+    setActiveTab,
+    saveCurrentGame
+  } = useGame();
   
   /* ─── Match State (Lifted) ─── */
   const [matchTime, setMatchTime] = useState(0);
@@ -150,8 +162,21 @@ function MainWindow() {
   const logoSrc = getClubLogo(activeTeam.logo, activeTeam.nazwa);
 
   const handleBackToMenu = () => {
+    setShowExitModal(true);
+  };
+
+  const confirmExitWithoutSave = () => {
     setCurrentTeam(null);
     setOpponentTeam(null);
+    setShowExitModal(false);
+  };
+
+  const confirmSaveAndExit = () => {
+    const type = currentTeam?.isCustom ? "custom" : "existing";
+    saveCurrentGame(type);
+    setCurrentTeam(null);
+    setOpponentTeam(null);
+    setShowExitModal(false);
   };
 
   if (isSimulating) {
@@ -259,17 +284,23 @@ function MainWindow() {
         <section className="mid-sec">
           <nav className="tab-nav">
             <p className={activeTab === "Zawodnicy" ? "active" : ""} onClick={() => setActiveTab("Zawodnicy")}>Zawodnicy</p>
-            <p className={activeTab === "Taktyka" ? "active" : ""} onClick={() => setActiveTab("Taktyka")}>Taktyka</p>
-            <p className={activeTab === "Wytyczne" ? "active" : ""} onClick={() => setActiveTab("Wytyczne")}>Wytyczne</p>
-            <p className={activeTab === "Notatki" ? "active" : ""} onClick={() => setActiveTab("Notatki")}>Notatki</p>
+            <p className={activeTab === "Taktyka" ? "active" : ""} onClick={() => setActiveTab("Taktyka")}>
+              Taktyka {(isOppView && !currentTeam?.isCustom) && <span className="material-symbols-outlined" style={{fontSize: '14px', marginLeft: '5px'}}>lock</span>}
+            </p>
+            <p className={activeTab === "Wytyczne" ? "active" : ""} onClick={() => setActiveTab("Wytyczne")}>
+              Wytyczne {(isOppView && !currentTeam?.isCustom) && <span className="material-symbols-outlined" style={{fontSize: '14px', marginLeft: '5px'}}>lock</span>}
+            </p>
+            <p className={activeTab === "Notatki" ? "active" : ""} onClick={() => setActiveTab("Notatki")}>
+              Notatki {(isOppView && !currentTeam?.isCustom) && <span className="material-symbols-outlined" style={{fontSize: '14px', marginLeft: '5px'}}>lock</span>}
+            </p>
           </nav>
           
           <div className="content-wrapper">
-            <div className="main-panel">
+            <div className={`main-panel ${activeTab === "Notatki" ? "main-panel--no-scroll" : ""}`}>
               {activeTab === "Zawodnicy" && <PlayerList team={activeTeam} isOpponent={isOppView} />}
-              {activeTab === "Taktyka" && <TacticsPanel isOpponent={isOppView} />}
-              {activeTab === "Wytyczne" && <PlayerTacticsPanel isOpponent={isOppView} />}
-              {activeTab === "Notatki" && <NoteEditor />}
+              {activeTab === "Taktyka" && <TacticsPanel isOpponent={isOppView && !currentTeam?.isCustom} />}
+              {activeTab === "Wytyczne" && <PlayerTacticsPanel isOpponent={isOppView && !currentTeam?.isCustom} />}
+              {activeTab === "Notatki" && <NoteEditor team={activeTeam} isOpponent={isOppView && !currentTeam?.isCustom} />}
             </div>
           </div>
         </section>
@@ -278,6 +309,14 @@ function MainWindow() {
           <AIWindow />
         </section>
       </main>
+
+      {showExitModal && (
+        <ExitConfirmationModal 
+          onCancel={() => setShowExitModal(false)}
+          onExitWithoutSave={confirmExitWithoutSave}
+          onSaveAndExit={confirmSaveAndExit}
+        />
+      )}
     </div>
   );
 }

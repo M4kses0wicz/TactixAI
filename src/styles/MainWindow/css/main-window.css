@@ -313,6 +313,10 @@
   padding: 0;
 }
 
+.main-panel--no-scroll {
+  overflow: hidden !important;
+}
+
 .main-panel::-webkit-scrollbar {
   width: 6px;
 }

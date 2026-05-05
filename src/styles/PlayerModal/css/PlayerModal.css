@@ -209,17 +209,146 @@
   position: relative;
 }
 
-.pm-nav-btn--active {
+.pm-nav-btn.active {
   color: #fff;
 }
-.pm-nav-btn--active::after {
+.pm-nav-btn.active::after {
   content: '';
   position: absolute;
   bottom: 0;
   left: 0;
   width: 100%;
   height: 3px;
-  background: #FFEA00;
+  background: #ffffff;
+}
+
+/* NOTES SECTION */
+.pm-notes-container {
+  padding: 10px;
+}
+
+.pm-no-notes {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px;
+  color: rgba(255, 255, 255, 0.2);
+  text-align: center;
+}
+
+.pm-no-notes .material-symbols-outlined {
+  font-size: 64px;
+  margin-bottom: 20px;
+  opacity: 0.3;
+}
+
+.pm-no-notes p {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.pm-notes-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+}
+
+.pm-note-card {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  padding: 20px;
+  transition: all 0.2s ease;
+}
+
+.pm-note-card:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 0 15px rgba(255, 234, 0, 0.1), 0 0 30px rgba(255, 255, 255, 0.05);
+  transform: translateY(-2px);
+}
+
+.pm-delete-note {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.pm-delete-note:hover {
+  background: rgba(255, 75, 75, 0.1);
+  color: #ff4b4b;
+}
+
+.pm-note-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #cccccc;
+  overflow: hidden;
+}
+
+.pm-note-header span:nth-child(2) {
+  flex: 1;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  white-space: normal;
+}
+
+.pm-note-header .material-symbols-outlined {
+  font-size: 18px;
+}
+
+.pm-note-body {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.pm-note-text {
+  white-space: pre-wrap;
+}
+
+.pm-note-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.pm-note-list li {
+  position: relative;
+  padding-left: 20px;
+  margin-bottom: 8px;
+}
+
+.pm-note-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 8px;
+  width: 6px;
+  height: 6px;
+  background: #ffffff;
+  border-radius: 50%;
+  opacity: 0.5;
 }
 
 /* CONTENT */

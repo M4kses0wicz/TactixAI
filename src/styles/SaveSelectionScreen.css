@@ -1,0 +1,302 @@
+.save-selection-screen {
+  width: 100vw;
+  height: 100vh;
+  background-color: #070707;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+  font-family: 'Lato', sans-serif;
+}
+
+.ss-back-button {
+  position: absolute !important;
+  top: 30px !important;
+  right: 60px !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+  padding: 8px 16px !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  font-size: 10px !important;
+  font-weight: 800 !important;
+  letter-spacing: 1.5px !important;
+  transition: all 0.2s ease !important;
+  z-index: 1000 !important;
+  width: auto !important;
+  text-transform: uppercase !important;
+}
+
+.ss-back-button:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+  color: #fff !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  transform: translateY(-2px) !important;
+}
+
+.save-selection-header {
+  text-align: center;
+  position: absolute;
+  top: 60px;
+  width: 100%;
+  animation: ssFadeIn 0.8s ease-out;
+}
+
+.save-selection-header h1 {
+  font-size: 38px;
+  font-weight: 900;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  margin: 0;
+  background: linear-gradient(to bottom, #fff, #888);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.save-selection-header p {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-top: 10px;
+}
+
+/* CAROUSEL */
+.carousel-container {
+  width: 100%;
+  height: 500px;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+  cursor: grab;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+  perspective: 1500px;
+  z-index: 5;
+}
+
+.carousel-container:active {
+  cursor: grabbing;
+}
+
+.saves-track {
+  display: flex;
+  gap: 40px;
+  position: absolute;
+  left: 50%; /* Baseline for centering */
+  height: 400px;
+  align-items: center;
+  will-change: transform;
+}
+
+.ss-carousel-item {
+  width: 240px;
+  height: 340px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 30px;
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  filter: grayscale(1) opacity(0.3);
+  transform: scale(0.8) translateZ(-100px);
+  position: relative;
+  backdrop-filter: blur(5px);
+  flex-shrink: 0;
+}
+
+.ss-carousel-item.active {
+  filter: grayscale(0) opacity(1);
+  transform: scale(1.15) translateZ(0);
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    0 15px 35px rgba(0, 0, 0, 0.8),
+    0 5px 15px rgba(0, 0, 0, 0.5),
+    0 0 20px rgba(76, 175, 80, 0.1);
+  z-index: 50;
+}
+
+.item-logo-wrapper {
+  width: 120px;
+  height: 120px;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+
+.item-logo-wrapper.showing-opponent {
+  background: rgba(76, 175, 80, 0.1);
+  border-color: rgba(76, 175, 80, 0.4);
+}
+
+.opponent-peek {
+  font-size: 9px;
+  color: #4CAF50;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-top: -2px;
+  margin-bottom: 4px;
+  height: 12px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.opponent-peek.visible {
+  opacity: 1;
+}
+
+.ss-carousel-item.active .item-logo-wrapper {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(76, 175, 80, 0.3);
+  box-shadow: 0 0 30px rgba(76, 175, 80, 0.1);
+}
+
+.item-logo-img {
+  width: 70%;
+  height: 70%;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 15px rgba(0,0,0,0.4));
+  transition: transform 0.3s ease;
+}
+
+.item-logo-wrapper.showing-opponent .item-logo-img {
+  animation: ssLogoSwitch 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes ssLogoSwitch {
+  0% { transform: scale(0.6) rotate(-10deg); opacity: 0; }
+  100% { transform: scale(1) rotate(0); opacity: 1; }
+}
+
+.item-info {
+  text-align: center;
+  width: 100%;
+}
+
+.item-info h3 {
+  font-size: 18px;
+  font-weight: 900;
+  margin: 10px 0 5px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.item-info span {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.3);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.item-meta {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 5px;
+}
+
+.item-meta span {
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.25);
+}
+
+/* NEW ITEM SPECIFIC */
+.ss-new-item {
+  border-style: dashed;
+}
+
+.ss-new-item .material-symbols-outlined {
+  font-size: 40px !important;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.ss-new-item.active .material-symbols-outlined {
+  color: #4CAF50;
+}
+
+/* DELETE BUTTON */
+.ss-delete-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 75, 75, 0.3);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 20;
+}
+
+.ss-delete-btn:hover {
+  color: #ff4b4b;
+  transform: scale(1.2);
+}
+
+.ss-continue-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent 70%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding-bottom: 25px;
+  gap: 4px;
+  font-weight: 900;
+  font-size: 9px;
+  letter-spacing: 2px;
+  opacity: 0;
+  transition: all 0.3s ease;
+  color: rgba(76, 175, 80, 0.9);
+  border-radius: 24px;
+  pointer-events: none;
+}
+
+.ss-carousel-item.active:hover .ss-continue-overlay {
+  opacity: 1;
+}
+
+.ss-continue-overlay span {
+  font-size: 32px !important;
+  margin-bottom: 5px;
+}
+
+.selection-footer {
+  position: absolute;
+  bottom: 30px;
+  width: 100%;
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.1);
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+@keyframes ssFadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}

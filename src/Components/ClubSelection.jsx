@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useGame } from "../context/GameContext";
 import "../styles/ClubSelection.css";
 
-export default function ClubSelection({ onBack }) {
+export default function ClubSelection({ onBack, onComplete }) {
   const { db, selectTeam, selectOpponentTeam, getClubLogo } = useGame();
   const [phase, setPhase] = useState("user"); // "user" | "opponent"
   const [userClub, setUserClub] = useState(null);
@@ -79,6 +79,7 @@ export default function ClubSelection({ onBack }) {
     } else {
       selectTeam(userClub.id);
       selectOpponentTeam(selected.id);
+      if (onComplete) onComplete();
     }
   };
 

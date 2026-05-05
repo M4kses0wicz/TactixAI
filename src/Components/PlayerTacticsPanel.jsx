@@ -778,7 +778,7 @@ export default function PlayerTacticsList({ isOpponent }) {
   return (
     <div className="ptac-list">
       {isLocked && (
-        <div className="tac-locked-msg" style={{ margin: '20px 24px 0' }}>
+        <div className="tac-locked-msg">
           <span className="material-symbols-outlined">lock</span>
           Wytyczne przeciwnika są zablokowane w trybie istniejących klubów.
         </div>
