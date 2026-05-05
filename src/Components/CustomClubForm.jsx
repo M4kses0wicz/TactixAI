@@ -3,6 +3,7 @@ import "../styles/MainWindow/css/main-window.css";
 import "../styles/TacticsPanel/css/TacticsPanel.css";
 import "../styles/AIWindow/css/ai-window.css";
 import "../styles/ClubSelection.css";
+import "../styles/CustomClubForm.css";
 
 import PlayerCreatorModal from "./PlayerCreatorModal";
 import initialData from "../data/initialData.json";
@@ -554,8 +555,19 @@ export default function CustomClubForm({ onBack, onComplete, isOpponentMode = fa
   const [activeTacTab, setActiveTacTab] = useState("przy_pilce"); // przy_pilce or bez_pilki
 
   const [nazwa, setNazwa] = useState("");
-  const [liga, setLiga] = useState("Niższa liga");
+  const [liga, setLiga] = useState("");
   const [logoUrl, setLogoUrl] = useState("");
+
+  const handleImageUpload = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        setLogoUrl(event.target.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
   const [formation, setFormation] = useState("4-3-3");
 
   const [taktyka, setTaktyka] = useState({
@@ -699,35 +711,55 @@ export default function CustomClubForm({ onBack, onComplete, isOpponentMode = fa
 
   if (step === "setup") {
     return (
-      <div className="main-container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'radial-gradient(circle at center, #111 0%, #050505 100%)' }}>
+      <div className="main-container ccf-setup-bg">
         <button className="selection-back-btn" onClick={onBack}>
           <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>arrow_back</span>
           WRÓĆ
         </button>
         
-        <div style={{ width: '100%', maxWidth: '500px', background: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.08)', borderRadius: '24px', padding: '40px', display: 'flex', flexDirection: 'column', alignItems: 'center', boxShadow: '0 30px 60px rgba(0,0,0,0.5)', backdropFilter: 'blur(20px)' }}>
-          {isOpponentMode && <div style={{ background: '#FF4400', color: 'white', padding: '4px 12px', borderRadius: '20px', fontSize: '10px', fontWeight: 900, marginBottom: '15px', textTransform: 'uppercase', letterSpacing: '1px' }}>PRZECIWNIK</div>}
-          <img src={logoUrl || INITIAL_LOGO} alt="Preview" style={{ width: '120px', height: '120px', objectFit: 'contain', marginBottom: '30px', filter: 'drop-shadow(0 10px 20px rgba(0,0,0,0.5))' }} />
+        <div className="ccf-setup-card">
+          {isOpponentMode && <div className="ccf-opponent-badge">PRZECIWNIK</div>}
           
-          <h2 style={{ margin: '0 0 30px', fontSize: '24px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '2px', textAlign: 'center' }}>{nazwa.trim() || "Nowy Klub"}</h2>
+          <div className="ccf-setup-logo-wrapper">
+            <img src={logoUrl || INITIAL_LOGO} alt="Preview" className="ccf-setup-logo" />
+          </div>
+          
+          <h2 className="ccf-setup-title">{nazwa.trim() || "Nowy Klub"}</h2>
 
-          <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <label style={{ fontSize: '11px', fontWeight: 800, color: 'rgba(255,255,255,0.4)', letterSpacing: '1px' }}>NAZWA KLUBU</label>
-              <input type="text" value={nazwa} onChange={e => setNazwa(e.target.value)} placeholder="np. FC Warsaw" style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '14px 16px', color: '#fff', fontSize: '15px', fontWeight: 700, outline: 'none' }} />
+          <div className="ccf-setup-form">
+            <div className="ccf-setup-field">
+              <label>NAZWA KLUBU</label>
+              <input type="text" value={nazwa} onChange={e => setNazwa(e.target.value)} placeholder="np. FC Warsaw" />
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <label style={{ fontSize: '11px', fontWeight: 800, color: 'rgba(255,255,255,0.4)', letterSpacing: '1px' }}>LIGA</label>
-              <input type="text" value={liga} onChange={e => setLiga(e.target.value)} placeholder="np. Niższa liga" style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '14px 16px', color: '#fff', fontSize: '15px', fontWeight: 700, outline: 'none' }} />
+            <div className="ccf-setup-field">
+              <label>LIGA</label>
+              <input type="text" value={liga} onChange={e => setLiga(e.target.value)} placeholder="np. Ekstraklasa" />
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <label style={{ fontSize: '11px', fontWeight: 800, color: 'rgba(255,255,255,0.4)', letterSpacing: '1px' }}>URL LOGO (Opcjonalnie)</label>
-              <input type="text" value={logoUrl} onChange={e => setLogoUrl(e.target.value)} placeholder="https://..." style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '14px 16px', color: '#fff', fontSize: '15px', fontWeight: 700, outline: 'none' }} />
+            <div className="ccf-setup-field">
+              <label>LOGO</label>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <input 
+                  type="text" 
+                  value={logoUrl} 
+                  onChange={e => setLogoUrl(e.target.value)} 
+                  placeholder="URL logo lub wgraj plik ➞" 
+                  style={{ flex: 1 }}
+                />
+                <label className="ccf-upload-btn">
+                  <input 
+                    type="file" 
+                    accept="image/*" 
+                    onChange={handleImageUpload} 
+                    style={{ display: 'none' }} 
+                  />
+                  <span className="material-symbols-outlined" style={{ fontSize: '18px' }}>upload_file</span>
+                </label>
+              </div>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div className="ccf-setup-field">
               <CustomDropdown
                 label="DOMYŚLNA FORMACJA"
                 options={['4-4-2', '4-3-3', '4-2-3-1', '4-1-4-1', '3-5-2', '3-4-3', '5-3-2', '5-4-1']}
@@ -737,7 +769,7 @@ export default function CustomClubForm({ onBack, onComplete, isOpponentMode = fa
             </div>
           </div>
 
-          <button className="form-next-btn" onClick={handleNextStep} style={{ marginTop: '40px' }}>
+          <button className="ccf-setup-next-btn" onClick={handleNextStep}>
             DALEJ
             <span className="material-symbols-outlined">arrow_forward</span>
           </button>
