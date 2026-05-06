@@ -180,26 +180,22 @@
   }
 }
 
-/* ─── MAIN GRID 5-COL ────────────────────────────────── */
+/* ─── MAIN GRID 4-COL ────────────────────────────────── */
 .mc-body-4col {
   display: grid;
-  grid-template-columns: 22fr 14fr 28fr 22fr 14fr;
-  grid-template-rows: 1fr auto;
-  grid-template-areas:
-    "home  atk  mid  away  ai"
-    "home  sum  mid  away  ai";
+  grid-template-columns: 22fr 30fr 22fr 26fr;
   gap: 14px;
   flex: 1;
   min-height: 0;
   padding: 14px 20px 20px 20px;
   background: #050505;
 }
-.mc-col-home  { grid-area: home; }
-.mc-col-mid   { grid-area: mid;  grid-row: 1 / 3; }
-.mc-col-away  { grid-area: away; grid-row: 1 / 3; }
-.mc-col-ai    { grid-area: ai;   grid-row: 1 / 3; }
-.mc-analytics-card--atk   { grid-area: atk; }
-.mc-analytics-card--rival { grid-area: sum; }
+.mc-col-home  { }
+.mc-col-mid   { }
+.mc-col-away  { }
+.mc-col-ai    { }
+.mc-analytics-card--atk   { /* embedded in AI col */ }
+.mc-analytics-card--rival { /* embedded in AI col */ }
 
 /* ─── BASE COLUMN STYLE ──────────────────────────── */
 .mc-col {
@@ -508,113 +504,18 @@
   line-height: 1.6;
 }
 
-/* ─── RIGHT COLUMN (AI) — styl 1:1 z AIWindow ─── */
-
-.mc-AI-win {
-  height: 100%;
-  width: 100%;
+.mc-col-analytics {
   display: flex;
   flex-direction: column;
-  font-family: "Lato", sans-serif;
-  background: rgba(0, 0, 0, 0.2);
-  padding: 20px;
-  position: relative;
-}
-
-.mc-messages-container {
-  flex: 1;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  padding-right: 8px;
-  margin-bottom: 20px;
-  min-height: 0;
-}
-
-.mc-message-bubble {
-  max-width: 85%;
-  padding: 12px 16px;
-  border-radius: 15px;
-  font-size: 14px;
-  line-height: 1.5;
-  white-space: pre-wrap;
-}
-
-.mc-message-bubble.user {
-  align-self: flex-end;
-  background: #ffffff;
-  color: #000000;
-  border-bottom-right-radius: 4px;
-}
-
-.mc-message-bubble.assistant {
-  align-self: flex-start;
-  background: rgba(255, 255, 255, 0.05);
-  color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-bottom-left-radius: 4px;
-  max-width: 100%;
-}
-
-/* Input — okrągły jak w AIWindow */
-.mc-inp {
-  width: 100%;
-  position: relative;
-  display: flex;
-  align-items: center;
-  background: rgba(255, 255, 255, 0.03);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 100px;
-  padding: 5px 5px 5px 15px;
-  transition: all 0.2s;
-  flex-shrink: 0;
-}
-
-.mc-inp:focus-within {
-  border-color: rgba(255, 255, 255, 0.2);
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.mc-inp__field {
-  flex: 1;
-  padding: 10px 0;
-  font-size: 14px;
-  border: none;
+  gap: 14px;
   background: transparent;
-  color: #ffffff;
-  outline: none;
-  font-family: inherit;
+  border: none;
 }
 
-.mc-inp__field::placeholder {
-  color: rgba(255, 255, 255, 0.3);
+.mc-col-analytics .mc-analytics-card {
+  flex: 1;
 }
 
-.mc-inp__send {
-  background: #ffffff;
-  color: #070707;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-size: 20px;
-  flex-shrink: 0;
-}
-
-.mc-inp__send:hover {
-  transform: scale(1.05);
-  background: #f0f0f0;
-}
-
-.mc-inp__send.disabled {
-  opacity: 0.3;
-  cursor: default;
-}
 
 /* ─── FOOTER ───────────────────────────────────── */
 .mc-footer {

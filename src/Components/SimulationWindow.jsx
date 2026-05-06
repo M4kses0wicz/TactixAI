@@ -340,10 +340,7 @@ const SimulationWindow = ({
   const [subSelectName, setSubSelectName] = useState(null);
   const [subFeedback, setSubFeedback] = useState(null);
 
-  const [aiInput, setAiInput] = useState("");
-  const [aiChat, setAiChat] = useState([
-    { role: "assistant", text: "Gotów do analizy. Zadaj mi pytanie o taktykę lub zaproponuj zmianę." }
-  ]);
+
 
   const feedRef = useRef(null);
 
@@ -417,15 +414,7 @@ const SimulationWindow = ({
     setTimeout(() => setSubFeedback(null), 3000);
   }, [subSelectId, subSelectName, currentTeam, opponentTeam, sessionId, substitutePlayer]);
 
-  /* ── AI Send ──────────────────────────────────────── */
-  const handleAiSend = () => {
-    if (!aiInput.trim()) return;
-    setAiChat(prev => [...prev,
-      { role: "user", text: aiInput },
-      { role: "assistant", text: "Analizuję sytuację na boisku..." }
-    ]);
-    setAiInput("");
-  };
+
 
   /* ── SquadList data ── */
   // allHomePlayers nie jest już potrzebne — SquadList buduje z assignedStarters
@@ -514,21 +503,6 @@ const SimulationWindow = ({
             />
           </div>
         </div>
-
-        {/* ── ATTACK DIRECTIONS ── */}
-        <AttackDirectionsPanel
-          homeDir={stats?.homeAttackDir}
-          awayDir={stats?.awayAttackDir}
-        />
-
-        {/* ── MATCH SUMMARY CARD (kartki, rożne, strzelcy) ── */}
-        <MatchSummaryCard
-          stats={stats}
-          homePlayers={homePlayers}
-          awayPlayers={awayPlayers}
-          homeName={homeName}
-          awayName={awayName}
-        />
 
         <div className="mc-col mc-col-mid">
 
@@ -632,28 +606,19 @@ const SimulationWindow = ({
           </div>
         </div>
 
-        {/* ── AI ── */}
-        <div className="mc-col mc-col-ai">
-          <section className="mc-AI-win">
-            <div className="mc-messages-container">
-              {aiChat.map((msg, idx) => (
-                <div key={idx} className={`mc-message-bubble ${msg.role}`}>{msg.text}</div>
-              ))}
-            </div>
-            <div className="mc-inp">
-              <input
-                type="text"
-                className="mc-inp__field"
-                value={aiInput}
-                onChange={e => setAiInput(e.target.value)}
-                placeholder="Zapytaj o sytuację na boisku..."
-                onKeyDown={e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); handleAiSend(); } }}
-              />
-              <span className={`material-symbols-outlined mc-inp__send${!aiInput.trim() ? " disabled" : ""}`} onClick={handleAiSend}>
-                arrow_upward
-              </span>
-            </div>
-          </section>
+        {/* ── Analytics ── */}
+        <div className="mc-col mc-col-analytics" style={{ padding: "16px", gap: "16px", background: "transparent", border: "none" }}>
+          <AttackDirectionsPanel
+            homeDir={stats?.homeAttackDir}
+            awayDir={stats?.awayAttackDir}
+          />
+          <MatchSummaryCard
+            stats={stats}
+            homePlayers={homePlayers}
+            awayPlayers={awayPlayers}
+            homeName={homeName}
+            awayName={awayName}
+          />
         </div>
 
       </div>
