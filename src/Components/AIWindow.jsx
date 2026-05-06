@@ -716,12 +716,6 @@ function AIWindow() {
             </div>
           )}
 
-          {matchData && (
-            <div className="live-indicator">
-              <span className="live-dot"></span>
-              LIVE — {matchData.time}' | {matchData.scoreHome} : {matchData.scoreAway}
-            </div>
-          )}
 
           <div className="inp">
             <input

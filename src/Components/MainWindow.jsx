@@ -232,12 +232,6 @@ function MainWindow() {
         )}
         
         <div className="header-right">
-          {matchTime > 0 && isMatchFinished && (
-            <button className="simulate-btn" onClick={() => setIsSimulating(true)}>
-              <span className="material-symbols-outlined">sports_soccer</span>
-              Zakończ symulację
-            </button>
-          )}
           {matchTime === 0 ? (
             <button className="simulate-btn" onClick={() => setIsSimulating(true)}>
               <span className="material-symbols-outlined" style={{ color: '#4CAF50', fontSize: '20px' }}>play_arrow</span>
@@ -246,7 +240,7 @@ function MainWindow() {
           ) : (
             <button className="simulate-btn" onClick={() => setIsSimulating(true)}>
               <span className="material-symbols-outlined" style={{ color: '#4CAF50', fontSize: '20px' }}>sports_soccer</span>
-              {isMatchFinished ? "Zakończ symulację" : "Wróć do meczu"}
+              Mecz
             </button>
           )}
           <button 
