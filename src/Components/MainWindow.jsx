@@ -14,14 +14,8 @@ import SimulationWindow from "./SimulationWindow";
 import ExitConfirmationModal from "./ExitConfirmationModal";
 import personIcon from "../assets/user-icon.png";
 
-const SAMPLE_EVENTS = [
-  { min: 3,  text: "Genialna interwencja Bramkarza zatrzymuje uderzenie Larghalline!", type: "normal" },
-  { min: 19, text: "Cucurella zapisany w notesie arbitra. Musi teraz uważać.", type: "card" },
-  { min: 23, text: "Akcja przerwana. Sędzia boczny podnosi chorągiewkę — James nie spełniony.", type: "normal" },
-  { min: 26, text: "Brzydki faul Chalobah. Sędzia udziela mu ustnego upomnienia.", type: "card" },
-  { min: 30, text: "Niecelne uderzenie Colwill. To była dobra okazja do objęcia prowadzenia.", type: "normal" },
-  { min: 32, text: "Zła decyzja Wellenreuther. Strzelał w trybuny.", type: "normal" },
-];
+const API = "http://127.0.0.1:8000";
+const SESSION_ID = "match_" + Date.now();
 
 function MainWindow() {
   const [pitchView, setPitchView] = useState("team");
@@ -39,7 +33,7 @@ function MainWindow() {
     saveCurrentGame
   } = useGame();
   
-  /* ─── Match State (Lifted) ─── */
+  /* ─── Match State (zasilany przez CoreMatchEngine API) ─── */
   const [matchTime, setMatchTime] = useState(0);
   const [matchScore, setMatchScore] = useState({ home: 0, away: 0 });
   const [matchEvents, setMatchEvents] = useState([]);
@@ -49,109 +43,128 @@ function MainWindow() {
     homePoss: 50, awayPoss: 50,
     homeShots: 0, awayShots: 0,
     homeShotsOn: 0, awayShotsOn: 0,
-    homePass: 84, awayPass: 79,
+    homePass: 0, awayPass: 0,
     homeFouls: 0, awayFouls: 0,
     homeCorners: 0, awayCorners: 0,
     homeYellow: 0, awayYellow: 0,
     homeRed: 0, awayRed: 0,
-    homeOffsides: 0, awayOffsides: 0,
-    homeSaves: 0, awaySaves: 0,
-    homeBlocks: 0, awayBlocks: 0,
-    homeCrosses: 0, awayCrosses: 0,
-    homeTackles: 0, awayTackles: 0,
-    homeAerial: 0, awayAerial: 0,
+    homeXG: 0, awayXG: 0,
+    homeActionZones: { defense: 33, midfield: 34, attack: 33 },
+    awayActionZones: { defense: 33, midfield: 34, attack: 33 },
+    homeAttackDir: { left: 33, center: 34, right: 33 },
+    awayAttackDir: { left: 33, center: 34, right: 33 },
   });
-  
+
   const [homePlayers, setHomePlayers] = useState([]);
   const [awayPlayers, setAwayPlayers] = useState([]);
-  
-  const ratingsRef = useRef({});
+  const [engineReady, setEngineReady] = useState(false);
   const timerRef = useRef(null);
 
-  /* Init/Update players when match starts or teams change */
-  useEffect(() => {
-    const getPlayers = (team) => {
-      if (!team) return [];
-      let starters = team.zawodnicy?.filter(p => p.isStarting) || [];
-      if (starters.length === 0) starters = team.zawodnicy?.slice(0, 11) || [];
-      
-      return starters.map((p, i) => {
-        const id = p.id ?? i;
-        if (!ratingsRef.current[id]) {
-          ratingsRef.current[id] = 6.6 + Math.random() * 0.8;
-        }
-        return {
-          id,
-          name: p.imie_nazwisko || "?",
-          shortName: p.imie_nazwisko?.split(" ").pop() || "?",
-          pos: p.pozycja_glowna || "?",
-          num: p.numer ?? p.numer_koszulki ?? (i + 1),
-          rating: ratingsRef.current[id],
-        };
-      });
-    };
-    setHomePlayers(getPlayers(currentTeam));
-    setAwayPlayers(getPlayers(opponentTeam));
-  }, [currentTeam, opponentTeam]);
-
-  const handleMinuteTick = (t) => {
-    const r = Math.random();
-    const sample = SAMPLE_EVENTS.find(e => e.min === t);
-    if (sample) {
-      setMatchEvents(prev => [sample, ...prev]);
-      if (sample.type === "card") setMatchStats(s => ({ ...s, homeYellow: s.homeYellow + 1 }));
+  /* ─── Pomocnicze: aktualizuj cały stan z payloadu API ─── */
+  const applyStats = (stats, newEvents = []) => {
+    const h = stats.home;
+    const a = stats.away;
+    setMatchTime(stats.minute);
+    setMatchScore({ home: stats.score_home, away: stats.score_away });
+    if (stats.is_finished) setIsMatchFinished(true);
+    setMatchStats({
+      homePoss: h.possession_pct,    awayPoss: a.possession_pct,
+      homeShots: h.shots_total,       awayShots: a.shots_total,
+      homeShotsOn: h.shots_on_target, awayShotsOn: a.shots_on_target,
+      homePass: h.pass_accuracy_pct,  awayPass: a.pass_accuracy_pct,
+      homeFouls: h.fouls,             awayFouls: a.fouls,
+      homeCorners: h.corners,         awayCorners: a.corners,
+      homeYellow: h.yellow_cards,     awayYellow: a.yellow_cards,
+      homeRed: h.red_cards,           awayRed: a.red_cards,
+      homeXG: h.cumulative_xg,        awayXG: a.cumulative_xg,
+      homeActionZones: h.action_zones_pct,
+      awayActionZones: a.action_zones_pct,
+      homeAttackDir: h.attack_directions_pct,
+      awayAttackDir: a.attack_directions_pct,
+    });
+    if (stats.momentum?.length) {
+      setMatchMomentum(stats.momentum.map(m => ({ home: m.home, away: m.away })));
     }
-
-    if (r < 0.04) {
-      const isHome = Math.random() > 0.5;
-      if (isHome) {
-        setMatchScore(s => ({ ...s, home: s.home + 1 }));
-        setMatchEvents(prev => [{ min: t, text: `GOL! ${currentTeam?.nazwa || "Gospodarz"} obejmuje prowadzenie!`, type: "goal" }, ...prev]);
-      } else {
-        setMatchScore(s => ({ ...s, away: s.away + 1 }));
-        setMatchEvents(prev => [{ min: t, text: `GOL! ${opponentTeam?.nazwa || "Gość"} wyrównuje!`, type: "goal" }, ...prev]);
-      }
-      setMatchStats(s => isHome
-        ? { ...s, homeShots: s.homeShots + 1, homeShotsOn: s.homeShotsOn + 1 }
-        : { ...s, awayShots: s.awayShots + 1, awayShotsOn: s.awayShotsOn + 1 });
-    } else if (r < 0.10) {
-      const isHome = Math.random() > 0.5;
-      setMatchStats(s => isHome ? { ...s, homeShots: s.homeShots + 1 } : { ...s, awayShots: s.awayShots + 1 });
-    }
-    
-    if (t % 3 === 0) {
-      setMatchMomentum(prev => [...prev, { home: Math.random() * 6 + 2, away: Math.random() * 6 + 2 }]);
+    // Oceny zawodników
+    const mapPlayers = (arr) => arr.map(p => ({
+      id: p.id, name: p.name,
+      shortName: p.name?.split(" ").pop() || "?",
+      pos: p.pos, rating: p.rating, stamina: p.stamina,
+      goals: p.goals,
+    }));
+    setHomePlayers(mapPlayers(h.player_ratings || []));
+    setAwayPlayers(mapPlayers(a.player_ratings || []));
+    // Zdarzenia – dodaj nowe na górę
+    if (newEvents.length) {
+      setMatchEvents(prev => [
+        ...newEvents.map(e => ({ min: e.min, text: e.text, type: e.type })).reverse(),
+        ...prev,
+      ]);
     }
   };
 
-  /* ─── Live Coaching Clock ─── */
-  useEffect(() => {
-    if (isMatchFinished) return;
-    
-    const interval = isSimulating ? 1000 : 10000; // Normal match (1s) vs Slow coaching (10s)
-    
-    if (matchTime > 0 || isSimulating) {
-      timerRef.current = setInterval(() => {
-        setMatchTime(prev => {
-          if (prev >= 90) {
-            clearInterval(timerRef.current);
-            setIsMatchFinished(true);
-            return 90;
-          }
-          return prev + 1;
-        });
-      }, interval);
+  /* ─── Start symulacji: POST /api/simulate/start ─── */
+  const startSimulation = async () => {
+    try {
+      const res = await fetch(`${API}/api/simulate/start`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          session_id: SESSION_ID,
+          homeTeam: currentTeam,
+          awayTeam: opponentTeam,
+        }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        applyStats(data.stats);
+        setEngineReady(true);
+      } else {
+        console.error("Simulate start error:", data.error);
+        setEngineReady(false);
+      }
+    } catch (e) {
+      console.error("Cannot reach simulation API:", e);
+      setEngineReady(false);
     }
+  };
+
+  /* ─── Tick: POST /api/simulate/tick ─── */
+  const doTick = async () => {
+    try {
+      const res = await fetch(`${API}/api/simulate/tick`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ session_id: SESSION_ID, ticks: 10 }),
+      });
+      const data = await res.json();
+      if (data.ok) {
+        applyStats(data.stats, data.new_events || []);
+        if (data.finished) {
+          clearInterval(timerRef.current);
+          setIsMatchFinished(true);
+        }
+      }
+    } catch (e) {
+      console.error("Tick error:", e);
+    }
+  };
+
+  /* ─── Uruchom silnik gdy isSimulating=true ─── */
+  useEffect(() => {
+    if (!isSimulating) {
+      clearInterval(timerRef.current);
+      return;
+    }
+    if (isMatchFinished) return;
+
+    // Przy pierwszym wejściu w symulację: zainicjuj silnik
+    startSimulation().then(() => {
+      timerRef.current = setInterval(doTick, 1200); // 1 minuta gry co 1.2s
+    });
 
     return () => clearInterval(timerRef.current);
-  }, [isSimulating, isMatchFinished, matchTime]);
-
-  /* ─── Side effects of time passing ─── */
-  useEffect(() => {
-    if (matchTime > 0 && !isMatchFinished) {
-      handleMinuteTick(matchTime);
-    }
-  }, [matchTime]);
+  }, [isSimulating]);
 
 
 

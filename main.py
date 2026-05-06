@@ -5,6 +5,61 @@ import json
 import re
 import requests
 import json_repair
+import random
+from typing import Optional
+
+# ── CoreMatchEngine ──────────────────────────────────────────────
+from core_match_engine import (
+    MatchEngine, MatchState, Player, PlayerAttributes,
+    TeamTactics, Mentality,
+    ZoneLongitudinal, ZoneLateral,
+)
+
+# In-memory store: session_id -> MatchEngine
+_SESSIONS: dict[str, MatchEngine] = {}
+
+# ── Mapowanie polskich atrybutów z bazy → pola PlayerAttributes ──
+_ATTR_MAP = {
+    "szybkosc": "pace", "przyspieszenie": "pace",
+    "sila": "strength", "wytrzymalosc": "stamina",
+    "agresja": "aggression", "podania": "passing",
+    "drybling": "dribbling", "wykanczanie_akcji": "finishing",
+    "dosrodkowania": "crossing", "gra_glowa": "heading",
+    "technika": "first_touch", "wizja_gry": "vision",
+    "ustawienie": "positioning", "decyzje": "decisions",
+    "opanowanie": "composure", "pracowitosc": "work_rate",
+    "odbior_pilki": "tackling", "krycie": "marking",
+    "koncentracja": "concentration",
+    "refleks": "gk_reflexes", "chwyty": "gk_handling",
+    "ustawienie_bramkarza": "gk_positioning",
+}
+
+def _build_player(raw: dict, idx: int) -> Player:
+    """Konwertuje zawodnika z frontendu na obiekt Player silnika."""
+    raw_attrs = raw.get("atrybuty") or {}
+    engine_attrs: dict[str, int] = {}
+    for pl_key, eng_key in _ATTR_MAP.items():
+        val = raw_attrs.get(pl_key)
+        if val is not None:
+            try:
+                engine_attrs[eng_key] = max(1, min(20, int(val)))
+            except (TypeError, ValueError):
+                pass
+    attrs = PlayerAttributes(**engine_attrs)
+    pos = raw.get("pozycja_glowna") or raw.get("pos") or "CM"
+    return Player(
+        id=str(raw.get("id", idx)),
+        name=raw.get("imie_nazwisko") or raw.get("name") or f"P{idx}",
+        position=pos,
+        attributes=attrs,
+    )
+
+def _build_tactics(team: dict) -> TeamTactics:
+    """Buduje TeamTactics z danych drużyny frontendu."""
+    men_str = (team.get("mentalnosc") or "Wyważona").strip()
+    men_map = {m.value: m for m in Mentality}
+    mentality = men_map.get(men_str, Mentality.BALANCED)
+    return TeamTactics(mentality=mentality)
 
 app = FastAPI()
 
@@ -435,4 +490,102 @@ def aktualizuj_druzyne(team_data: dict):
 
     except Exception as e:
         return {"Blad polaczenia": str(e)}
-    
+
+
+# ══════════════════════════════════════════════════════════════════
+# ENDPOINTS SYMULACJI MECZU
+# ══════════════════════════════════════════════════════════════════
+
+@app.post("/api/simulate/start")
+def simulate_start(data: dict):
+    """
+    Inicjuje nową sesję symulacji.
+    Body: { session_id, homeTeam, awayTeam }
+    Zwraca: initial live_stats payload
+    """
+    session_id  = data.get("session_id", "default")
+    home_team   = data.get("homeTeam", {})
+    away_team   = data.get("awayTeam", {})
+
+    # Pobierz startującą jedenastkę (lub pierwsze 11)
+    def get_starters(team: dict) -> list:
+        zawodnicy = team.get("zawodnicy") or []
+        starters  = [p for p in zawodnicy if p.get("isStarting")]
+        if not starters:
+            starters = zawodnicy[:11]
+        return starters[:11]
+
+    home_raw = get_starters(home_team)
+    away_raw = get_starters(away_team)
+
+    home_players = [_build_player(p, i) for i, p in enumerate(home_raw)]
+    away_players = [_build_player(p, i) for i, p in enumerate(away_raw)]
+
+    if not home_players:
+        return {"error": "Brak zawodników gospodarza"}
+    if not away_players:
+        return {"error": "Brak zawodników gościa"}
+
+    state = MatchState(
+        home_players=home_players,
+        away_players=away_players,
+        home_tactics=_build_tactics(home_team),
+        away_tactics=_build_tactics(away_team),
+    )
+    engine = MatchEngine(state)
+    _SESSIONS[session_id] = engine
+
+    return {
+        "ok": True,
+        "session_id": session_id,
+        "stats": engine.get_live_stats(),
+    }
+
+
+@app.post("/api/simulate/tick")
+def simulate_tick(data: dict):
+    """
+    Przesuwa symulację o N ticków (domyślnie 10 = 1 minuta).
+    Body: { session_id, ticks? }
+    Zwraca: live_stats po wykonanych tickach + lista nowych zdarzeń
+    """
+    session_id = data.get("session_id", "default")
+    ticks      = int(data.get("ticks", 10))   # 10 ticków = 1 minuta gry
+
+    engine = _SESSIONS.get(session_id)
+    if not engine:
+        return {"error": "Sesja nie istnieje. Wywołaj /api/simulate/start najpierw."}
+
+    if engine.state.is_finished:
+        return {"ok": True, "finished": True, "stats": engine.get_live_stats()}
+
+    new_events = []
+    for _ in range(ticks):
+        ev = engine.simulate_tick()
+        if ev:
+            new_events.append({
+                "min":    ev.minute,
+                "text":   ev.text,
+                "type":   ev.event_type,
+                "team":   ev.team,
+                "player": ev.player_name,
+                "xg":     ev.xg,
+            })
+        if engine.state.is_finished:
+            break
+
+    stats = engine.get_live_stats()
+    return {
+        "ok":         True,
+        "finished":   engine.state.is_finished,
+        "new_events": new_events,
+        "stats":      stats,
+    }
+
+
+@app.post("/api/simulate/reset")
+def simulate_reset(data: dict):
+    """Usuwa sesję z pamięci."""
+    session_id = data.get("session_id", "default")
+    _SESSIONS.pop(session_id, None)
+    return {"ok": True}
