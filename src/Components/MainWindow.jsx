@@ -15,7 +15,12 @@ import ExitConfirmationModal from "./ExitConfirmationModal";
 import personIcon from "../assets/user-icon.png";
 
 const API = "http://127.0.0.1:8000";
-const SESSION_ID = "match_" + Date.now();
+// SESSION_ID jest stały przez cały czas życia aplikacji (nie resetuje się przy re-renderach)
+const SESSION_ID = (() => {
+  let id = sessionStorage.getItem("tactix_session_id");
+  if (!id) { id = "match_" + Date.now(); sessionStorage.setItem("tactix_session_id", id); }
+  return id;
+})();
 
 function MainWindow() {
   const [pitchView, setPitchView] = useState("team");
@@ -158,17 +163,47 @@ function MainWindow() {
     }
     if (isMatchFinished) return;
 
-    // Przy pierwszym wejściu w symulację: zainicjuj silnik
-    startSimulation().then(() => {
-      timerRef.current = setInterval(doTick, 1200); // 1 minuta gry co 1.2s
-    });
+    // Synchronizuj taktykę przed wznowieniem/startem
+    const syncTactics = async () => {
+      try {
+        await fetch(`${API}/api/simulate/tactics`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            session_id: SESSION_ID,
+            homeTeam: currentTeam,
+            awayTeam: opponentTeam,
+          }),
+        });
+      } catch (e) {
+        console.warn("Tactics sync failed, but continuing...", e);
+      }
+    };
+
+    // Przy pierwszym wejściu w symulację: zainicjuj silnik lub wznów
+    const run = async () => {
+      if (matchTime === 0) {
+        await startSimulation();
+      } else {
+        // Jeśli mecz już trwa, upewnij się że backend ma najnowszą taktykę (zmiany w przerwie)
+        await syncTactics();
+      }
+      
+      // Startujemy interwał dopiero gdy silnik gotowy (lub już był)
+      timerRef.current = setInterval(doTick, 1200); 
+    };
+
+    run();
 
     return () => clearInterval(timerRef.current);
   }, [isSimulating]);
 
 
 
-  if (!currentTeam) return null;
+  if (!currentTeam || !currentTeam.zawodnicy) {
+    console.warn("MainWindow: Brak currentTeam lub zawodników!", currentTeam);
+    return null;
+  }
 
   const activeTeam = pitchView === "opponent" ? (opponentTeam || currentTeam) : currentTeam;
   const isOppView = pitchView === "opponent";
@@ -196,6 +231,7 @@ function MainWindow() {
     return (
       <SimulationWindow 
         onFinish={() => setIsSimulating(false)} 
+        sessionId={SESSION_ID}
         time={matchTime}
         score={matchScore}
         events={matchEvents}

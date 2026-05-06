@@ -28,7 +28,13 @@ function App() {
   }, [currentTeam]); // Only depend on currentTeam to prevent loops
 
   // If we have a team and we are NOT in the middle of custom creation or selection, show MainWindow
-  if (currentTeam && currentTeam.zawodnicy && screen !== 4 && screen !== 5 && screen !== 2) {
+  useEffect(() => {
+    if (currentTeam) {
+      console.log("App: CurrentTeam changed", currentTeam.nazwa, "Zawodnicy:", currentTeam.zawodnicy?.length);
+    }
+  }, [currentTeam]);
+
+  if (currentTeam && currentTeam.zawodnicy && currentTeam.zawodnicy.length > 0 && screen !== 4 && screen !== 5 && screen !== 2) {
     return <MainWindow />;
   }
 

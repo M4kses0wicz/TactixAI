@@ -180,24 +180,26 @@
   }
 }
 
-/* ─── MAIN GRID 4-COL ────────────────────────────── */
+/* ─── MAIN GRID 5-COL ────────────────────────────────── */
 .mc-body-4col {
   display: grid;
-  grid-template-columns: 24fr 30fr 24fr 22fr;
+  grid-template-columns: 22fr 14fr 28fr 22fr 14fr;
   grid-template-rows: 1fr auto;
   grid-template-areas:
-    "home  mid  away  ai"
-    "atk   mid  rival ai";
-  gap: 16px;
+    "home  atk  mid  away  ai"
+    "home  sum  mid  away  ai";
+  gap: 14px;
   flex: 1;
   min-height: 0;
-  padding: 16px 24px 24px 24px;
+  padding: 14px 20px 20px 20px;
   background: #050505;
 }
 .mc-col-home  { grid-area: home; }
 .mc-col-mid   { grid-area: mid;  grid-row: 1 / 3; }
-.mc-col-away  { grid-area: away; }
+.mc-col-away  { grid-area: away; grid-row: 1 / 3; }
 .mc-col-ai    { grid-area: ai;   grid-row: 1 / 3; }
+.mc-analytics-card--atk   { grid-area: atk; }
+.mc-analytics-card--rival { grid-area: sum; }
 
 /* ─── BASE COLUMN STYLE ──────────────────────────── */
 .mc-col {
@@ -1046,4 +1048,201 @@
   border: 1px solid rgba(255, 255, 255, 0.07);
   border-top: none;
   border-radius: 0 0 4px 4px;
+}
+
+/* ─── SQUAD LIST (starters + bench) ────────────── */
+.mc-squad-wrapper {
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.mc-squad-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 10px 12px 10px;
+}
+
+.mc-squad-section-label {
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.25);
+  padding: 6px 4px 3px 4px;
+}
+
+.mc-compact-pos {
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+  width: 22px;
+  flex-shrink: 0;
+}
+
+/* Highlight for sub selection */
+.mc-compact-row--selected {
+  background: rgba(74, 222, 128, 0.12) !important;
+  border: 1px solid rgba(74, 222, 128, 0.35) !important;
+}
+
+/* Bench rows have slightly different background */
+.mc-compact-row--bench {
+  background: rgba(255,255,255,0.015);
+  border: 1px dashed rgba(255,255,255,0.08);
+}
+
+.mc-compact-row--bench:hover {
+  background: rgba(74,222,128,0.08);
+  border-color: rgba(74,222,128,0.25);
+  cursor: pointer;
+}
+
+.mc-compact-row:hover {
+  background: rgba(255,255,255,0.06);
+  cursor: pointer;
+}
+
+/* RZ badge for bench players */
+.mc-bench-badge {
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  color: rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 3px;
+  padding: 1px 4px;
+  flex-shrink: 0;
+}
+
+/* ─── Clickable dots on mini-pitch ─────────────── */
+.mc-dot--clickable {
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.mc-dot--clickable:hover .mc-dot__circle {
+  border-color: rgba(74,222,128,0.7);
+  box-shadow: 0 0 8px rgba(74,222,128,0.25);
+}
+
+.mc-dot--selected .mc-dot__circle {
+  border: 2px solid #4ade80 !important;
+  box-shadow: 0 0 12px rgba(74,222,128,0.4);
+  animation: pulseSub 1.2s infinite ease-in-out;
+}
+
+@keyframes pulseSub {
+  0%, 100% { box-shadow: 0 0 8px rgba(74,222,128,0.3); }
+  50%       { box-shadow: 0 0 18px rgba(74,222,128,0.6); }
+}
+
+/* ─── Sub mode badge in team header ───────────── */
+.mc-sub-mode-badge {
+  font-size: 7px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #4ade80;
+  background: rgba(74,222,128,0.12);
+  border: 1px solid rgba(74,222,128,0.3);
+  border-radius: 4px;
+  padding: 2px 7px;
+  animation: fadeIn 0.2s ease;
+}
+
+/* ─── Sub hint bar ────────────────────────────── */
+.mc-sub-hint {
+  position: absolute;
+  bottom: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(74,222,128,0.12);
+  border: 1px solid rgba(74,222,128,0.25);
+  border-radius: 6px;
+  padding: 5px 18px;
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(255,255,255,0.8);
+  white-space: nowrap;
+  z-index: 10;
+  animation: fadeIn 0.2s ease;
+}
+
+/* ─── Sub feedback toast ──────────────────────── */
+.mc-sub-feedback {
+  position: absolute;
+  bottom: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(74,222,128,0.2);
+  border: 1px solid rgba(74,222,128,0.4);
+  border-radius: 6px;
+  padding: 5px 18px;
+  font-size: 10px;
+  font-weight: 700;
+  color: #4ade80;
+  white-space: nowrap;
+  z-index: 10;
+  animation: fadeIn 0.2s ease;
+}
+/* --- MATCH SUMMARY CARD --- */
+.mc-summary-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.mc-summary-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 8px;
+  padding: 8px 4px;
+  gap: 3px;
+}
+.mc-summary-val {
+  font-size: 18px;
+  font-weight: 900;
+  font-family: 'Outfit', sans-serif;
+  color: rgba(255,255,255,0.9);
+  line-height: 1;
+}
+.mc-summary-lbl {
+  font-size: 7px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: rgba(255,255,255,0.3);
+}
+.mc-summary-scorer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 6px;
+  border-radius: 5px;
+  font-size: 11px;
+  gap: 8px;
+}
+.mc-summary-scorer:hover { background: rgba(255,255,255,0.03); }
+.mc-summary-scorer-name {
+  font-weight: 600;
+  color: rgba(255,255,255,0.8);
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.mc-summary-scorer-goals {
+  font-size: 12px;
+  flex-shrink: 0;
 }

@@ -1,8 +1,10 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 import psycopg2
 import json
 import re
+import asyncio
 import requests
 import json_repair
 import random
@@ -14,6 +16,10 @@ from core_match_engine import (
     TeamTactics, Mentality,
     ZoneLongitudinal, ZoneLateral,
 )
+
+# ── Commentary Generator ─────────────────────────────────────────
+from commentary import CommentaryGenerator
+_commentary_gen = CommentaryGenerator()
 
 # In-memory store: session_id -> MatchEngine
 _SESSIONS: dict[str, MatchEngine] = {}
@@ -500,10 +506,21 @@ def aktualizuj_druzyne(team_data: dict):
 def simulate_start(data: dict):
     """
     Inicjuje nową sesję symulacji.
-    Body: { session_id, homeTeam, awayTeam }
+    Body: { session_id, homeTeam, awayTeam, restart? }
     Zwraca: initial live_stats payload
     """
     session_id  = data.get("session_id", "default")
+    restart     = data.get("restart", False)
+
+    # Jeśli sesja już istnieje i nie chcemy restartu, zwróć obecny stan
+    if session_id in _SESSIONS and not restart:
+        return {
+            "ok": True,
+            "session_id": session_id,
+            "stats": _SESSIONS[session_id].get_live_stats(),
+            "resumed": True
+        }
+
     home_team   = data.get("homeTeam", {})
     away_team   = data.get("awayTeam", {})
 
@@ -540,6 +557,25 @@ def simulate_start(data: dict):
         "session_id": session_id,
         "stats": engine.get_live_stats(),
     }
+
+
+@app.post("/api/simulate/tactics")
+def simulate_update_tactics(data: dict):
+    """
+    Aktualizuje taktykę w locie podczas trwania meczu.
+    Body: { session_id, homeTeam?, awayTeam? }
+    """
+    session_id = data.get("session_id", "default")
+    engine = _SESSIONS.get(session_id)
+    if not engine:
+        return {"error": "Sesja nie istnieje"}
+
+    if "homeTeam" in data:
+        engine.state.home_tactics = _build_tactics(data["homeTeam"])
+    if "awayTeam" in data:
+        engine.state.away_tactics = _build_tactics(data["awayTeam"])
+
+    return {"ok": True}
 
 
 @app.post("/api/simulate/tick")
@@ -588,4 +624,233 @@ def simulate_reset(data: dict):
     """Usuwa sesję z pamięci."""
     session_id = data.get("session_id", "default")
     _SESSIONS.pop(session_id, None)
-    return {"ok": True}
+    return {"ok": True}
+
+
+# ══════════════════════════════════════════════════════════════════
+# ZADANIE C: FASTAPI SSE STREAMING
+# ══════════════════════════════════════════════════════════════════
+
+async def _sse_event(data: dict) -> str:
+    """
+    Formatuje słownik jako Server-Sent Event.
+    Każde zdarzenie to: data: <json>\n\n
+    """
+    payload = json.dumps(data, ensure_ascii=False)
+    return f"data: {payload}\n\n"
+
+
+@app.post("/api/simulate/stream")
+async def simulate_stream(data: dict):
+    """
+    SSE Streaming endpoint – jeden tick co 0.5 sekundy czasu rzeczywistego.
+
+    Body:
+        {
+          "session_id": "abc",
+          "homeTeam":   { ...team_data... },
+          "awayTeam":   { ...team_data... },
+          "ticks_per_batch": 1        // opcjonalnie (domyślnie 1 tick / 0.5s)
+        }
+
+    Stream SSE emituje obiekty JSON:
+        {
+          "minute":      int,
+          "tick":        int,
+          "score_home":  int,
+          "score_away":  int,
+          "is_finished": bool,
+          "stats":       { ...get_live_stats()... },
+          "new_events":  [ { min, text, type, team, player, xg }, ... ],
+          "commentary":  str | null   // ostatni komentarz dla UI
+        }
+    """
+    session_id      = data.get("session_id", "default")
+    ticks_per_batch = max(1, int(data.get("ticks_per_batch", 1)))
+
+    # ── Inicjalizacja sesji (jeśli nie istnieje) ─────────────────────
+    home_team = data.get("homeTeam", {})
+    away_team = data.get("awayTeam", {})
+
+    if session_id not in _SESSIONS or data.get("restart"):
+        def get_starters(team: dict) -> list:
+            zawodnicy = team.get("zawodnicy") or []
+            starters  = [p for p in zawodnicy if p.get("isStarting")]
+            if not starters:
+                starters = zawodnicy[:11]
+            return starters[:11]
+
+        home_raw = get_starters(home_team)
+        away_raw = get_starters(away_team)
+        home_players = [_build_player(p, i) for i, p in enumerate(home_raw)]
+        away_players = [_build_player(p, i) for i, p in enumerate(away_raw)]
+
+        if not home_players or not away_players:
+            async def error_stream():
+                yield await _sse_event({"error": "Brak zawodników"})
+            return StreamingResponse(error_stream(), media_type="text/event-stream")
+
+        state = MatchState(
+            home_players=home_players,
+            away_players=away_players,
+            home_tactics=_build_tactics(home_team),
+            away_tactics=_build_tactics(away_team),
+        )
+        engine = MatchEngine(state)
+        _SESSIONS[session_id] = engine
+    else:
+        engine = _SESSIONS[session_id]
+
+    # ── Generator ticków (async generator → StreamingResponse) ──────
+    async def event_generator():
+        try:
+            while not engine.state.is_finished:
+                new_events: list[dict] = []
+
+                # Przetwórz batch ticków
+                for _ in range(ticks_per_batch):
+                    ev = engine.simulate_tick()
+                    if ev:
+                        new_events.append({
+                            "min":    ev.minute,
+                            "text":   ev.text,
+                            "type":   ev.event_type,
+                            "team":   ev.team,
+                            "player": ev.player_name,
+                            "xg":     ev.xg,
+                        })
+                    if engine.state.is_finished:
+                        break
+
+                # Komentarz – ostatni wpis z new_events lub None
+                commentary: Optional[str] = None
+                if new_events:
+                    last = new_events[-1]
+                    commentary = last["text"]  # tekst już wygenerowany przez silnik
+
+                payload = {
+                    "minute":      engine.state.current_minute,
+                    "tick":        engine.state.current_tick,
+                    "score_home":  engine.state.score_home,
+                    "score_away":  engine.state.score_away,
+                    "is_finished": engine.state.is_finished,
+                    "stats":       engine.get_live_stats(),
+                    "new_events":  new_events,
+                    "commentary":  commentary,
+                }
+
+                yield await _sse_event(payload)
+
+                # 0.5 sekundy = 1 tick gry (6s)
+                await asyncio.sleep(0.5)
+
+            # Końcowy pakiet po zakończeniu meczu
+            final_commentary = _commentary_gen.generate(
+                "full_time",
+                score_home=engine.state.score_home,
+                score_away=engine.state.score_away,
+            )
+            final_payload = {
+                "minute":      engine.state.current_minute,
+                "tick":        engine.state.current_tick,
+                "score_home":  engine.state.score_home,
+                "score_away":  engine.state.score_away,
+                "is_finished": True,
+                "stats":       engine.get_live_stats(),
+                "new_events":  [],
+                "commentary":  final_commentary,
+            }
+            yield await _sse_event(final_payload)
+
+        except asyncio.CancelledError:
+            # Klient rozłączył się – sprzątamy sesję
+            _SESSIONS.pop(session_id, None)
+
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control":     "no-cache",
+            "Connection":        "keep-alive",
+            "X-Accel-Buffering": "no",   # ważne dla nginx / reverse proxy
+        },
+    )
+
+
+@app.get("/api/simulate/stream/{session_id}")
+async def simulate_stream_get(session_id: str, request: Request):
+    """
+    GET-based SSE stream dla istniejącej sesji (np. EventSource z frontendu React).
+    Sesja musi być wcześniej zainicjowana przez POST /api/simulate/start.
+
+    Front-end:
+        const es = new EventSource(`/api/simulate/stream/${sessionId}`);
+        es.onmessage = (e) => { const d = JSON.parse(e.data); ... };
+    """
+    engine = _SESSIONS.get(session_id)
+    if not engine:
+        async def not_found():
+            yield await _sse_event({"error": "Sesja nie istnieje. Wywołaj /api/simulate/start."})
+        return StreamingResponse(not_found(), media_type="text/event-stream")
+
+    async def event_generator():
+        try:
+            while not engine.state.is_finished:
+                # Sprawdź czy klient nadal połączony
+                if await request.is_disconnected():
+                    break
+
+                new_events: list[dict] = []
+                ev = engine.simulate_tick()
+                if ev:
+                    new_events.append({
+                        "min":    ev.minute,
+                        "text":   ev.text,
+                        "type":   ev.event_type,
+                        "team":   ev.team,
+                        "player": ev.player_name,
+                        "xg":     ev.xg,
+                    })
+
+                commentary = new_events[-1]["text"] if new_events else None
+
+                payload = {
+                    "minute":      engine.state.current_minute,
+                    "tick":        engine.state.current_tick,
+                    "score_home":  engine.state.score_home,
+                    "score_away":  engine.state.score_away,
+                    "is_finished": engine.state.is_finished,
+                    "stats":       engine.get_live_stats(),
+                    "new_events":  new_events,
+                    "commentary":  commentary,
+                }
+                yield await _sse_event(payload)
+                await asyncio.sleep(0.5)
+
+            # Zakończenie meczu
+            final_commentary = _commentary_gen.generate(
+                "full_time",
+                score_home=engine.state.score_home,
+                score_away=engine.state.score_away,
+            )
+            yield await _sse_event({
+                "minute":      engine.state.current_minute,
+                "score_home":  engine.state.score_home,
+                "score_away":  engine.state.score_away,
+                "is_finished": True,
+                "stats":       engine.get_live_stats(),
+                "new_events":  [],
+                "commentary":  final_commentary,
+            })
+        except asyncio.CancelledError:
+            pass
+
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control":     "no-cache",
+            "Connection":        "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )

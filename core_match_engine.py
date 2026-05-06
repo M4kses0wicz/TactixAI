@@ -11,6 +11,19 @@ from enum import Enum
 from typing import Dict, List, Optional, Tuple
 from pydantic import BaseModel, Field
 
+# CommentaryGenerator importowany leniwie (po definicji klas)
+_commentary: Optional[object] = None
+
+def _get_commentary():
+    global _commentary
+    if _commentary is None:
+        try:
+            from commentary import CommentaryGenerator
+            _commentary = CommentaryGenerator()
+        except ImportError:
+            _commentary = None
+    return _commentary
+
 
 # ==============================================================================
 # ENUMS – Geometria Boiska (Grid 3x3)
@@ -361,6 +374,9 @@ class MatchState(BaseModel):
     # Licznik nieprzerwanego posiadania (do automatycznych zmian posiadania)
     consecutive_possession_ticks: int = 0
 
+    # Licznik ticków w środkowej strefie (blokuje szybkie wejście w atak)
+    midfield_ticks: int = 0
+
     class Config:
         use_enum_values = False   # zachowujemy Enum obiekty wewnętrznie
 
@@ -377,7 +393,19 @@ from typing import Tuple, Optional
 SIGMA = 3.2          # globalne odchylenie standardowe pojedynków
 TICKS_PER_MINUTE = 10
 TOTAL_MINUTES    = 90
-STAMINA_DRAIN_BASE = 0.08   # % kondycji tracone na tick za uczestnictwo w akcji
+STAMINA_DRAIN_BASE = 0.06   # % kondycji tracone na tick za uczestnictwo w akcji
+
+# ── Mikro-oceny (rating deltas per action) ──────────────────────────────
+RATING_PASS_SUCCESS    =  0.01   # udane podanie
+RATING_PASS_FAIL       = -0.03   # strata przez nieudane podanie
+RATING_TACKLE_WIN      =  0.05   # wygrany odbiór
+RATING_BALL_LOST       = -0.05   # strata piłki (drybling przeGRANY)
+RATING_DRIBBLE_WIN     =  0.03   # wygrany drybling
+RATING_SHOT_ON_TARGET  =  0.10   # strzał w światło bramki
+RATING_SHOT_OFF        = -0.02   # strzał obok / zablokowany
+RATING_ASSIST          =  0.50   # asysta
+RATING_GOAL            =  1.00   # gol
+RATING_INTERCEPTION    =  0.05   # przechwyt
 
 
 class DuelCalculator:
@@ -433,12 +461,12 @@ class DuelCalculator:
 
         success = roll_passer > roll_def
 
-        # Kluczowe podanie: sukces i piłka ląduje w strefie ataku
-        key_pass = success and random.random() < 0.12
+        # Kluczowe podanie: sukces i wyraźna przewaga atakującego
+        key_pass = success and (roll_passer - roll_def) > 6.0 and random.random() < 0.25
 
-        rating_delta = 0.04 if success else -0.05
+        rating_delta = RATING_PASS_SUCCESS if success else RATING_PASS_FAIL
         if key_pass:
-            rating_delta = 0.10
+            rating_delta = 0.08
 
         return success, {
             "key_pass":          key_pass,
@@ -466,42 +494,51 @@ class DuelCalculator:
         xG modyfikowane przez różnicę Gauss roll'i.
         """
         # ---- Bazowe xG według strefy boiska ----
+        # Realistyczne: średnio 2.5 gola na mecz przy 14 strzałach
         if zone_longitudinal == ZoneLongitudinal.ATTACK:
-            base_xg = 0.09 if zone_lateral == ZoneLateral.CENTER else 0.04
+            base_xg = 0.30 if zone_lateral == ZoneLateral.CENTER else 0.14
         elif zone_longitudinal == ZoneLongitudinal.MIDFIELD:
-            base_xg = 0.020
+            base_xg = 0.05
         else:
-            base_xg = 0.008   # długi strzał z obrony
+            base_xg = 0.02
 
         s  = shooter
         gk = goalkeeper
 
         mu_shooter = (
-            s.effective_attr("finishing")   * 1.5
-            + s.effective_attr("composure")
-            + s.effective_attr("positioning")
+            s.effective_attr("finishing")    * 1.4
+            + s.effective_attr("composure")  * 0.8
+            + s.effective_attr("positioning") * 0.5
         )
         mu_gk = (
-            gk.effective_attr("gk_reflexes")    * 1.5
-            + gk.effective_attr("gk_positioning")
-            + gk.effective_attr("gk_handling")
+            gk.effective_attr("gk_reflexes")     * 1.0
+            + gk.effective_attr("gk_positioning") * 0.5
+            + gk.effective_attr("gk_handling")    * 0.4
         )
 
         roll_s  = random.gauss(mu_shooter, SIGMA)
         roll_gk = random.gauss(mu_gk, SIGMA)
 
-        # xG skalowane wynikiem Gaussa (norma: roll przewaga max ~20 pkt)
-        advantage = max(-1.0, min(1.0, (roll_s - roll_gk) / 20.0))
-        xg = max(0.01, min(0.95, base_xg + advantage * base_xg * 1.5))
+        # GK może zmniejszyć xG najwyżej o 40% jeśli WYRAZE gra lepiej
+        save_factor = max(0.6, min(1.2, 1.0 + (roll_s - roll_gk) / 60.0))
+        xg = max(0.05, min(0.92, base_xg * save_factor))
 
-        # Czy padnie gol? Losujemy z wyznaczonego xG
+        # Czy padnie gol?
         is_goal = random.random() < xg
 
-        # Czy strzał był celny (na bramkę)?
-        on_target = is_goal or (roll_s > roll_gk * 0.8 and random.random() < 0.55)
+        # Czy strzał był celny?
+        on_target = is_goal or (roll_s > roll_gk * 0.85 and random.random() < 0.50)
 
-        rating_delta_shooter  = 0.08 if is_goal else (0.02 if on_target else -0.03)
-        rating_delta_gk       = -0.10 if is_goal else (0.05 if on_target else 0.0)
+        # Mikro-oceny zgodne ze specyfikacją
+        if is_goal:
+            rating_delta_shooter = RATING_GOAL
+            rating_delta_gk      = -0.15
+        elif on_target:
+            rating_delta_shooter = RATING_SHOT_ON_TARGET
+            rating_delta_gk      = 0.08
+        else:
+            rating_delta_shooter = RATING_SHOT_OFF
+            rating_delta_gk      = 0.0
 
         return is_goal, {
             "xg":                  round(xg, 3),
@@ -553,12 +590,13 @@ class DuelCalculator:
         foul_chance = 0.0
         if not att_wins and not is_aerial:
             deficit = roll_att - roll_def   # ujemny → duży deficit = agresywny odbiór
-            foul_chance = max(0.0, min(0.35, (-deficit / 20.0) * (d.effective_attr("aggression") / 10.0)))
+            foul_chance = max(0.0, min(0.30, (-deficit / 20.0) * (d.effective_attr("aggression") / 12.0)))
 
         foul = (not att_wins) and (random.random() < foul_chance)
 
-        rating_delta_att = 0.06 if att_wins else -0.04
-        rating_delta_def = -0.04 if att_wins else 0.05
+        # Mikro-oceny
+        rating_delta_att = RATING_DRIBBLE_WIN if att_wins else RATING_BALL_LOST
+        rating_delta_def = -0.03 if att_wins else RATING_TACKLE_WIN
 
         return att_wins, {
             "foul":              foul,
@@ -596,8 +634,8 @@ class DuelCalculator:
         intercepted = roll_p > roll_c
 
         return intercepted, {
-            "rating_delta_presser":  0.15 if intercepted else 0.0,
-            "rating_delta_carrier":  -0.12 if intercepted else 0.0,
+            "rating_delta_presser":  RATING_INTERCEPTION if intercepted else 0.0,
+            "rating_delta_carrier":  RATING_BALL_LOST if intercepted else 0.0,
         }
 
 
@@ -713,12 +751,38 @@ class MatchEngine:
         self.state.events.append(ev)
 
     def _advance_zone(self, success: bool, lateral_shift: bool = False) -> None:
-        """Przesuwa piłkę do przodu lub do tyłu w siatce stref."""
+        """
+        Przesuwa piłkę do przodu lub do tyłu w siatce stref.
+
+        KLUCZOWA ZMIANA: Aby dostać się z obrony do ataku, piłka musi
+        NAJPIERW spędzić minimum 2 ticki w strefie środkowej (midfield_ticks).
+        To zapobiega hokejowemu stylowę - piłka nie może skoczyć z obrony
+        bezpośrednio do strefy ofensywnej.
+        """
         pitch = self.state.pitch
+        current_zone = pitch.zone_longitudinal
+
         if success:
-            pitch.zone_longitudinal = ZONE_PROGRESSION[pitch.zone_longitudinal]
+            if current_zone == ZoneLongitudinal.DEFENSE:
+                pitch.zone_longitudinal = ZoneLongitudinal.MIDFIELD
+                self.state.midfield_ticks = 0  # reset licznika przy wejściu w środek
+            elif current_zone == ZoneLongitudinal.MIDFIELD:
+                self.state.midfield_ticks += 1
+                # Wejście w strefę ataku tylko po spędzeniu MIN 3 ticków w środku
+                # Szansa rośnie stopniowo z czasem i biasem ofensywnym taktyki
+                bias = self._attacking_tactics().mentality_attack_bias
+                enter_attack_chance = min(0.55, 0.15 + (self.state.midfield_ticks - 3) * 0.10 + (bias - 0.5) * 0.12)
+                if self.state.midfield_ticks >= 3 and random.random() < enter_attack_chance:
+                    pitch.zone_longitudinal = ZoneLongitudinal.ATTACK
+                    self.state.midfield_ticks = 0
+                # else: zostajemy w środku
+            else:   # ATTACK: zostajemy lub wracamy przez obronę rywala
+                pitch.zone_longitudinal = ZoneLongitudinal.ATTACK
         else:
-            pitch.zone_longitudinal = ZONE_REGRESSION[pitch.zone_longitudinal]
+            # Nieudana akcja: cofamy się o jedną strefę
+            pitch.zone_longitudinal = ZONE_REGRESSION[current_zone]
+            if current_zone != ZoneLongitudinal.DEFENSE:
+                self.state.midfield_ticks = 0
 
         if lateral_shift:
             pitch.zone_lateral = random.choice(ALL_LATERAL)
@@ -730,25 +794,45 @@ class MatchEngine:
     def _decide_action(self) -> str:
         """
         Na podstawie strefy i taktyki wybiera akcję:
-        'pass', 'dribble', 'shot'
+        'hold', 'pass', 'dribble', 'shot'
+
+        BALANS: Średnio 10–25 strzałów na 90 minut (obie drużyny łącznie).
+        Każda minuta = 10 ticków → ~900 ticków na mecz.
+        Cel: strzał co ~45–90 ticków = ~10–20 strzałów.
+
+        Klucz: akcja 'hold' to zwykłe utrzymanie piłki BEZ postępu.
+        Nabija posiadanie i drobne mikro-oceny, ale nie przesuwa strefy.
         """
         zone = self.state.pitch.zone_longitudinal
         bias = self._attacking_tactics().mentality_attack_bias   # 0.30 – 0.75
+        tact = self._attacking_tactics()
 
         if zone == ZoneLongitudinal.DEFENSE:
-            # W obronie dominują podania – zawodnik szuka wyjścia
-            weights = {"pass": 0.88, "dribble": 0.10, "shot": 0.02}
+            # Obrona: 80% podania, 12% utrzymanie, 7% drybling, 1% długi strzał
+            weights = {"hold": 0.12, "pass": 0.80, "dribble": 0.07, "shot": 0.01}
+
         elif zone == ZoneLongitudinal.MIDFIELD:
-            # W środku zależy od taktyki
-            shot_w   = max(0.02, (bias - 0.4) * 0.06)
-            drib_w   = 0.06 + (bias - 0.4) * 0.07
-            pass_w   = 1.0 - shot_w - drib_w
-            weights = {"pass": pass_w, "dribble": drib_w, "shot": shot_w}
+            # Środek: silna pozycja obrony, drużyna MUSI najpierw wypracować okazję
+            # Strzały ze środka pola = rzadkość (tylko przy bias > 0.6)
+            hold_w = max(0.10, 0.28 - (bias - 0.5) * 0.20)       # 0.10 – 0.28
+            shot_w = max(0.005, (bias - 0.50) * 0.015)            # 0.005 – 0.01
+            drib_w = 0.05 + (bias - 0.40) * 0.04                  # 0.06 – 0.09
+            pass_w = max(0.50, 1.0 - hold_w - shot_w - drib_w)
+            weights = {"hold": hold_w, "pass": pass_w, "dribble": drib_w, "shot": shot_w}
+
         else:   # ATTACK
-            shot_w   = 0.10 + (bias - 0.50) * 0.14
-            drib_w   = 0.18
-            pass_w   = max(0.35, 1.0 - shot_w - drib_w)
-            weights = {"pass": pass_w, "dribble": drib_w, "shot": shot_w}
+            # W ataku strzały są możliwe, ale i tak wymaga się stworzenia okazji
+            # shot: 10–18%, dribble: 14%, hold: 10%, pass: reszta
+            shot_w = 0.10 + (bias - 0.50) * 0.16                  # 0.10 – 0.18
+            drib_w = 0.14
+            hold_w = max(0.06, 0.12 - (bias - 0.50) * 0.08)       # 0.06 – 0.12
+            pass_w = max(0.35, 1.0 - shot_w - drib_w - hold_w)
+            weights = {"hold": hold_w, "pass": pass_w, "dribble": drib_w, "shot": shot_w}
+
+        # Korekta taktyczna: directness > 3 zwiększa szansę na długie podanie, nie strzał
+        if tact.directness >= 4 and zone == ZoneLongitudinal.MIDFIELD:
+            weights["pass"] = min(weights["pass"] + 0.08, 0.80)
+            weights["hold"] = max(weights["hold"] - 0.04, 0.05)
 
         choices = list(weights.keys())
         probs   = list(weights.values())
@@ -758,6 +842,30 @@ class MatchEngine:
     # AKCJE INDYWIDUALNE
     # ------------------------------------------------------------------
 
+    def _do_hold(self, carrier: "Player") -> None:
+        """
+        Zawodnik utrzymuje piłkę bez postępu (podanie wstecz / boczne).
+        Nabija posiadanie i drobne mikro-oceny podań.
+        NIE przesuwa strefy. Minimalny szum pozycji bocznej.
+        """
+        att_stats = self._attacking_stats()
+        att_stats.passes_attempted += 1
+        carrier.stats.passes_attempted += 1
+
+        # Hold prawie zawsze się udaje (80-90% celność)
+        tact = self._attacking_tactics()
+        hold_success_chance = 0.78 + (carrier.effective_attr("passing") - 10) * 0.012
+        if random.random() < hold_success_chance:
+            att_stats.passes_completed += 1
+            carrier.stats.passes_completed += 1
+            self._update_rating(carrier, RATING_PASS_SUCCESS * 0.5)  # pół delta za bezpieczne podanie
+        else:
+            # Rzadka strata przy utrzymaniu
+            self._swap_possession()
+            self._update_rating(carrier, RATING_PASS_FAIL)
+
+        self._drain_stamina(carrier, 0.3)
+
     def _do_pass(self, carrier: "Player") -> None:
         att_pool = [p for p in self._attacking_players() if p.id != carrier.id]
         receiver = self._pick_random(att_pool)
@@ -765,7 +873,8 @@ class MatchEngine:
             return
 
         def_pool = self._defending_players()
-        defender = self._pick_random(def_pool, prefer_pos=["CM", "DM", "ŚP", "DP"])
+        # Preferuj środkowych pomocników/obrońców do blokowania podań
+        defender = self._pick_random(def_pool, prefer_pos=["CM", "DM", "ŚP", "DP", "ŚO", "CB"])
 
         tact = self._attacking_tactics()
         success, meta = DuelCalculator.calculate_pass(carrier, receiver, defender, tact)
@@ -780,8 +889,15 @@ class MatchEngine:
             carrier.stats.passes_completed += 1
             if meta["key_pass"]:
                 carrier.stats.key_passes += 1
+                # Asysta potencjalna – gracz-odbiorca zarejestrowany
+                if receiver:
+                    self._update_rating(receiver, 0.04)
 
-            self._advance_zone(success=True, lateral_shift=random.random() < 0.3)
+            self._advance_zone(success=True, lateral_shift=random.random() < 0.25)
+
+            # Aktualizuj kierunek ataku jeśli wchodzimy w strefę ataku
+            if self.state.pitch.zone_longitudinal == ZoneLongitudinal.ATTACK:
+                self._attacking_stats().attack_direction_shots[self.state.pitch.zone_lateral] += 1
         else:
             # Przechwyt lub wybicie
             if defender:
@@ -816,9 +932,37 @@ class MatchEngine:
             if meta["foul"]:
                 defender.stats.fouls_committed += 1
                 carrier.stats.fouls_suffered += 1
-                self._attacking_stats().fouls += 1
-                # Stały fragment gry – utrzymuje posiadanie atakującemu
-                # (logika stałych fragmentów w Kroku 3)
+                att_stats_foul = self._attacking_stats()
+                att_stats_foul.fouls += 1
+
+                # ── Kartka za faul ────────────────────────────────────────
+                card_chance = 0.18 + defender.effective_attr("aggression") * 0.008
+                if random.random() < card_chance:
+                    card_type = "red" if random.random() < 0.08 else "yellow"
+                    if card_type == "yellow":
+                        self._defending_stats().yellow_cards += 1
+                        defender.cards.append("yellow")
+                    else:
+                        self._defending_stats().red_cards += 1
+                        defender.cards.append("red")
+                        defender.is_on_pitch = False
+                    cg = _get_commentary()
+                    card_text = cg.generate("card", minute=self.state.current_minute,
+                                            player=defender.name, card_type=card_type) if cg else \
+                        f"Kartka dla {defender.name}!"
+                    self._push_event("card", card_text, player=defender)
+
+                # ── Decyzja: rzut wolny czy rzut karny ───────────────────
+                in_penalty_area = (
+                    self.state.pitch.zone_longitudinal == ZoneLongitudinal.ATTACK
+                    and random.random() < 0.25
+                )
+                if in_penalty_area:
+                    self.state.pitch.set_piece = "penalty"
+                    self._do_set_piece(carrier)
+                else:
+                    self.state.pitch.set_piece = "free_kick"
+                    self._do_set_piece(carrier)
             else:
                 self._swap_possession()
                 self._advance_zone(success=False)
@@ -843,6 +987,7 @@ class MatchEngine:
         att_stats = self._attacking_stats()
         att_stats.shots += 1
         att_stats.xg   += meta["xg"]
+        # Kierunek ataku zliczany przy strzale
         att_stats.attack_direction_shots[zone_lat] += 1
         carrier.stats.shots += 1
         carrier.stats.xg_generated += meta["xg"]
@@ -872,30 +1017,320 @@ class MatchEngine:
                 self.state.away_stats.goals += 1
 
             carrier.stats.goals += 1
-            self._push_event(
+            cg = _get_commentary()
+            goal_text = cg.generate(
                 "goal",
-                f"GOL! {carrier.name} trafia do siatki! ({self.state.score_home}:{self.state.score_away})",
-                player=carrier,
-                xg=meta["xg"],
-            )
+                minute=self.state.current_minute,
+                player=carrier.name,
+                goalkeeper=gk.name,
+                score_home=self.state.score_home,
+                score_away=self.state.score_away,
+            ) if cg else f"GOL! {carrier.name} ({self.state.score_home}:{self.state.score_away})"
+            self._push_event("goal", goal_text, player=carrier, xg=meta["xg"])
             # Po golu – wznowienie z centrum
             self.state.pitch.zone_longitudinal = ZoneLongitudinal.MIDFIELD
             self.state.pitch.zone_lateral      = ZoneLateral.CENTER
             self._swap_possession()
         else:
-            self._push_event(
+            cg = _get_commentary()
+            shot_text = cg.generate(
                 "shot",
-                f"Strzał {carrier.name}! {'Na bramkę' if meta['on_target'] else 'Obok'} (xG: {meta['xg']:.2f})",
-                player=carrier,
+                minute=self.state.current_minute,
+                player=carrier.name,
                 xg=meta["xg"],
-            )
+            ) if cg else f"Strzał {carrier.name}! (xG: {meta['xg']:.2f})"
+            self._push_event("shot", shot_text, player=carrier, xg=meta["xg"])
             if meta["on_target"]:
-                # Bramkarz wybija – rzut rożny lub autem (losowo)
-                if random.random() < 0.25:
+                # Bramkarz wybija – 35% szans na rzut rożny
+                if random.random() < 0.35:
                     att_stats.corners += 1
-            # Piłka wraca do obrony broniących
+                    cg = _get_commentary()
+                    corner_text = cg.generate(
+                        "corner",
+                        minute=self.state.current_minute,
+                        player=carrier.name,
+                        team=self._team_label(),
+                    ) if cg else f"{carrier.name} – rzut rożny!"
+                    self._push_event("corner", corner_text, player=carrier)
+                    # Natychmiastowe wykonanie rzutu rożnego
+                    self.state.pitch.set_piece = "corner"
+                    self._do_set_piece(carrier)
+                    return
+                else:
+                    cg = _get_commentary()
+                    save_text = cg.generate(
+                        "save",
+                        minute=self.state.current_minute,
+                        player=carrier.name,
+                        goalkeeper=gk.name,
+                        xg=meta["xg"],
+                    ) if cg else f"Obrona {gk.name}!"
+                    self._push_event("shot", save_text, player=carrier, xg=meta["xg"])
+                    self.state.pitch.zone_longitudinal = ZoneLongitudinal.MIDFIELD
+                    self._swap_possession()
+                    return
+            # Strzał obok – piłka za linią lub długi aut
             self.state.pitch.zone_longitudinal = ZoneLongitudinal.MIDFIELD
             self._swap_possession()
+
+    # ------------------------------------------------------------------
+    # ZADANIE A: STAŁE FRAGMENTY GRY
+    # ------------------------------------------------------------------
+
+    def _do_set_piece(self, taker: "Player") -> Optional["MatchEvent"]:
+        """
+        Dispatcher stałych fragmentów. Czyta self.state.pitch.set_piece
+        i deleguje do właściwej metody.
+        Zawsze resetuje set_piece na None po wykonaniu.
+        """
+        sp_type = self.state.pitch.set_piece
+        self.state.pitch.set_piece = None   # reset
+
+        if sp_type == "penalty":
+            return self._execute_penalty(taker)
+        elif sp_type == "corner":
+            return self._execute_corner_or_freekick(taker, is_corner=True)
+        elif sp_type == "free_kick":
+            return self._execute_corner_or_freekick(taker, is_corner=False)
+        return None
+
+    # ── Rzut wolny / Rzut rożny ──────────────────────────────────────
+
+    def _execute_corner_or_freekick(self, taker: "Player", is_corner: bool) -> Optional["MatchEvent"]:
+        """
+        Dośrodkowanie z rzutu rożnego lub rzutu wolnego.
+
+        Formuła:
+            mu_taker    = Crossing*1.6 + Vision*0.5
+            mu_header   = (Heading*1.4 + Jumping*1.0)  [best att header]
+            mu_def_air  = (Heading*1.2 + Strength*0.8 + GK_Aerial*1.5)  [defending side]
+
+        xG bazowe:
+            corner    = 0.10
+            free_kick = 0.08  (bezpośredni) lub 0.05 (pośredni z dośrodkowaniem)
+        """
+        att_players = self._attacking_players()
+        def_players = self._defending_players()
+        defending_home = not self.state.pitch.home_possession
+        gk = self._find_goalkeeper(is_home=defending_home)
+
+        if not att_players or gk is None:
+            return None
+
+        # Wybierz najlepszego dośrodkującego (crossing)
+        best_crosser = max(att_players, key=lambda p: p.effective_attr("crossing"))
+
+        # Wybierz najlepszego skaczącego zawodnika w ataku
+        best_header_att = max(
+            [p for p in att_players if p.id != best_crosser.id] or att_players,
+            key=lambda p: p.effective_attr("heading") + p.effective_attr("strength"),
+        )
+
+        # Wybierz najlepszego obrońcę powietrznego
+        best_def_air = max(
+            def_players,
+            key=lambda p: p.effective_attr("heading") + p.effective_attr("strength"),
+        ) if def_players else None
+
+        # ── Gauss ────────────────────────────────────────────────────
+        mu_cross = (
+            best_crosser.effective_attr("crossing") * 1.6
+            + best_crosser.effective_attr("vision")  * 0.5
+        )
+        mu_header = (
+            best_header_att.effective_attr("heading")   * 1.4
+            + best_header_att.effective_attr("strength") * 1.0
+        )
+        if best_def_air:
+            mu_def = (
+                best_def_air.effective_attr("heading")   * 1.2
+                + best_def_air.effective_attr("strength") * 0.8
+                + gk.effective_attr("gk_aerial")          * 1.5
+            )
+        else:
+            mu_def = gk.effective_attr("gk_aerial") * 2.0
+
+        roll_cross  = random.gauss(mu_cross,  SIGMA)
+        roll_header = random.gauss(mu_header, SIGMA)
+        roll_def    = random.gauss(mu_def,    SIGMA)
+
+        cross_success = roll_cross > (mu_def * 0.6)   # dośrodkowanie trafia w strefę
+        wins_header   = roll_header > roll_def         # wygrywa pojedynek powietrzny
+
+        base_xg = 0.10 if is_corner else 0.08
+        advantage = max(-1.0, min(1.0, (roll_header - roll_def) / 18.0))
+        xg_sp = max(0.02, min(0.55, base_xg + advantage * base_xg * 2.0))
+
+        sp_label = "corner" if is_corner else "free_kick"
+        cg = _get_commentary()
+
+        if cross_success and wins_header:
+            # Główka / strzał – kwalifikujemy do bramkarz-duel
+            is_goal, shot_meta = DuelCalculator.calculate_shot(
+                best_header_att, gk,
+                ZoneLongitudinal.ATTACK, ZoneLateral.CENTER,
+            )
+            # Wzbogacamy xG o bonus za stały fragment
+            final_xg = round(max(shot_meta["xg"], xg_sp), 3)
+            att_s = self._attacking_stats()
+            att_s.shots += 1
+            att_s.xg    += final_xg
+            best_header_att.stats.shots += 1
+            best_header_att.stats.xg_generated += final_xg
+
+            if is_goal:
+                if self.state.pitch.home_possession:
+                    self.state.score_home += 1
+                    self.state.home_stats.goals += 1
+                else:
+                    self.state.score_away += 1
+                    self.state.away_stats.goals += 1
+                best_header_att.stats.goals += 1
+                att_s.shots_on_target += 1
+                best_header_att.stats.shots_on_target += 1
+                goal_text = cg.generate(
+                    "goal",
+                    minute=self.state.current_minute,
+                    player=best_header_att.name,
+                    goalkeeper=gk.name,
+                    score_home=self.state.score_home,
+                    score_away=self.state.score_away,
+                ) if cg else f"GOL po stałym fragmencie! {best_header_att.name}!"
+                self._push_event("goal", goal_text, player=best_header_att, xg=final_xg)
+                self.state.pitch.zone_longitudinal = ZoneLongitudinal.MIDFIELD
+                self.state.pitch.zone_lateral      = ZoneLateral.CENTER
+                self._swap_possession()
+            else:
+                att_s.shots_on_target += 1
+                best_header_att.stats.shots_on_target += 1
+                save_text = cg.generate(
+                    "save",
+                    minute=self.state.current_minute,
+                    player=best_header_att.name,
+                    goalkeeper=gk.name,
+                    xg=final_xg,
+                ) if cg else f"Obrona {gk.name} po stałym fragmencie!"
+                self._push_event("shot", save_text, player=best_header_att, xg=final_xg)
+                self.state.pitch.zone_longitudinal = ZoneLongitudinal.MIDFIELD
+                self._swap_possession()
+        else:
+            # Niecelne dośrodkowanie – piłka do obrońców
+            sp_text = cg.generate(
+                "set_piece",
+                minute=self.state.current_minute,
+                player=best_crosser.name,
+                goalkeeper=gk.name,
+                set_piece_type=sp_label,
+            ) if cg else f"Stały fragment gry — niecelne dośrodkowanie."
+            self._push_event("set_piece", sp_text, player=best_crosser)
+            self._swap_possession()
+
+        # Stamina drain
+        self._drain_stamina(best_crosser, 0.6)
+        self._drain_stamina(best_header_att, 1.0)
+        if best_def_air:
+            self._drain_stamina(best_def_air, 1.0)
+        return None
+
+    # ── Rzut Karny ───────────────────────────────────────────────────
+
+    def _execute_penalty(
+        self,
+        taker: "Player",
+    ) -> Optional["MatchEvent"]:
+        """
+        Rzut karny.
+
+        Formuła:
+            mu_taker  = Finishing*1.8 + Composure*1.2
+            mu_gk     = GK_Reflexes*2.0
+
+        xG bazowe = 0.76 (statystyczne PK)
+        Wynik Gaussa modyfikuje xG w zakresie ±0.15.
+        """
+        defending_home = not self.state.pitch.home_possession
+        gk = self._find_goalkeeper(is_home=defending_home)
+        if gk is None:
+            return None
+
+        att_players = self._attacking_players()
+        # Wybierz najlepszego egzekutora (finishing + composure)
+        best_taker = max(
+            att_players,
+            key=lambda p: p.effective_attr("finishing") + p.effective_attr("composure"),
+        ) if att_players else taker
+
+        mu_taker = (
+            best_taker.effective_attr("finishing")  * 1.8
+            + best_taker.effective_attr("composure") * 1.2
+        )
+        mu_gk = gk.effective_attr("gk_reflexes") * 2.0
+
+        roll_t  = random.gauss(mu_taker, SIGMA * 0.8)   # mniejsza wariancja (presja)
+        roll_gk = random.gauss(mu_gk,    SIGMA * 0.8)
+
+        advantage = max(-1.0, min(1.0, (roll_t - roll_gk) / 20.0))
+        BASE_PK_XG = 0.76
+        xg_pen = round(max(0.55, min(0.95, BASE_PK_XG + advantage * 0.15)), 3)
+
+        is_goal = random.random() < xg_pen
+
+        cg = _get_commentary()
+        pen_text = cg.generate(
+            "penalty",
+            minute=self.state.current_minute,
+            player=best_taker.name,
+            goalkeeper=gk.name,
+        ) if cg else f"Rzut karny — {best_taker.name}!"
+        self._push_event("set_piece", pen_text, player=best_taker)
+
+        att_s = self._attacking_stats()
+        att_s.shots += 1
+        att_s.xg    += xg_pen
+        best_taker.stats.shots += 1
+        best_taker.stats.xg_generated += xg_pen
+
+        if is_goal:
+            if self.state.pitch.home_possession:
+                self.state.score_home += 1
+                self.state.home_stats.goals += 1
+            else:
+                self.state.score_away += 1
+                self.state.away_stats.goals += 1
+            best_taker.stats.goals += 1
+            att_s.shots_on_target += 1
+            best_taker.stats.shots_on_target += 1
+            goal_text = cg.generate(
+                "goal",
+                minute=self.state.current_minute,
+                player=best_taker.name,
+                goalkeeper=gk.name,
+                score_home=self.state.score_home,
+                score_away=self.state.score_away,
+            ) if cg else f"GOL z rzutu karnego! {best_taker.name}!"
+            self._push_event("goal", goal_text, player=best_taker, xg=xg_pen)
+            self.state.pitch.zone_longitudinal = ZoneLongitudinal.MIDFIELD
+            self.state.pitch.zone_lateral      = ZoneLateral.CENTER
+            self._swap_possession()
+        else:
+            # Obroniony rzut karny
+            save_text = cg.generate(
+                "save",
+                minute=self.state.current_minute,
+                player=best_taker.name,
+                goalkeeper=gk.name,
+                xg=xg_pen,
+            ) if cg else f"Obroniony rzut karny! {gk.name} ratuje!"
+            att_s.shots_on_target += 1
+            best_taker.stats.shots_on_target += 1
+            self._push_event("save", save_text, player=best_taker, xg=xg_pen)
+            self._update_rating(gk, 0.35)      # wielki bonus dla bramkarza
+            self._update_rating(best_taker, -0.20)
+            self.state.pitch.zone_longitudinal = ZoneLongitudinal.MIDFIELD
+            self._swap_possession()
+
+        self._drain_stamina(best_taker, 0.5)
+        return None
 
     # ------------------------------------------------------------------
     # AKTUALIZACJA POSIADANIA (statystyki)
@@ -955,6 +1390,11 @@ class MatchEngine:
         Wywołuj w pętli:
             while not engine.state.is_finished:
                 event = engine.simulate_tick()
+
+        BALANS:
+        - 'hold' = bezpieczne utrzymanie (nabija posiadanie bez postępu strefy)
+        - Pressing = obrońca może wymusić stratę przed decyzją akcji
+        - Strzały: cel 10–25 łącznie w 90 min
         """
         state = self.state
 
@@ -967,10 +1407,51 @@ class MatchEngine:
             self._swap_possession()
             return None
 
-        carrier = self._pick_random(att_pool, prefer_pos=["CM", "AM", "ST", "ŚP", "N"])
+        # Preferuj zawodników ofensywnych tylko w ataku, w obronie wybierz obrońców
+        zone = state.pitch.zone_longitudinal
+        if zone == ZoneLongitudinal.DEFENSE:
+            carrier = self._pick_random(att_pool, prefer_pos=["GK", "CB", "ŚO", "LO", "PO", "BR"])
+        elif zone == ZoneLongitudinal.MIDFIELD:
+            carrier = self._pick_random(att_pool, prefer_pos=["CM", "DM", "ŚP", "DP", "LP", "PP"])
+        else:
+            carrier = self._pick_random(att_pool, prefer_pos=["AM", "ST", "LW", "RW", "LS", "PS", "N", "OP"])
+
         state.pitch.ball_carrier_id = carrier.id
 
-        # --- Aktualizuj statystyki posiadania ---
+        # --- Pressing: czy obrońca spróbuje przerwać akcję PRZED jej wykonaniem? ---
+        # (symuluje presję – redukuje czas na myślenie)
+        def_pool = self._defending_players()
+        def_tact = self._defending_tactics()
+        if def_pool and def_tact.pressing >= 3 and random.random() < 0.12:
+            presser = self._pick_random(
+                def_pool,
+                prefer_pos=["CM", "DM", "ŚP", "DP", "CB", "ŚO"]
+            )
+            if presser:
+                intercepted, press_meta = DuelCalculator.calculate_interception(
+                    presser, carrier, def_tact.pressing
+                )
+                if intercepted:
+                    self._defending_stats().interceptions += 1
+                    presser.stats.interceptions += 1
+                    self._update_rating(presser, press_meta["rating_delta_presser"])
+                    self._update_rating(carrier,  press_meta["rating_delta_carrier"])
+                    self._swap_possession()
+                    self._advance_zone(success=False)
+                    # Zarejestruj czas posiadania PRZED utratą
+                    att_stats = self._defending_stats()   # teraz to drużyna atakująca
+                    att_stats.possession_ticks += 1
+                    state.current_tick += 1
+                    if state.current_tick >= TICKS_PER_MINUTE:
+                        state.current_tick = 0
+                        state.current_minute += 1
+                        self._update_momentum()
+                    if state.current_minute >= TOTAL_MINUTES:
+                        state.is_finished = True
+                    return None   # pressing = brak zdarzenia do frontendu
+
+        # --- Aktualizuj statystyki posiadania (KUMULATYWNE) ---
+        # Liczymy KAŻDY tick z piłką – to daje rzetelne posiadanie
         self._update_possession_stats()
         carrier.stats.minutes_played = state.current_minute
 
@@ -978,7 +1459,9 @@ class MatchEngine:
         action = self._decide_action()
         events_before = len(state.events)
 
-        if action == "pass":
+        if action == "hold":
+            self._do_hold(carrier)
+        elif action == "pass":
             self._do_pass(carrier)
         elif action == "dribble":
             self._do_dribble(carrier)
